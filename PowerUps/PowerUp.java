@@ -1,17 +1,40 @@
 package PowerUps;
 
-public abstract class PowerUp {
-    protected float duration;
-    protected String type;
+import Objects.Ball;
+import Objects.GameObject;
+import Objects.Paddle;
 
-    public PowerUp(float duration, String type) {
-        this.duration = duration;
+import java.awt.*;
+
+public abstract class PowerUp extends GameObject {
+    protected static final float Fall_Speed = 2.0f; // tốc độ rơi
+    protected long DurationMs;
+    protected String type;
+    protected boolean collectedOrOffscreen = false;
+
+    public PowerUp(float x, float y, int width, int height, long durationMs, String type) {
+        super(x,y,width,height);
+        this.DurationMs = DurationMs;
         this.type = type;
     }
+    @Override
+    public void update() {
+        y += Fall_Speed;
+    }
+    public void render(Graphics2D g2) {
+        g2.setColor(Color.YELLOW);
+        g2.fillOval(Math.round(x), Math.round(y), width, height);
+        g2.setColor(Color.BLACK);
+        g2.drawOval(Math.round(x), Math.round(y), width, height);
+        g2.setFont(new Font("Arial", Font.BOLD, 12));
+        String s = getType().substring(0,1);
+        int tw = g2.getFontMetrics().stringWidth(s);
+        g2.drawString(s, Math.round(x) + (width - tw)/2, Math.round(y) + height/2 + 4);
+    }
 
-    public abstract void applyEffect(Paddle paddle);
-    public abstract void removeEffect(Paddle paddle);
+    public abstract void applyEffect(Paddle paddle, Ball ball, Object gameManager);
+    public abstract void removeEffect(Paddle paddle, Ball ball, Object gameManager);
 
     public String getType() { return type; }
-    public float getDuration() { return duration; }
+    public float getDurationMs() { return DurationMs; }
 }

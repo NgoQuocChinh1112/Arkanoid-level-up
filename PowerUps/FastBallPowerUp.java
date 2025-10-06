@@ -1,17 +1,49 @@
 package PowerUps;
 
+import Objects.Ball;
+import Objects.Paddle;
+import java.awt.*;
+
 public class FastBallPowerUp extends PowerUp {
-    public FastBallPowerUp(float duration) {
-        super(duration, "FAST_BALL");
+    private static final float SPEED_FACTOR = 1.6f;
+    private static final Color MAIN_COLOR = new Color(220, 120, 40);
+
+    public FastBallPowerUp(float x, float y, int width, int height, long durationMs) {
+        super(x, y, width, height, durationMs, "FAST_BALL");
+    }
+    @Override
+    public void applyEffect(Paddle paddle, Ball ball, Object gameManager) {
+        float originalDx = ball.getDx();
+        float originalDy = ball.getDy();
+        float factor = 1.6f;
+
+        // Tăng tốc bóng
+        ball.setDx(originalDx * factor);
+        ball.setDy(originalDy * factor);
+
+        // Sau khi hết thời gian, khôi phục tốc độ cũ
+        javax.swing.Timer timer = new javax.swing.Timer((int) DurationMs, e -> {
+            ball.setDx(originalDx);
+            ball.setDy(originalDy);
+        });
+        timer.setRepeats(false); // chỉ chạy 1 lần
+        timer.start();
     }
 
-    @Override
-    public void applyEffect(Paddle paddle) {
-        // TODO
-    }
+
 
     @Override
-    public void removeEffect(Paddle paddle) {
-        // TODO
+    public void render(Graphics2D g2) {
+        g2.setColor(MAIN_COLOR);
+        g2.fillOval(Math.round(x), Math.round(y), width, height);
+
+        g2.setColor(Color.BLACK);
+        g2.drawOval(Math.round(x), Math.round(y), width, height);
+
+        g2.setFont(new Font("Arial", Font.BOLD, 12));
+        String label = "F";
+        int textWidth = g2.getFontMetrics().stringWidth(label);
+        g2.drawString(label, Math.round(x) + (width - textWidth) / 2,
+                Math.round(y) + height / 2 + 4);
     }
 }

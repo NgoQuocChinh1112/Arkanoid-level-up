@@ -1,16 +1,35 @@
 package Objects;
 
 import java.awt.*;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 
 public class Brick extends GameObject {
+    protected static final int MAX_LEVEL = 5;
     protected int hitPoints;
-    protected String type;
-    protected boolean destroyed = false;
+    private BufferedImage[] textures;
+    protected int level;
 
-    public Brick(float x, float y, int width, int height, int hitPoints, String type) {
+    public Brick(float x, float y, int width, int height, int hitPoints, int level) {
         super(x, y, width, height);
         this.hitPoints = hitPoints;
-        this.type = type;
+        this.level = level;
+        loadTexture();
+        texture = textures[this.level - 1];
+    }
+
+    public void loadTexture() {
+        textures = new BufferedImage[MAX_LEVEL];
+        try {
+            textures[0] = ImageIO.read(getClass().getResource("/assets/brick_white.png"));   // level 1
+            textures[1] = ImageIO.read(getClass().getResource("/assets/brick_blue.png"));    // level 2
+            textures[2] = ImageIO.read(getClass().getResource("/assets/brick_green.png"));   // level 3
+            textures[3] = ImageIO.read(getClass().getResource("/assets/brick_yellow.png"));  // level 4
+            textures[4] = ImageIO.read(getClass().getResource("/assets/brick_red.png"));     // level 5
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -19,26 +38,31 @@ public class Brick extends GameObject {
 
     @Override
     public void render(Graphics2D g2) {
-        Color fill = type.equals("STRONG") ? new Color(180, 50, 50) : new Color(50, 150, 220);
-        g2.setColor(fill);
-        g2.fillRoundRect(Math.round(x), Math.round(y), width, height, 6, 6);
-        g2.setColor(Color.BLACK);
-        g2.drawRoundRect(Math.round(x), Math.round(y), width, height, 6, 6);
-        g2.setColor(Color.WHITE);
-        g2.setFont(new Font("Arial", Font.BOLD, 12));
-        String s = String.valueOf(hitPoints);
-        int tw = g2.getFontMetrics().stringWidth(s);
-        g2.drawString(s, Math.round(x) + (width - tw)/2, Math.round(y) + height/2 + 5);
+        if (!isDestroyed()) {
+            g2.drawImage(texture, (int)x, (int)y, width, height, null);
+        }
     }
 
     public void takeHit() {
-        hitPoints--;
-        if (hitPoints <= 0) destroyed = true;
+        if (hitPoints > 0) {
+            hitPoints--;
+            if (hitPoints > 0) {
+                texture = textures[hitPoints - 1];
+            } else {
+                texture = null;
+            }
+        }
     }
 
-    public boolean isDestroyed() { return destroyed; }
+    public boolean isDestroyed() {
+        return hitPoints <= 0;
+    }
 
-    public int getHitPoints() { return hitPoints; }
+    public int getHitPoints() {
+        return hitPoints;
+    }
 
-    public String getType() { return type; }
+    public int level() {
+        return level;
+    }
 }

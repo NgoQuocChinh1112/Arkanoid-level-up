@@ -66,11 +66,8 @@ public class GameManager extends JPanel implements Runnable, KeyListener {
                 int x = offsetX + c * (brickW + padding);
                 int y = offsetY + r * (brickH + padding);
                 // randomly strong bricks
-                if ((r == 0 && c % 4 == 0) || rand.nextDouble() < 0.12) {
-                    bricks.add(new StrongBrick(x, y, brickW, brickH));
-                } else {
-                    bricks.add(new NormalBrick(x, y, brickW, brickH));
-                }
+                int num = rand.nextInt(5) + 1;
+                bricks.add(new Brick(x, y, brickW, brickH, num, num));
             }
         }
     }

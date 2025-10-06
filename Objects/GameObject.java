@@ -1,12 +1,14 @@
 package Objects;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
 public abstract class GameObject {
     protected float x;
     protected float y;
     protected int width;
     protected int height;
+    protected BufferedImage texture;
 
     public GameObject(float x, float y, int width, int height) {
         this.x = x;
@@ -31,8 +33,7 @@ public abstract class GameObject {
      * @param other Đối tượng cần kiểm tra va chạm
      * @return true nếu hai đối tượng giao nhau, ngược lại false
      */
-    public boolean intersects(GameObject other) {
-        return this.getBounds().intersects(other.getBounds());
+    public boolean intersects(GameObject other) { return this.getBounds().intersects(other.getBounds());
     }
 
     // getters / setters

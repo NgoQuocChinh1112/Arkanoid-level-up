@@ -1,5 +1,7 @@
 package Objects;
 
+import java.awt.*;
+
 public abstract class GameObject {
     protected float x;
     protected float y;
@@ -14,7 +16,7 @@ public abstract class GameObject {
     }
 
     public abstract void update();
-    public abstract void render(Renderer renderer);
+    public abstract void render(Graphics2D g2);
 
     /**
      * Trả về vùng bao của đối tượng dưới dạng hình chữ nhật.

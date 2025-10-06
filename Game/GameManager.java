@@ -18,6 +18,7 @@ public class GameManager extends JPanel implements Runnable, KeyListener {
     private Thread gameThread;
     private boolean running = false;
     private final int FPS = 60;
+    private int currentLevel = 1;
 
     private Paddle paddle;
     private Ball ball;
@@ -53,24 +54,59 @@ public class GameManager extends JPanel implements Runnable, KeyListener {
     }
 
     private void buildLevel() {
-        bricks.clear();
-        int rows = 5;
-        int cols = 10;
-        int brickW = 64;
-        int brickH = 24;
-        int padding = 8;
-        int offsetX = (WIDTH - (cols * (brickW + padding) - padding)) / 2;
-        int offsetY = 60;
-        for (int r = 0; r < rows; r++) {
-            for (int c = 0; c < cols; c++) {
+    bricks.clear();
+
+    int brickW = 64, brickH = 24, padding = 8;
+    int offsetY = 60;
+
+    // === MAP MỖI LEVEL (dùng số 1–5 để thể hiện loại gạch, 0 là trống) ===
+    int[][] level1 = {
+        {0,1,1,0,0,0,1,1,0},
+        {1,2,2,1,0,1,2,2,1},
+        {1,3,3,3,3,3,3,3,1},
+        {0,1,4,4,4,4,4,1,0},
+        {0,0,1,5,5,5,1,0,0},
+    };
+
+    int[][] level2 = {
+        {0,0,0,3,3,3,0,0,0},
+        {0,0,3,2,2,2,3,0,0},
+        {0,3,2,1,1,1,2,3,0},
+        {3,2,1,1,1,1,1,2,3},
+        {0,3,2,1,1,1,2,3,0},
+    };
+
+    int[][] level3 = {
+        {1,0,0,0,0,0,0,0,1},
+        {1,1,0,0,0,0,0,1,1},
+        {1,1,1,0,0,0,1,1,1},
+        {1,1,1,1,0,1,1,1,1},
+        {1,1,1,1,1,1,1,1,1},
+    };
+
+    // === CHỌN LEVEL HIỆN TẠI ===
+    int[][] map;
+    switch (currentLevel) {
+        case 2 -> map = level2;
+        case 3 -> map = level3;
+        default -> map = level1;
+    }
+
+    int cols = map[0].length;
+    int offsetX = (WIDTH - (cols * (brickW + padding) - padding)) / 2;
+
+    // === TẠO GẠCH THEO MAP ===
+    for (int r = 0; r < map.length; r++) {
+        for (int c = 0; c < map[r].length; c++) {
+            int type = map[r][c];
+            if (type != 0) {
                 int x = offsetX + c * (brickW + padding);
                 int y = offsetY + r * (brickH + padding);
-                // randomly strong bricks
-                int num = rand.nextInt(5) + 1;
-                bricks.add(new Brick(x, y, brickW, brickH, num, num));
+                bricks.add(new Brick(x, y, brickW, brickH, type, type));
             }
         }
     }
+}
 
     public void startGameThread() {
         if (gameThread == null) {
@@ -103,34 +139,49 @@ public class GameManager extends JPanel implements Runnable, KeyListener {
     }
 
     private void updateGame() {
-        if (gameState.equals("RUNNING")) {
-            handleInput();
-            paddle.update();
-            // clamp paddle inside screen
-            if (paddle.getX() < 0) paddle.setX(0);
-            if (paddle.getX() + paddle.getWidth() > WIDTH) paddle.setX(WIDTH - paddle.getWidth());
+    if (!gameState.equals("RUNNING")) return;
 
-            // Ball sticks to paddle until launched
-            if (!ball.isLaunched()) {
-                ball.setX(paddle.getX() + paddle.getWidth() / 2f - ball.getWidth() / 2f);
-                ball.setY(paddle.getY() - ball.getHeight() - 1);
-            } else {
-                ball.update();
-            }
+    // xử lý input & di chuyển paddle
+    handleInput();
+    paddle.update();
+    // clamp paddle inside screen
+    if (paddle.getX() < 0) paddle.setX(0);
+    if (paddle.getX() + paddle.getWidth() > WIDTH) paddle.setX(WIDTH - paddle.getWidth());
 
-            // update powerups
-            for (PowerUp p : powerUps) p.update();
+    // Ball sticks to paddle until launched
+    if (!ball.isLaunched()) {
+        ball.setX(paddle.getX() + paddle.getWidth() / 2f - ball.getWidth() / 2f);
+        ball.setY(paddle.getY() - ball.getHeight() - 1);
+    } else {
+        ball.update();
+    }
 
-            checkCollisions();
+    // update powerups (falling)
+    for (PowerUp p : powerUps) p.update();
 
-            // remove expired powerups from active lists (powerup objects falling)
-            powerUps.removeIf(PowerUp::isCollectedOrOffscreen);
+    // collisions (ball vs walls / paddle / bricks / powerups)
+    checkCollisions();
 
-            // check win or lose
-            if (bricks.isEmpty()) gameState = "WIN";
-            if (lives <= 0) gameState = "GAMEOVER";
+    // remove expired/collected powerups from list
+    powerUps.removeIf(PowerUp::isCollectedOrOffscreen);
+
+    // check win/lose
+    if (bricks.isEmpty()) {
+        currentLevel++;
+        if (currentLevel > 3) {
+            gameState = "WIN";
+        } else {
+            buildLevel();
+            ball.resetToPaddle(paddle); // reset sets launched=false already
+            // optional: ensure ball not moving
+            ball.setDx(0); ball.setDy(0);
         }
     }
+    if (lives <= 0) {
+        gameState = "GAMEOVER";
+    }
+}
+
 
     private void handleInput() {
         float sp = paddle.getSpeed();

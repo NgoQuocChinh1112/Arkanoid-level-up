@@ -15,11 +15,10 @@ public class FastBallPowerUp extends PowerUp {
     public void applyEffect(Paddle paddle, Ball ball, Object gameManager) {
         float originalDx = ball.getDx();
         float originalDy = ball.getDy();
-        float factor = 1.6f;
 
         // Tăng tốc bóng
-        ball.setDx(originalDx * factor);
-        ball.setDy(originalDy * factor);
+        ball.setDx(originalDx * SPEED_FACTOR);
+        ball.setDy(originalDy * SPEED_FACTOR);
 
         // Sau khi hết thời gian, khôi phục tốc độ cũ
         javax.swing.Timer timer = new javax.swing.Timer((int) DurationMs, e -> {

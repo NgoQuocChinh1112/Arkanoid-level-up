@@ -7,20 +7,22 @@ import Objects.Paddle;
 import java.awt.*;
 
 public abstract class PowerUp extends GameObject {
-    protected static final float Fall_Speed = 2.0f; // tốc độ rơi
-    protected long DurationMs;
+    protected long durationMs;
     protected String type;
+    protected float dy = 2.0f;
     protected boolean collectedOrOffscreen = false;
-
     public PowerUp(float x, float y, int width, int height, long durationMs, String type) {
         super(x,y,width,height);
-        this.DurationMs = DurationMs;
+        this.durationMs = durationMs;
         this.type = type;
     }
+
     @Override
     public void update() {
-        y += Fall_Speed;
+        y += dy;
     }
+
+    @Override
     public void render(Graphics2D g2) {
         g2.setColor(Color.YELLOW);
         g2.fillOval(Math.round(x), Math.round(y), width, height);
@@ -33,8 +35,10 @@ public abstract class PowerUp extends GameObject {
     }
 
     public abstract void applyEffect(Paddle paddle, Ball ball, Object gameManager);
-    public abstract void removeEffect(Paddle paddle, Ball ball, Object gameManager);
 
     public String getType() { return type; }
-    public float getDurationMs() { return DurationMs; }
+    public long getDurationMs() { return durationMs; }
+
+    public boolean isCollectedOrOffscreen() { return collectedOrOffscreen; }
+    public void markCollectedOrOffscreen() { collectedOrOffscreen = true; }
 }

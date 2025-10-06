@@ -10,14 +10,12 @@ public class ExpandPaddlePowerUp extends PowerUp {
 
     @Override
     public void applyEffect(Paddle paddle) {
-        // TODO
         OriginalWidth = paddle.width; // lưu kích thước gốc
         paddle.width = OriginalWidth * 2;
     }
 
     @Override
     public void removeEffect(Paddle paddle) {
-        // TODO
         paddle.width = OriginalWidth;
     }
 }

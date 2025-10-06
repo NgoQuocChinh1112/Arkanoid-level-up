@@ -1,6 +1,6 @@
 public abstract class MovableObject extends GameObject {
-    protected float dx;
-    protected float dy;
+    protected float dx = 0;
+    protected float dy = 0;
 
     public MovableObject(float x, float y, int width, int height, float dx, float dy) {
         super(x, y, width, height);
@@ -10,8 +10,14 @@ public abstract class MovableObject extends GameObject {
 
     // Hàm di chuyển move().
     public void move() {
-        x += dx;
-        y += dy;
+        this.x += dx;
+        this.y += dy;
+    }
+
+    // Hàm cập nhật vị trí.
+    @Override
+    public void update() {
+        move();
     }
 
     // getter / setter.

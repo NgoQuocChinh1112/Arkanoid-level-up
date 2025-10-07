@@ -62,12 +62,10 @@ public class GameManager extends JPanel implements Runnable, KeyListener {
         requestFocus();
         addKeyListener(this);
 
-        try {
-            backgroundImage = ImageIO.read(getClass().getResource("/assets/back_ground.png"));
-            backgroundImage = resizeImage(backgroundImage, WIDTH, HEIGHT); // nếu muốn scale
-        } catch (IOException | IllegalArgumentException e) {
-            e.printStackTrace();
-        }
+        backgroundImage = Renderer.loadBgroundTexture();
+    if (backgroundImage != null) {
+        backgroundImage = resizeImage(backgroundImage, width, height);
+    }
         initGame();
     }
 

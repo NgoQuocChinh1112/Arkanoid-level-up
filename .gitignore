@@ -4,4 +4,6 @@
 !PowerUps/
 !assets/
 !assets/**
+!levels/
+!levels/*.txt
 !.gitignore

@@ -68,8 +68,6 @@ public class GameManager extends JPanel implements Runnable, KeyListener {
         } catch (IOException | IllegalArgumentException e) {
             e.printStackTrace();
         }
-
-
         initGame();
     }
 
@@ -99,65 +97,10 @@ public class GameManager extends JPanel implements Runnable, KeyListener {
     private void initGame() {
         paddle = new Paddle((WIDTH / 2f - (60 * scaleX)), (HEIGHT - (60 * scaleY)), (int) (120 * scaleX), (int) (16 * scaleY));
         ball = new Ball(WIDTH / 2f - (8 * scaleX), HEIGHT - 80 * scaleY, (int) (16 * scaleY), (int) (16*scaleY));
-        bricks = new ArrayList<>();
+        bricks = new  ArrayList<>();
+        bricks = Level.buildLevel(1, WIDTH, HEIGHT, scaleX, scaleY);
         powerUps = new ArrayList<>();
-        buildLevel();
     }
-
-    private void buildLevel() {
-    bricks.clear();
-
-    int brickW = (int) (64f * scaleX), brickH = (int) (24f * scaleY);
-    int offsetY = (int) (60 * scaleY);
-
-    // === MAP MỖI LEVEL (dùng số 1–5 để thể hiện loại gạch, 0 là trống) ===
-    int[][] level1 = {
-        {0,1,1,0,0,0,1,1,0},
-        {1,2,2,1,0,1,2,2,1},
-        {1,3,3,3,3,3,3,3,1},
-        {0,1,4,4,4,4,4,1,0},
-        {0,0,1,5,5,5,1,0,0},
-    };
-
-    int[][] level2 = {
-        {0,0,0,3,3,3,0,0,0},
-        {0,0,3,2,2,2,3,0,0},
-        {0,3,2,1,1,1,2,3,0},
-        {3,2,1,1,1,1,1,2,3},
-        {0,3,2,1,1,1,2,3,0},
-    };
-
-    int[][] level3 = {
-        {1,0,0,0,0,0,0,0,1},
-        {1,1,0,0,0,0,0,1,1},
-        {1,1,1,0,0,0,1,1,1},
-        {1,1,1,1,0,1,1,1,1},
-        {1,1,1,1,1,1,1,1,1},
-    };
-
-    // === CHỌN LEVEL HIỆN TẠI ===
-    int[][] map;
-    switch (currentLevel) {
-        case 2 -> map = level2;
-        case 3 -> map = level3;
-        default -> map = level1;
-    }
-
-    int cols = map[0].length;
-    int offsetX = (WIDTH - (cols * brickW)) / 2;
-
-    // === TẠO GẠCH THEO MAP ===
-    for (int r = 0; r < map.length; r++) {
-        for (int c = 0; c < map[r].length; c++) {
-            int type = map[r][c];
-            if (type != 0) {
-                int x = offsetX + c * brickW;
-                int y = offsetY + r * brickH;
-                bricks.add(new Brick(x, y, brickW, brickH, type, type));
-            }
-        }
-    }
-}
 
     public void startGameThread() {
         if (gameThread == null) {
@@ -222,7 +165,6 @@ public class GameManager extends JPanel implements Runnable, KeyListener {
         if (currentLevel > 3) {
             gameState = "WIN";
         } else {
-            buildLevel();
             ball.resetToPaddle(paddle); // reset sets launched=false already
             // optional: ensure ball not moving
             ball.setDx(0); ball.setDy(0);

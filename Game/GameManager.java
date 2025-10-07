@@ -45,6 +45,29 @@ public class GameManager extends JPanel implements Runnable, KeyListener {
         initGame();
     }
 
+    // Check if circle intersecs rectangle
+    private boolean circleIntersectsRect(float cx, float cy, float radius, Rectangle rect) {
+        float closestX;
+        if (cx >= rect.x && cx <= rect.x + rect.width) {
+            closestX = cx;
+        } else if (cx > rect.x + rect.width) {
+            closestX = rect.x + rect.width;
+        } else {
+            closestX = rect.x;
+        }    
+        float closestY;
+        if (cy >= rect.y && cy <= rect.y + rect.height) {
+            closestY = cy;
+        } else if (cy > rect.y + rect.height) {
+            closestY = rect.y + rect.height;
+        } else {
+            closestY = rect.y;
+        }
+        float dx = cx - closestX;
+        float dy = cy - closestY;
+        return (dx * dx + dy * dy) < (radius * radius);
+    }
+
     private void initGame() {
         paddle = new Paddle(WIDTH / 2f - 60, HEIGHT - 60, 120, 16);
         ball = new Ball(WIDTH / 2f - 8, HEIGHT - 80, 16, 16);
@@ -139,35 +162,35 @@ public class GameManager extends JPanel implements Runnable, KeyListener {
     }
 
     private void updateGame() {
-    if (!gameState.equals("RUNNING")) return;
+        if (!gameState.equals("RUNNING")) return;
 
-    // xử lý input & di chuyển paddle
-    handleInput();
-    paddle.update();
-    // clamp paddle inside screen
-    if (paddle.getX() < 0) paddle.setX(0);
-    if (paddle.getX() + paddle.getWidth() > WIDTH) paddle.setX(WIDTH - paddle.getWidth());
+        // xử lý input & di chuyển paddle
+        handleInput();
+        paddle.update();
+        // clamp paddle inside screen
+        if (paddle.getX() < 0) paddle.setX(0);
+        if (paddle.getX() + paddle.getWidth() > WIDTH) paddle.setX(WIDTH - paddle.getWidth());
 
-    // Ball sticks to paddle until launched
-    if (!ball.isLaunched()) {
-        ball.setX(paddle.getX() + paddle.getWidth() / 2f - ball.getWidth() / 2f);
-        ball.setY(paddle.getY() - ball.getHeight() - 1);
-    } else {
-        ball.update();
-    }
+        // Ball sticks to paddle until launched
+        if (!ball.isLaunched()) {
+            ball.setX(paddle.getX() + paddle.getWidth() / 2f - ball.getWidth() / 2f);
+            ball.setY(paddle.getY() - ball.getHeight() - 1);
+        } else {
+            ball.update();
+        }
 
-    // update powerups (falling)
-    for (PowerUp p : powerUps) p.update();
+       // update powerups (falling)
+        for (PowerUp p : powerUps) p.update();
 
-    // collisions (ball vs walls / paddle / bricks / powerups)
-    checkCollisions();
+         // collisions (ball vs walls / paddle / bricks / powerups)
+        checkCollisions();
 
-    // remove expired/collected powerups from list
-    powerUps.removeIf(PowerUp::isCollectedOrOffscreen);
+        // remove expired/collected powerups from list
+        powerUps.removeIf(PowerUp::isCollectedOrOffscreen);
 
-    // check win/lose
-    if (bricks.isEmpty()) {
-        currentLevel++;
+         // check win/lose
+        if (bricks.isEmpty()) {
+            currentLevel++;
         if (currentLevel > 3) {
             gameState = "WIN";
         } else {
@@ -230,8 +253,12 @@ public class GameManager extends JPanel implements Runnable, KeyListener {
         while (it.hasNext()) {
             Brick b = it.next();
             if (b.isDestroyed()) continue;
-            if (ball.intersects(b)) {
-                // simple collision response: reverse dy if vertical hit, else dx
+
+            float ballCenterX = ball.getX() + ball.getWidth() / 2f;
+            float ballCenterY = ball.getY() + ball.getHeight() / 2f;
+            float radius = ball.getWidth() / 2f; // ban kinh bong
+
+            if (circleIntersectsRect(ballCenterX, ballCenterY, radius, b.getBounds())) {
                 Rectangle overlap = ball.getBounds().intersection(b.getBounds());
                 if (overlap.width < overlap.height) {
                     // horizontal overlap -> reflect dx

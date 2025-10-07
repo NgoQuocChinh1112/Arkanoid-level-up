@@ -56,7 +56,7 @@ public class GameManager extends JPanel implements Runnable, KeyListener {
     private void buildLevel() {
     bricks.clear();
 
-    int brickW = 64, brickH = 24, padding = 8;
+    int brickW = 64, brickH = 24;
     int offsetY = 60;
 
     // === MAP MỖI LEVEL (dùng số 1–5 để thể hiện loại gạch, 0 là trống) ===
@@ -93,15 +93,15 @@ public class GameManager extends JPanel implements Runnable, KeyListener {
     }
 
     int cols = map[0].length;
-    int offsetX = (WIDTH - (cols * (brickW + padding) - padding)) / 2;
+    int offsetX = (WIDTH - (cols * brickW)) / 2;
 
     // === TẠO GẠCH THEO MAP ===
     for (int r = 0; r < map.length; r++) {
         for (int c = 0; c < map[r].length; c++) {
             int type = map[r][c];
             if (type != 0) {
-                int x = offsetX + c * (brickW + padding);
-                int y = offsetY + r * (brickH + padding);
+                int x = offsetX + c * brickW;
+                int y = offsetY + r * brickH;
                 bricks.add(new Brick(x, y, brickW, brickH, type, type));
             }
         }

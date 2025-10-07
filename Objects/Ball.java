@@ -1,5 +1,6 @@
 package Objects;
 
+import Game.Renderer;
 import java.awt.*;
 
 public class Ball extends MovableObject {
@@ -10,6 +11,7 @@ public class Ball extends MovableObject {
         super(x, y, width, height);
         dx = 0;
         dy = 0;
+        texture = Renderer.loadBallTexture();
     }
 
     @Override
@@ -19,10 +21,7 @@ public class Ball extends MovableObject {
 
     @Override
     public void render(Graphics2D g2) {
-        g2.setColor(Color.WHITE);
-        g2.fillOval(Math.round(x), Math.round(y), width, height);
-        g2.setColor(Color.GRAY);
-        g2.drawOval(Math.round(x), Math.round(y), width, height);
+        g2.drawImage(texture, Math.round(x), Math.round(y), width, height, null);
     }
 
     public void launch(float dx, float dy) {

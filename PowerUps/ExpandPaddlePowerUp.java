@@ -15,7 +15,7 @@ public class ExpandPaddlePowerUp extends PowerUp {
     @Override
     public void applyEffect(Paddle paddle, Ball ball, Object gameManager) {
         if (originalWidth == -1) originalWidth = paddle.getWidth();
-        int newW = Math.min(300, originalWidth + 80);
+        int newW = Math.min(300, originalWidth + 50);
         paddle.setWidth(newW);
         // schedule removal after duration
         new Thread(() -> {

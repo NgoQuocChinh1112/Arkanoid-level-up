@@ -41,4 +41,9 @@ public class Renderer {
         textures[4] = loadTexture("/assets/brick_red.png");     // level 5
         return textures;
     }
+
+    public static BufferedImage loadBallTexture() {
+        return loadTexture("/assets/ball.png");
+    }
+
 }

@@ -2,28 +2,60 @@ package PowerUps;
 
 import Objects.Ball;
 import Objects.Paddle;
-
 import java.awt.*;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class ExpandPaddlePowerUp extends PowerUp {
-    private int originalWidth = -1;
+    private static int originalWidth = -1;
+    private static long expandEndTime = 0;
+    private static final Timer timer = new Timer(true);
+    private static TimerTask currentTask = null;
 
     public ExpandPaddlePowerUp(float x, float y, int width, int height, long durationMs) {
         super(x, y, width, height, durationMs, "EXPAND_PADDLE");
     }
 
-    @Override
     public void applyEffect(Paddle paddle, Ball ball, Object gameManager) {
-        if (originalWidth == -1) originalWidth = paddle.getWidth();
-        int newW = Math.min(300, originalWidth + 80);
-        paddle.setWidth(newW);
-        // schedule removal after duration
-        new Thread(() -> {
-            try {
-                Thread.sleep(durationMs);
-            } catch (InterruptedException ignored) {}
-            paddle.setWidth(originalWidth);
-        }).start();
+        long now = System.currentTimeMillis();
+
+        if (originalWidth == -1) {
+            originalWidth = paddle.getWidth();
+        }
+
+        long newEndTime = now + this.durationMs;
+        if (newEndTime > expandEndTime) {
+            expandEndTime = newEndTime;
+        }
+
+
+        int expandedWidth = Math.min(300, originalWidth + 80);
+        paddle.setWidth(expandedWidth);
+
+
+        if (currentTask != null) {
+            currentTask.cancel();
+        }
+        currentTask = new TimerTask() {
+            @Override
+            public void run() {
+                if (now < expandEndTime) {  // Double-check in case of race
+                    paddle.setWidth(originalWidth);
+                }
+                currentTask = null;
+            }
+        };
+        timer.schedule(currentTask, expandEndTime - now);
+    }
+
+
+    public static void resetState() {
+        if (currentTask != null) {
+            currentTask.cancel();
+            currentTask = null;
+        }
+        originalWidth = -1;
+        expandEndTime = 0;
     }
 
     @Override

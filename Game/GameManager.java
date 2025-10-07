@@ -12,12 +12,14 @@ import java.util.List;
 import java.util.Random;
 
 public class GameManager extends JPanel implements Runnable, KeyListener {
-    private final int WIDTH;
-    private final int HEIGHT;
+    private int WIDTH;
+    private int HEIGHT;
+
+    private float scaleX;
+    private float scaleY;
 
     private Thread gameThread;
     private boolean running = false;
-    private final int FPS = 60;
 
     private Paddle paddle;
     private Ball ball;
@@ -26,27 +28,39 @@ public class GameManager extends JPanel implements Runnable, KeyListener {
 
     private int score = 0;
     private int lives = 3;
-    private String gameState = "MENU"; // MENU, RUNNING, GAMEOVER, WIN
+    private String gameState = "MENU"; /* MENU, RUNNING, GAMEOVER, WIN */
 
     private boolean leftPressed = false;
     private boolean rightPressed = false;
 
     private Random rand = new Random();
 
+    /** thay đổi kích thước khi fullscreen. */
+    public void setGameSize(int width, int height) {
+        this.WIDTH = width;
+        this.HEIGHT = height;
+        this.scaleX = (float) WIDTH / 800f;
+        this.scaleY = (float) HEIGHT / 600f;
+        setPreferredSize(new Dimension(WIDTH, HEIGHT));
+        revalidate(); // cập nhật layout nếu cần
+    }
+
     public GameManager(int width, int height) {
         this.WIDTH = width;
         this.HEIGHT = height;
+        this.scaleX = (float) WIDTH / 800f;
+        this.scaleY = (float) HEIGHT / 600f;
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
         setFocusable(true);
         requestFocus();
         addKeyListener(this);
-
         initGame();
     }
 
+
     private void initGame() {
-        paddle = new Paddle(WIDTH / 2f - 60, HEIGHT - 60, 120, 16);
-        ball = new Ball(WIDTH / 2f - 8, HEIGHT - 80, 16, 16);
+        paddle = new Paddle((WIDTH / 2f - (60 * scaleX)), (HEIGHT - (60 * scaleY)), (int) (120 * scaleX), (int) (16 * scaleY));
+        ball = new Ball(WIDTH / 2f - (8 * scaleX), HEIGHT - 80 * scaleY, (int) (16 * scaleY), (int) (16*scaleY));
         bricks = new ArrayList<>();
         powerUps = new ArrayList<>();
         buildLevel();
@@ -56,11 +70,11 @@ public class GameManager extends JPanel implements Runnable, KeyListener {
         bricks.clear();
         int rows = 5;
         int cols = 10;
-        int brickW = 64;
-        int brickH = 24;
-        int padding = 8;
+        int brickW = (int) (64f * scaleX);
+        int brickH = (int) (24f * scaleY);
+        int padding = (int) (8 * scaleX);
         int offsetX = (WIDTH - (cols * (brickW + padding) - padding)) / 2;
-        int offsetY = 60;
+        int offsetY = (int) (60 * scaleY);
         for (int r = 0; r < rows; r++) {
             for (int c = 0; c < cols; c++) {
                 int x = offsetX + c * (brickW + padding);
@@ -85,6 +99,7 @@ public class GameManager extends JPanel implements Runnable, KeyListener {
 
     @Override
     public void run() {
+        int FPS = 60;
         long drawInterval = 1000000000 / FPS;
         long lastTime = System.nanoTime();
         long delta = 0;
@@ -239,9 +254,9 @@ public class GameManager extends JPanel implements Runnable, KeyListener {
 
         // draw HUD
         g2.setColor(Color.WHITE);
-        g2.setFont(new Font("Arial", Font.PLAIN, 18));
-        g2.drawString("Score: " + score, 12, 22);
-        g2.drawString("Lives: " + lives, WIDTH - 110, 22);
+        g2.setFont(new Font("Arial", Font.PLAIN, (int) (18 * scaleY)));
+        g2.drawString("Score: " + score, (int)(12 * scaleX), (int) (22 * scaleY));
+        g2.drawString("Lives: " + lives, WIDTH - (int) (90 * scaleY), (int) (22 *  scaleY));
 
         // draw paddles, ball, bricks, powerups
         paddle.render(g2);
@@ -293,6 +308,10 @@ public class GameManager extends JPanel implements Runnable, KeyListener {
             if (gameState.equals("GAMEOVER") || gameState.equals("WIN")) {
                 restart();
             }
+        }
+        if (kc == KeyEvent.VK_F11) {
+            Main.onFullscreen();
+            initGame();
         }
     }
     @Override

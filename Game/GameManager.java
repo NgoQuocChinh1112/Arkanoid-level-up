@@ -16,8 +16,11 @@ import java.io.IOException;
 
 
 public class GameManager extends JPanel implements Runnable, KeyListener {
-    private final int WIDTH;
-    private final int HEIGHT;
+    private int WIDTH;
+    private int HEIGHT;
+
+    private float scaleX;
+    private float scaleY;
 
     private Thread gameThread;
     private boolean running = false;
@@ -40,9 +43,20 @@ public class GameManager extends JPanel implements Runnable, KeyListener {
 
     private Random rand = new Random();
 
+    public void setGameSize(int width, int height) {
+        this.WIDTH = width;
+        this.HEIGHT = height;
+        this.scaleX = (float) WIDTH / 800f;
+        this.scaleY = (float) HEIGHT / 600f;
+        setPreferredSize(new Dimension(WIDTH, HEIGHT));
+        revalidate(); // cập nhật layout nếu cần
+    }
+
     public GameManager(int width, int height) {
         this.WIDTH = width;
         this.HEIGHT = height;
+        this.scaleX = (float) WIDTH / 800f;
+        this.scaleY = (float) HEIGHT / 600f;
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
         setFocusable(true);
         requestFocus();
@@ -83,8 +97,8 @@ public class GameManager extends JPanel implements Runnable, KeyListener {
     }
 
     private void initGame() {
-        paddle = new Paddle(WIDTH / 2f - 60, HEIGHT - 60, 120, 16);
-        ball = new Ball(WIDTH / 2f - 8, HEIGHT - 80, 16, 16);
+        paddle = new Paddle((WIDTH / 2f - (60 * scaleX)), (HEIGHT - (60 * scaleY)), (int) (120 * scaleX), (int) (16 * scaleY));
+        ball = new Ball(WIDTH / 2f - (8 * scaleX), HEIGHT - 80 * scaleY, (int) (16 * scaleY), (int) (16*scaleY));
         bricks = new ArrayList<>();
         powerUps = new ArrayList<>();
         buildLevel();
@@ -93,8 +107,8 @@ public class GameManager extends JPanel implements Runnable, KeyListener {
     private void buildLevel() {
     bricks.clear();
 
-    int brickW = 64, brickH = 24;
-    int offsetY = 60;
+    int brickW = (int) (64f * scaleX), brickH = (int) (24f * scaleY);
+    int offsetY = (int) (60 * scaleY);
 
     // === MAP MỖI LEVEL (dùng số 1–5 để thể hiện loại gạch, 0 là trống) ===
     int[][] level1 = {
@@ -332,9 +346,9 @@ public class GameManager extends JPanel implements Runnable, KeyListener {
 
         // draw HUD
         g2.setColor(Color.WHITE);
-        g2.setFont(new Font("Arial", Font.PLAIN, 18));
-        g2.drawString("Score: " + score, 12, 22);
-        g2.drawString("Lives: " + lives, WIDTH - 110, 22);
+        g2.setFont(new Font("Arial", Font.PLAIN, (int) (18 * scaleY)));
+        g2.drawString("Score: " + score, (int)(12 * scaleX), (int) (22 * scaleY));
+        g2.drawString("Lives: " + lives, WIDTH - (int) (90 * scaleY), (int) (22 *  scaleY));
 
         // draw paddles, ball, bricks, powerups
         paddle.render(g2);
@@ -386,6 +400,10 @@ public class GameManager extends JPanel implements Runnable, KeyListener {
             if (gameState.equals("GAMEOVER") || gameState.equals("WIN")) {
                 restart();
             }
+        }
+        if (kc == KeyEvent.VK_F11) {
+            Main.onFullscreen();
+            initGame();
         }
     }
     @Override

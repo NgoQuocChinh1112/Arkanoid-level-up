@@ -62,10 +62,14 @@ public class GameManager extends JPanel implements Runnable, KeyListener {
         requestFocus();
         addKeyListener(this);
 
+        setFocusable(true);
+        requestFocusInWindow();
+
+
         backgroundImage = Renderer.loadBgroundTexture();
-    if (backgroundImage != null) {
-        backgroundImage = resizeImage(backgroundImage, width, height);
-    }
+        if (backgroundImage != null) {
+            backgroundImage = resizeImage(backgroundImage, width, height);
+        }
         initGame();
     }
 
@@ -78,7 +82,7 @@ public class GameManager extends JPanel implements Runnable, KeyListener {
             closestX = rect.x + rect.width;
         } else {
             closestX = rect.x;
-        }    
+        }
         float closestY;
         if (cy >= rect.y && cy <= rect.y + rect.height) {
             closestY = cy;
@@ -148,30 +152,30 @@ public class GameManager extends JPanel implements Runnable, KeyListener {
             ball.update();
         }
 
-       // update powerups (falling)
+        // update powerups (falling)
         for (PowerUp p : powerUps) p.update();
 
-         // collisions (ball vs walls / paddle / bricks / powerups)
+        // collisions (ball vs walls / paddle / bricks / powerups)
         checkCollisions();
 
         // remove expired/collected powerups from list
         powerUps.removeIf(PowerUp::isCollectedOrOffscreen);
 
-         // check win/lose
+        // check win/lose
         if (bricks.isEmpty()) {
             currentLevel++;
-        if (currentLevel > 3) {
-            gameState = "WIN";
-        } else {
-            ball.resetToPaddle(paddle); // reset sets launched=false already
-            // optional: ensure ball not moving
-            ball.setDx(0); ball.setDy(0);
+            if (currentLevel > 3) {
+                gameState = "WIN";
+            } else {
+                ball.resetToPaddle(paddle); // reset sets launched=false already
+                // optional: ensure ball not moving
+                ball.setDx(0); ball.setDy(0);
+            }
+        }
+        if (lives <= 0) {
+            gameState = "GAMEOVER";
         }
     }
-    if (lives <= 0) {
-        gameState = "GAMEOVER";
-    }
-}
 
 
     private void handleInput() {
@@ -282,7 +286,7 @@ public class GameManager extends JPanel implements Runnable, KeyListener {
         } else {
             g2.setColor(Color.DARK_GRAY);
             g2.fillRect(0, 0, WIDTH, HEIGHT);
-        }   
+        }
 
         // draw HUD
         g2.setColor(Color.WHITE);

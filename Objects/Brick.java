@@ -2,6 +2,7 @@ package Objects;
 
 import java.awt.*;
 import javax.imageio.ImageIO;
+import Game.Renderer;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
@@ -15,21 +16,10 @@ public class Brick extends GameObject {
         super(x, y, width, height);
         this.hitPoints = hitPoints;
         this.level = level;
-        loadTexture();
-        texture = textures[this.level - 1];
-    }
-
-    public void loadTexture() {
-        textures = new BufferedImage[MAX_LEVEL];
-        try {
-            textures[0] = ImageIO.read(getClass().getResource("/assets/brick_white.png"));   // level 1
-            textures[1] = ImageIO.read(getClass().getResource("/assets/brick_blue.png"));    // level 2
-            textures[2] = ImageIO.read(getClass().getResource("/assets/brick_green.png"));   // level 3
-            textures[3] = ImageIO.read(getClass().getResource("/assets/brick_yellow.png"));  // level 4
-            textures[4] = ImageIO.read(getClass().getResource("/assets/brick_red.png"));     // level 5
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (textures == null) {
+            textures = Renderer.loadBrickTexture();
         }
+        texture = textures[this.level - 1];
     }
 
     @Override

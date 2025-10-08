@@ -102,37 +102,36 @@ public class GameManager extends JPanel implements Runnable, KeyListener {
         paddle = new Paddle((WIDTH / 2f - (60 * scaleX)), (HEIGHT - (60 * scaleY)), (int) (120 * scaleX), (int) (16 * scaleY));
         ball = new Ball(WIDTH / 2f - (8 * scaleX), HEIGHT - 80 * scaleY, (int) (16 * scaleY), (int) (16*scaleY));
         bricks = new  ArrayList<>();
-        bricks = Level.buildLevel(1, WIDTH, HEIGHT, scaleX, scaleY);
+        bricks = Level.buildLevel(currentLevel, WIDTH, HEIGHT, scaleX, scaleY);
         powerUps = new ArrayList<>();
     }
 
     public void startGameThread() {
         if (gameThread == null) {
             running = true;
-            gameThread = new Thread(this);
+            gameThread = new Thread(this, "GameThread");
             gameThread.start();
         }
     }
 
     @Override
     public void run() {
-        long drawInterval = 1000000000 / FPS;
+        final long drawInterval = 1_000_000_000L / FPS;
         long lastTime = System.nanoTime();
-        long delta = 0;
+        long delta = 0L;
 
         while (running) {
             long now = System.nanoTime();
             delta += now - lastTime;
             lastTime = now;
 
-            if (delta >= drawInterval) {
+            while (delta >= drawInterval) {
                 updateGame();
                 repaint();
-                delta = 0;
+                delta -= drawInterval;
             }
-            try {
-                Thread.sleep(1);
-            } catch (InterruptedException ignored) {}
+
+            try { Thread.sleep(2); } catch (InterruptedException ignored) {}
         }
     }
 
@@ -366,6 +365,12 @@ public class GameManager extends JPanel implements Runnable, KeyListener {
         initGame();
         gameState = "MENU";
     }
+
+    public void setLevel(int level) {
+        this.currentLevel = level;
+        restart(); // khởi động lại game với level mới
+    }
+
 
     private BufferedImage resizeImage(BufferedImage originalImage, int targetWidth, int targetHeight) {
         Image tmp = originalImage.getScaledInstance(targetWidth, targetHeight, Image.SCALE_SMOOTH);

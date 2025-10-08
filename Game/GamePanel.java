@@ -16,8 +16,11 @@ public class GamePanel extends JPanel {
         cardLayout = new CardLayout();
         setLayout(cardLayout);
 
+        // Thiết đặt kích thước panel
+        setPreferredSize(new Dimension(WIDTH, HEIGHT));
+
         menu = new Menu(this);
-        game = new GameManager( WIDTH, HEIGHT);
+        game = new GameManager(WIDTH, HEIGHT);
 
         add(menu, "Menu");
         add(game, "Game");
@@ -39,14 +42,26 @@ public class GamePanel extends JPanel {
         cardLayout.show(this, "Menu");
     }
 
+
     public void startGame() {
         cardLayout.show(this, "Game");
+        game.setLevel(1);
+        game.startGameThread();
+        SwingUtilities.invokeLater(() -> {
+            game.setFocusable(true);
+            game.requestFocusInWindow();
+            game.grabFocus();
+        });
+    }
+
+    public void startGame(int level) {
+        cardLayout.show(this, "Game");
+        game.setLevel(level); // khi chọn level cụ thể
         game.startGameThread();
         SwingUtilities.invokeLater(() -> {
             game.setFocusable(true);
             game.requestFocusInWindow();
         });
     }
-
 }
 

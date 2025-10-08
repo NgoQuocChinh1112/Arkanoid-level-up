@@ -49,6 +49,9 @@ public class GameManager extends JPanel implements Runnable, KeyListener {
         this.scaleX = (float) WIDTH / 800f;
         this.scaleY = (float) HEIGHT / 600f;
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
+        if (backgroundImage != null) {
+            backgroundImage = resizeImage(backgroundImage, width, height);
+        }
         revalidate(); // cập nhật layout nếu cần
     }
 
@@ -64,7 +67,6 @@ public class GameManager extends JPanel implements Runnable, KeyListener {
 
         setFocusable(true);
         requestFocusInWindow();
-
 
         backgroundImage = Renderer.loadBgroundTexture();
         if (backgroundImage != null) {

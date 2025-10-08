@@ -28,6 +28,9 @@ public class GamePanel extends JPanel {
     public void setPanelSize(int width, int height) {
         this.WIDTH = width;
         this.HEIGHT = height;
+        if (game != null) {
+            game.setGameSize(width, height);
+        }
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
         revalidate(); // cập nhật layout nếu cần
     }

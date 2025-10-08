@@ -1,9 +1,11 @@
-*
-!Game/
-!Objects/
-!PowerUps/
-!assets/
-!assets/**
-!levels/
-!levels/*.txt
-!.gitignore
+# IntelliJ IDEA
+.idea/
+
+# Thư mục build của Java / Maven
+target/
+
+# Thư mục build của Gradle hoặc IDE
+out/
+
+# Các file khác không cần thiết
+*.iml

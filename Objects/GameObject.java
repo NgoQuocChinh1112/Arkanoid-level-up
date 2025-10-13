@@ -43,4 +43,6 @@ public abstract class GameObject {
     public int getHeight() { return height; }
     public void setX(float x) { this.x = x; }
     public void setY(float y) { this.y = y; }
+    public void setwidth(int width) { this.width = width; }
+    public void setHeight(int height) { this.height = height; }
 }

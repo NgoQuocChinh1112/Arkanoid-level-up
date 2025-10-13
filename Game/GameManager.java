@@ -11,8 +11,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
-import javax.imageio.ImageIO;
-import java.io.IOException;
 
 
 public class GameManager extends JPanel implements Runnable, KeyListener {
@@ -100,7 +98,7 @@ public class GameManager extends JPanel implements Runnable, KeyListener {
 
     private void initGame() {
         paddle = new Paddle((WIDTH / 2f - (60 * scaleX)), (HEIGHT - (60 * scaleY)), (int) (120 * scaleX), (int) (16 * scaleY));
-        ball = new Ball(WIDTH / 2f - (8 * scaleX), HEIGHT - 80 * scaleY, (int) (16 * scaleY), (int) (16*scaleY));
+        ball = new Ball(WIDTH / 2f - (8 * scaleX), HEIGHT - 80 * scaleY, (int) (16 * scaleY), (int) (16 * scaleY));
         bricks = new  ArrayList<>();
         bricks = Level.buildLevel(currentLevel, WIDTH, HEIGHT, scaleX, scaleY);
         powerUps = new ArrayList<>();
@@ -207,19 +205,28 @@ public class GameManager extends JPanel implements Runnable, KeyListener {
 
         // Ball vs Paddle
         if (ball.intersects(paddle)) {
-            // reflect depending on where it hits the paddle
             float paddleCenter = paddle.getX() + paddle.getWidth() / 2f;
-            float ballCenter = ball.getX() + ball.getWidth() / 2f;
-            float diff = (ballCenter - paddleCenter) / (paddle.getWidth() / 2f); // -1 .. 1
-            float maxSpeed = 6f;
-            float angle = diff * (float)Math.toRadians(60); // angle deviation
+            float ballCenter   = ball.getX() + ball.getWidth() / 2f;
+            float diff = (ballCenter - paddleCenter) / (paddle.getWidth() / 2f); // -1..1
+            float angle = diff * (float)Math.toRadians(60); // góc lệch tối đa 60°
             float speed = (float) Math.hypot(ball.getDx(), ball.getDy());
             speed = Math.max(speed, 4f);
+
+            boolean hitSide = Math.abs(diff) > 1f;
+
             ball.setDx((float)(Math.sin(angle) * speed));
-            ball.setDy((float)(-Math.abs(Math.cos(angle) * speed)));
-            // ensure ball is above paddle
-            ball.setY(paddle.getY() - ball.getHeight() - 1);
+
+            if (hitSide) {
+                ball.setDy((float)Math.abs(Math.cos(angle) * speed));
+            } else {
+                ball.setDy((float)-Math.abs(Math.cos(angle) * speed));
+            }
+
+            if (!hitSide) {
+                ball.setY(paddle.getY() - ball.getHeight());
+            }
         }
+
 
         // Ball vs Bricks
         Iterator<Brick> it = bricks.iterator();

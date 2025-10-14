@@ -1,12 +1,17 @@
 package Objects;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
+
+import Game.Renderer;
 
 public class Paddle extends MovableObject {
     private float speed = 6f;
+    private BufferedImage paddleImage;
 
     public Paddle(float x, float y, int width, int height) {
         super(x, y, width, height);
+        paddleImage = Renderer.loadPaddleTexture();
     }
 
     @Override
@@ -16,10 +21,7 @@ public class Paddle extends MovableObject {
 
     @Override
     public void render(Graphics2D g2) {
-        g2.setColor(Color.LIGHT_GRAY);
-        g2.fillRoundRect(Math.round(x), Math.round(y), width, height, 8, 8);
-        g2.setColor(Color.DARK_GRAY);
-        g2.drawRoundRect(Math.round(x), Math.round(y), width, height, 8, 8);
+        g2.drawImage(paddleImage, Math.round(x), Math.round(y), width, height, null);
     }
 
     public void moveLeft() { dx = -speed; }

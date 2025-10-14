@@ -55,7 +55,7 @@ public class Menu extends JPanel {
                 Point p = e.getPoint();
                 int w = getWidth();
                 int h = getHeight();
-                int btnW = 220, btnH = 80;
+                int btnW = 140, btnH = 80;
                 int centerX = w/2 - btnW/2;
                 int startY = h/2 - 40;
                 int chooseY = startY + 100;
@@ -105,7 +105,7 @@ public class Menu extends JPanel {
                 Point p = e.getPoint();
                 int w = getWidth();
                 int h = getHeight();
-                int btnW = 220, btnH = 80;
+                int btnW = 140, btnH = 80;
                 int centerX = w/2 - btnW/2;
                 int startY = h/2 - 40;
                 int chooseY = startY + 100;
@@ -151,7 +151,7 @@ public class Menu extends JPanel {
         }
 
         // Kích thước nút
-        int btnW = 220;
+        int btnW = 140;
         int btnH = 80;
         int centerX = w / 2 - btnW / 2;
         int startY = h / 2 - 40;

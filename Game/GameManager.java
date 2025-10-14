@@ -114,24 +114,21 @@ public class GameManager extends JPanel implements Runnable, KeyListener {
 
     @Override
     public void run() {
-        final long drawInterval = 1_000_000_000L / FPS;
-        long lastTime = System.nanoTime();
-        long delta = 0L;
+        final int FPS = 60;
+        final long sleepTime = 1000 / FPS; // thời gian nghỉ giữa 2 frame, tính theo mili giây
 
         while (running) {
-            long now = System.nanoTime();
-            delta += now - lastTime;
-            lastTime = now;
+            updateGame();
+            repaint();
 
-            while (delta >= drawInterval) {
-                updateGame();
-                repaint();
-                delta -= drawInterval;
-            }
-
-            try { Thread.sleep(2); } catch (InterruptedException ignored) {}
+            try {
+                Thread.sleep(sleepTime);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }   
         }
     }
+
 
     private void updateGame() {
         if (!gameState.equals("RUNNING")) return;

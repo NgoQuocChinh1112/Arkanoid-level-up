@@ -43,15 +43,15 @@ public class Renderer {
     }
 
     public static BufferedImage loadBallTexture() {
-        return loadTexture("/assets/ball.png");
+        return loadTexture("/assets/ball_1.png");
     }
 
     public static BufferedImage loadBgroundTexture() {
-        try {
-            return ImageIO.read(Renderer.class.getResource("/assets/back_ground.png"));
-        } catch (IOException | IllegalArgumentException e) {
-            System.err.println("Không thể tải background: /assets/back_ground.png");
-            return null;
-        }
+        return loadTexture(("/assets/back_ground.png"));
     }
+
+    public static BufferedImage loadPaddleTexture() {
+            return loadTexture("/assets/paddle_1.png");
+    }
+    
 }

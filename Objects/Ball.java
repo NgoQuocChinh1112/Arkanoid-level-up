@@ -8,7 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 
 public class Ball extends MovableObject {
-    private float speed = 7f;
+    private float speed = 8f;
     private boolean launched = false;
 
     // Constants để tránh magic numbers
@@ -132,10 +132,14 @@ public class Ball extends MovableObject {
         }
         // Tường dưới
         else if (y + height >= GameManager.HEIGHT) {
+            y = GameManager.HEIGHT - height;
+            dy = -Math.abs(dy);
+            /*
             launched = false;
             dx = 0;
             dy = 0;
             return;
+            */
         }
 
         if (collided) {
@@ -224,6 +228,20 @@ public class Ball extends MovableObject {
         }
     }
 
+    public float clamp(float value, float min, float max) {
+        return Math.max(min, Math.min(value, max));
+    }
+
+    public boolean circleCheckCollision(Rectangle rect) {
+        float closestX = clamp(getCenterX(), rect.x,rect.x + rect.width );
+        float closestY = clamp(getCenterY(), rect.y,rect.y + rect.height);
+
+        float dX = getCenterX() - closestX;
+        float dY = getCenterY() - closestY;
+
+        return (dX * dX + dY * dY) < (radius * radius);
+    }
+
     private void checkBrickCollisions(List<Brick> bricks) {
         Rectangle ballRect = getBounds();
         float ballCenterX = getCenterX();
@@ -234,53 +252,50 @@ public class Ball extends MovableObject {
             Brick brick = it.next();
             Rectangle brickRect = brick.getBounds();
 
-            if (!ballRect.intersects(brickRect)) continue;
+            if (!circleCheckCollision(brickRect)) continue;
 
-            // Tính vị trí tương đối của ball với brick
-            float brickCenterX = brickRect.x + brickRect.width / 2f;
-            float brickCenterY = brickRect.y + brickRect.height / 2f;
+                // Tính vị trí tương đối của ball với brick
+                float brickCenterX = brickRect.x + brickRect.width / 2f;
+                float brickCenterY = brickRect.y + brickRect.height / 2f;
 
-            float deltaX = ballCenterX - brickCenterX;
-            float deltaY = ballCenterY - brickCenterY;
+                float deltaX = ballCenterX - brickCenterX;
+                float deltaY = ballCenterY - brickCenterY;
 
-            // Tính overlap cho mỗi cạnh
-            float overlapX = (brickRect.width / 2f + radius) - Math.abs(deltaX);
-            float overlapY = (brickRect.height / 2f + radius) - Math.abs(deltaY);
+                // Tính overlap cho mỗi cạnh
+                float overlapX = (brickRect.width / 2f + radius) - Math.abs(deltaX);
+                float overlapY = (brickRect.height / 2f + radius) - Math.abs(deltaY);
 
-            // Va chạm theo trục có overlap nhỏ hơn
-            if (overlapX < overlapY) {
-                // Va chạm ngang (trái/phải)
-                if (deltaX > 0) {
-                    // Va chạm từ bên trái brick
-                    x = brickRect.x + brickRect.width + 0.5f;
+                // Va chạm theo trục có overlap nhỏ hơn
+                if (overlapX < overlapY) {
+                    // Va chạm ngang (trái/phải)
+                    if (deltaX > 0) {
+                        // Va chạm từ bên trái brick
+                        x = brickRect.x + brickRect.width + 0.5f;
+                    } else {
+                        // Va chạm từ bên phải brick
+                        x = brickRect.x - width - 0.5f;
+                    }
+                    dx = -dx;
                 } else {
-                    // Va chạm từ bên phải brick
-                    x = brickRect.x - width - 0.5f;
+                    // Va chạm dọc (trên/dưới)
+                    if (deltaY > 0) {
+                        // Va chạm từ trên brick
+                        y = brickRect.y + brickRect.height + 0.5f;
+                    } else {
+                        // Va chạm từ dưới brick
+                        y = brickRect.y - height - 0.5f;
+                    }
+                    dy = -dy;
                 }
-                dx = -dx;
-            } else {
-                // Va chạm dọc (trên/dưới)
-                if (deltaY > 0) {
-                    // Va chạm từ trên brick
-                    y = brickRect.y + brickRect.height + 0.5f;
-                } else {
-                    // Va chạm từ dưới brick
-                    y = brickRect.y - height - 0.5f;
+
+                // Normalize lại velocity để giữ tốc độ ổn định
+                normalizeVelocity();
+
+                // Xử lý brick
+                brick.takeHit();
+                if (brick.isDestroyed()) {
+                    it.remove();
                 }
-                dy = -dy;
-            }
-
-            // Normalize lại velocity để giữ tốc độ ổn định
-            normalizeVelocity();
-
-            // Xử lý brick
-            brick.takeHit();
-            if (brick.isDestroyed()) {
-                it.remove();
-            }
-
-            // Chỉ xử lý 1 brick collision mỗi frame
-            break;
         }
     }
 

@@ -18,9 +18,9 @@ public class BigBallPowerUp extends PowerUp {
             return;
         }
         int factor = 3;
-        ball.setEnlarged(true);
         ball.setwidth( factor * ball.getWidth());
         ball.setHeight(factor * ball.getHeight());
+        ball.setEnlarged(true);
         new Thread(() -> {
             try {
                 Thread.sleep(durationMs);

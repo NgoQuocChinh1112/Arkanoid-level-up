@@ -256,7 +256,7 @@ public class GameManager extends JPanel implements Runnable, KeyListener {
                     it.remove();
                     score += 100;
                     // random chance to drop powerup
-                    if (rand.nextDouble() < 0.99) {
+                    if (rand.nextDouble() < 0.18) {
                         int type = rand.nextInt(3); // 0,1,2
                         PowerUp pu;
                         if (type == 0) {

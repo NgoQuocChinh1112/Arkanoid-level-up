@@ -13,7 +13,12 @@ public class BigBallPowerUp extends PowerUp {
     public void applyEffect(Paddle paddle, Ball ball, Object gameManager) {
         int oldwidth = ball.getWidth();
         int oldheight = ball.getHeight();
+        if (ball.isEnlarged()) {
+            // kiểm tra bóng đã phóng to chưa
+            return;
+        }
         int factor = 3;
+        ball.setEnlarged(true);
         ball.setwidth( factor * ball.getWidth());
         ball.setHeight(factor * ball.getHeight());
         new Thread(() -> {
@@ -23,6 +28,7 @@ public class BigBallPowerUp extends PowerUp {
             // reduce back if still in motion (approx)
             ball.setwidth(oldwidth);
             ball.setHeight(oldheight);
+            ball.setEnlarged(false);
         }).start();
 
     }

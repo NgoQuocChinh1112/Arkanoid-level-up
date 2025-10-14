@@ -256,12 +256,26 @@ public class GameManager extends JPanel implements Runnable, KeyListener {
                     it.remove();
                     score += 100;
                     // random chance to drop powerup
-                    if (rand.nextDouble() < 0.18) {
-                        PowerUp pu = rand.nextBoolean()
-                                ? new ExpandPaddlePowerUp(b.getX() + b.getWidth()/2f - 12, b.getY() + b.getHeight()/2f, 24, 24, 8_000)
-                                : new FastBallPowerUp(b.getX() + b.getWidth()/2f - 12, b.getY() + b.getHeight()/2f, 24, 24, 6_000);
+                    if (rand.nextDouble() < 0.99) {
+                        int type = rand.nextInt(3); // 0,1,2
+                        PowerUp pu;
+                        if (type == 0) {
+                            pu = new ExpandPaddlePowerUp(b.getX() + b.getWidth()/2f - 12,
+                                    b.getY() + b.getHeight()/2f,
+                                    24, 24, 8_000);
+                        } else if (type == 1) {
+                            pu = new FastBallPowerUp(b.getX() + b.getWidth()/2f - 12,
+                                    b.getY() + b.getHeight()/2f,
+                                    24, 24, 6_000);
+                        } else { // type == 2
+                            pu = new BigBallPowerUp(b.getX() + b.getWidth()/2f - 12,
+                                    b.getY() + b.getHeight()/2f,
+                                    24, 24, 7_000);
+                        }
+
                         powerUps.add(pu);
                     }
+
                 }
                 break; // only one brick per update
             }

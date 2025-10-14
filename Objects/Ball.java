@@ -45,4 +45,15 @@ public class Ball extends MovableObject {
     public Rectangle getBounds() {
         return new Rectangle(Math.round(x), Math.round(y), width, height);
     }
+
+    private boolean enlarged = false;
+
+    public boolean isEnlarged() {
+        return enlarged;
+    }
+
+    public void setEnlarged(boolean enlarged) {
+        this.enlarged = enlarged;
+    }
+
 }

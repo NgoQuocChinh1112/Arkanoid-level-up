@@ -14,13 +14,14 @@ public class BigBallPowerUp extends PowerUp {
         int oldwidth = ball.getWidth();
         int oldheight = ball.getHeight();
         if (ball.isEnlarged()) {
-            // kiểm tra bóng đã phóng to chưa
+
             return;
         }
         int factor = 3;
         ball.setwidth( factor * ball.getWidth());
         ball.setHeight(factor * ball.getHeight());
         ball.setEnlarged(true);
+        ball.setTripleDamage(true);
         new Thread(() -> {
             try {
                 Thread.sleep(durationMs);
@@ -29,6 +30,7 @@ public class BigBallPowerUp extends PowerUp {
             ball.setwidth(oldwidth);
             ball.setHeight(oldheight);
             ball.setEnlarged(false);
+            ball.setTripleDamage(false);
         }).start();
 
     }

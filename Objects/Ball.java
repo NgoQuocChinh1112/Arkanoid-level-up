@@ -56,6 +56,17 @@ public class Ball extends MovableObject {
         this.enlarged = enlarged;
     }
 
+    private boolean tripleDamage = false;
+
+    public boolean hasTripleDamage() {
+        return tripleDamage;
+    }
+
+    public void setTripleDamage(boolean TripleDamage) {
+        this.tripleDamage = TripleDamage;
+    }
+
+
     private boolean explosive = false;
 
     public boolean isExplosive() {

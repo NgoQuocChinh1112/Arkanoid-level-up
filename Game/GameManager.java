@@ -125,7 +125,7 @@ public class GameManager extends JPanel implements Runnable, KeyListener {
                 Thread.sleep(sleepTime);
             } catch (InterruptedException e) {
                 e.printStackTrace();
-            }   
+            }
         }
     }
 
@@ -251,6 +251,11 @@ public class GameManager extends JPanel implements Runnable, KeyListener {
                     ball.setDy(-ball.getDy());
                 }
                 b.takeHit();
+                if (ball.hasTripleDamage() && !b.isDestroyed()) {
+                    b.takeHit();
+                    b.takeHit();
+                }
+
                 if (b.isDestroyed()) {
                     it.remove();
                     score += 100;
@@ -262,7 +267,7 @@ public class GameManager extends JPanel implements Runnable, KeyListener {
                     }
 
                     // random chance to drop powerup
-                    if (rand.nextDouble() < 0.18) {
+                    if (rand.nextDouble() < 0.2) {
                         int type = rand.nextInt(3); // 0,1,2
                         PowerUp pu;
                         if (type == 0) {

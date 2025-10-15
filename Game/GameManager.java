@@ -171,6 +171,8 @@ public class GameManager extends JPanel implements Runnable, KeyListener {
         if (lives <= 0) {
             gameState = "GAMEOVER";
         }
+
+        ExplosiveBallPowerUp.updateExplosions();
     }
 
 
@@ -252,6 +254,13 @@ public class GameManager extends JPanel implements Runnable, KeyListener {
                 if (b.isDestroyed()) {
                     it.remove();
                     score += 100;
+
+                    if (ball.isExplosive()) {
+                        float explosionRadius = 80f * scaleX; // bán kính nổ (tuỳ chỉnh)
+                        ExplosiveBallPowerUp.explodeAt(bricks, b.getX() + b.getWidth()/2f, b.getY() + b.getHeight()/2f, explosionRadius);
+
+                    }
+
                     // random chance to drop powerup
                     if (rand.nextDouble() < 0.18) {
                         int type = rand.nextInt(3); // 0,1,2
@@ -319,6 +328,8 @@ public class GameManager extends JPanel implements Runnable, KeyListener {
 
         for (Brick b : bricks) b.render(g2);
         for (PowerUp p : powerUps) p.render(g2);
+        ExplosiveBallPowerUp.drawExplosions(g2);
+
 
         // overlays
         if (gameState.equals("MENU")) {

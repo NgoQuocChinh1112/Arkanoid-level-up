@@ -37,6 +37,11 @@ public class Ball extends MovableObject {
     public float getRadius() {
         return radius;
     }
+
+    public void setRadius(float radius) {
+        this.radius = radius;
+    }
+
     public float getX(){
         return this.x;
     }
@@ -54,12 +59,14 @@ public class Ball extends MovableObject {
     }
     public void setWidth(int width){
         this.width = width;
+        this.radius = width / 2f;
     }
     public int getHeight(){
         return this.height;
     }
     public void setHeight(int height){
         this.height = height;
+        this.radius = height / 2f;
     }
     public float getDx() {
         return dx;
@@ -127,17 +134,6 @@ public class Ball extends MovableObject {
     public void setEnlarged(boolean enlarged) {
         this.enlarged = enlarged;
     }
-
-    private boolean tripleDamage = false;
-
-    public boolean hasTripleDamage() {
-        return tripleDamage;
-    }
-
-    public void setTripleDamage(boolean TripleDamage) {
-        this.tripleDamage = TripleDamage;
-    }
-
 
     private boolean explosive = false;
 

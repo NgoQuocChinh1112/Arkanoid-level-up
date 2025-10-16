@@ -11,29 +11,47 @@ public class BigBallPowerUp extends PowerUp {
     }
 
     public void applyEffect(Paddle paddle, Ball ball, Object gameManager) {
-        int oldwidth = ball.getWidth();
-        int oldheight = ball.getHeight();
-        if (ball.isEnlarged()) {
+        if (ball.isEnlarged()) return;
 
-            return;
-        }
+        int oldWidth = ball.getWidth();
+        int oldHeight = ball.getHeight();
         int factor = 3;
-        ball.setwidth( factor * ball.getWidth());
-        ball.setHeight(factor * ball.getHeight());
-        ball.setEnlarged(true);
-        ball.setTripleDamage(true);
-        new Thread(() -> {
-            try {
-                Thread.sleep(durationMs);
-            } catch (InterruptedException ignored) {}
-            // reduce back if still in motion (approx)
-            ball.setwidth(oldwidth);
-            ball.setHeight(oldheight);
-            ball.setEnlarged(false);
-            ball.setTripleDamage(false);
-        }).start();
 
+        // Lấy tâm thật của bóng
+        float oldCenterX = ball.getX() + ball.getWidth() / 2f;
+        float oldCenterY = ball.getY() + ball.getHeight() / 2f;
+
+        ball.setEnlarged(true);
+        ball.setWidth(factor * oldWidth);
+        ball.setHeight(factor * oldHeight);
+
+        // Đặt lại vị trí để giữ nguyên tâm
+        ball.setX(oldCenterX - ball.getWidth() / 2f);
+        ball.setY(oldCenterY - ball.getHeight() / 2f);
+
+        javax.swing.Timer timer = new javax.swing.Timer((int) durationMs, e -> {
+            // Tính tâm hiện tại trước khi thu nhỏ
+            float currentCenterX = ball.getX() + ball.getWidth() / 2f;
+            float currentCenterY = ball.getY() + ball.getHeight() / 2f;
+
+            ball.setWidth(oldWidth);
+            ball.setHeight(oldHeight);
+
+            // Giữ nguyên tâm hiện tại khi thu nhỏ
+            ball.setX(currentCenterX - ball.getWidth() / 2f);
+            ball.setY(currentCenterY - ball.getHeight() / 2f);
+            ball.setEnlarged(false);
+        });
+
+        timer.setRepeats(false);
+        timer.start();
     }
+
+
+
+
+
+
 
     @Override
     public void render(java.awt.Graphics2D g2) {

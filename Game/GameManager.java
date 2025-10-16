@@ -372,7 +372,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
 
             // Xử lý brick
             brick.takeHit();
-            if (ball.hasTripleDamage() && !brick.isDestroyed()) {
+            if (ball.isEnlarged() && !brick.isDestroyed()) {
                 brick.takeHit();
                 brick.takeHit();
             }
@@ -385,7 +385,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
                 }
                 if (rand.nextDouble() < 0.2) {
                     int type = rand.nextInt(3); // 0,1,2
-                    PowerUp pu;
+                    PowerUp pu = null  ;
                     if (type == 0) {
                         pu = new ExpandPaddlePowerUp(brick.getX() + brick.getWidth()/2f - 12,
                                 brick.getY() + brick.getHeight()/2f,
@@ -394,12 +394,16 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
                         pu = new FastBallPowerUp(brick.getX() + brick.getWidth()/2f - 12,
                                 brick.getY() + brick.getHeight()/2f,
                                 24, 24, 6_000);
-                    } else { // type == 2
+                    } else if ( type == 2) {
                         pu = new BigBallPowerUp(brick.getX() + brick.getWidth()/2f - 12,
                                 brick.getY() + brick.getHeight()/2f,
                                 24, 24, 7_000);
                     }
-                    powerUps.add(pu);
+                    if (pu != null) {
+
+                        powerUps.add(pu);
+                    }
+
                 }
             }
         }

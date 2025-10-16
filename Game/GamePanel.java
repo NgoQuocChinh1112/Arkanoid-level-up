@@ -7,6 +7,7 @@ public class GamePanel extends JPanel {
     private CardLayout cardLayout;
     private Menu menu;
     private GameManager game;
+    private LevelPanel levelPanel;
     private int WIDTH;
     private int HEIGHT;
 
@@ -21,9 +22,11 @@ public class GamePanel extends JPanel {
 
         menu = new Menu(this);
         game = new GameManager(WIDTH, HEIGHT);
+        levelPanel = new LevelPanel(this);
 
         add(menu, "Menu");
         add(game, "Game");
+        add(levelPanel, "LevelPanel");
 
         showMenu();
     }
@@ -42,6 +45,9 @@ public class GamePanel extends JPanel {
         cardLayout.show(this, "Menu");
     }
 
+    public void showLevelPanel() {
+        cardLayout.show(this, "LevelPanel");
+    }
 
     public void startGame() {
         cardLayout.show(this, "Game");

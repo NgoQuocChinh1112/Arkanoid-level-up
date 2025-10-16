@@ -99,7 +99,27 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         updateGame();
         repaint();
     }
-
+    private boolean circleIntersectsRect(float cx, float cy, float radius, Rectangle rect) {
+        float closestX;
+        if (cx >= rect.x && cx <= rect.x + rect.width) {
+            closestX = cx;
+        } else if (cx > rect.x + rect.width) {
+            closestX = rect.x + rect.width;
+        } else {
+            closestX = rect.x;
+        }
+        float closestY;
+        if (cy >= rect.y && cy <= rect.y + rect.height) {
+            closestY = cy;
+        } else if (cy > rect.y + rect.height) {
+            closestY = rect.y + rect.height;
+        } else {
+            closestY = rect.y;
+        }
+        float dx = cx - closestX;
+        float dy = cy - closestY;
+        return (dx * dx + dy * dy) < (radius * radius);
+    }
     private void updateGame() {
         if (!gameState.equals("RUNNING")) return;
 
@@ -121,7 +141,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         // update powerups (falling)
         for (PowerUp p : powerUps) p.update();
 
-        checkCollisions(paddle, bricks);
+        checkCollisions(paddle, bricks, powerUps);
 
         // remove expired/collected powerups from list
         powerUps.removeIf(PowerUp::isCollectedOrOffscreen);
@@ -152,7 +172,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         else paddle.setDx(0);
     }
 
-    public void checkCollisions(Paddle paddle, List<Brick> bricks) {
+    public void checkCollisions(Paddle paddle, List<Brick> bricks, List<PowerUp> powerUps) {
         if (!ball.launched) return;
 
         // Kiểm tra va chạm với tường
@@ -161,8 +181,8 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         // Kiểm tra va chạm với paddle
         checkPaddleCollision(paddle);
 
-        // Kiểm tra va chạm với bricks
-        checkBrickCollisions(bricks);
+        // Kiểm tra va chạm với bricks, powerup
+        checkBrickCollisions(bricks, powerUps);
     }
 
     private void checkWallCollisions() {
@@ -301,7 +321,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         return (dX * dX + dY * dY) < (ball.getRadius() * ball.getRadius());
     }
 
-    private void checkBrickCollisions(List<Brick> bricks) {
+    private void checkBrickCollisions(List<Brick> bricks, List<PowerUp> powerUps) {
         Rectangle ballRect = getBounds();
         float ballCenterX = ball.getCenterX();
         float ballCenterY = ball.getCenterY();
@@ -381,6 +401,20 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
                     }
                     powerUps.add(pu);
                 }
+            }
+        }
+        Iterator<PowerUp> pit = powerUps.iterator();
+        while (pit.hasNext()) {
+            PowerUp pu = pit.next();
+            if (pu.getY() > HEIGHT) {
+                pu.markCollectedOrOffscreen();
+                pit.remove();
+                continue;
+            }
+            if (pu.intersects(paddle)) {
+                pu.applyEffect(paddle, ball, this);
+                pu.markCollectedOrOffscreen();
+                pit.remove();
             }
         }
     }

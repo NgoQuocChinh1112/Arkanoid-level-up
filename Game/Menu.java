@@ -69,27 +69,9 @@ public class Menu extends JPanel {
                     parent.startGame();
                 } else if (exitRectLocal.contains(p)) {
                     System.exit(0);
-                } else if (chooseRect.contains(p)) {
-                    // Hiển thị danh sách level để chọn
-                    String[] levels = {"Level 1", "Level 2", "Level 3"};
-                    String selected = (String) JOptionPane.showInputDialog(
-                        Menu.this,
-                        "Chọn màn chơi:",
-                        "Chọn Level",
-                        JOptionPane.PLAIN_MESSAGE,
-                        null,
-                        levels,
-                        levels[0]
-                    );
-
-                    if (selected != null) {
-                        int level = 1;
-                        if (selected.equals("Level 2")) level = 2;
-                        else if (selected.equals("Level 3")) level = 3;
-                        parent.startGame(level);
-                    }
-                }
-
+                } else if (chooseRectLocal.contains(p)) {
+                    parent.showLevelPanel();
+                }    
             }
 
             @Override

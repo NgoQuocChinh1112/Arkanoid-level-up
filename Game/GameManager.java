@@ -4,6 +4,7 @@ import Objects.*;
 import PowerUps.*;
 
 import javax.swing.*;
+import javax.swing.Timer;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
@@ -13,15 +14,14 @@ import java.util.List;
 import java.util.Random;
 
 
-public class GameManager extends JPanel implements Runnable, KeyListener {
+public class GameManager extends JPanel implements KeyListener, ActionListener {
     private int WIDTH;
     private int HEIGHT;
 
     private float scaleX;
     private float scaleY;
 
-    private Thread gameThread;
-    private boolean running = false;
+    private Timer gameTimer;
     private final int FPS = 60;
     private int currentLevel = 1;
 
@@ -40,6 +40,15 @@ public class GameManager extends JPanel implements Runnable, KeyListener {
     private BufferedImage backgroundImage;
 
     private Random rand = new Random();
+
+    // Constants để tránh magic numbers
+    public static final float MAX_BOUNCE_ANGLE = 60f;
+    public static final float MIN_ANGLE = 15f;
+    public static final float MAX_ANGLE = 165f;
+    public static final float VERTICAL_ANGLE = 90f;
+    public static final float EPSILON = 0.001f; // Để so sánh float
+
+    // Cache để tránh tính toán lại
 
     public void setGameSize(int width, int height) {
         this.WIDTH = width;
@@ -71,29 +80,10 @@ public class GameManager extends JPanel implements Runnable, KeyListener {
             backgroundImage = resizeImage(backgroundImage, width, height);
         }
         initGame();
-    }
 
-    // Check if circle intersecs rectangle
-    private boolean circleIntersectsRect(float cx, float cy, float radius, Rectangle rect) {
-        float closestX;
-        if (cx >= rect.x && cx <= rect.x + rect.width) {
-            closestX = cx;
-        } else if (cx > rect.x + rect.width) {
-            closestX = rect.x + rect.width;
-        } else {
-            closestX = rect.x;
-        }
-        float closestY;
-        if (cy >= rect.y && cy <= rect.y + rect.height) {
-            closestY = cy;
-        } else if (cy > rect.y + rect.height) {
-            closestY = rect.y + rect.height;
-        } else {
-            closestY = rect.y;
-        }
-        float dx = cx - closestX;
-        float dy = cy - closestY;
-        return (dx * dx + dy * dy) < (radius * radius);
+        int delay = 1000 / FPS;
+        gameTimer = new Timer(delay, this);
+        gameTimer.start();
     }
 
     private void initGame() {
@@ -104,31 +94,11 @@ public class GameManager extends JPanel implements Runnable, KeyListener {
         powerUps = new ArrayList<>();
     }
 
-    public void startGameThread() {
-        if (gameThread == null) {
-            running = true;
-            gameThread = new Thread(this, "GameThread");
-            gameThread.start();
-        }
-    }
-
     @Override
-    public void run() {
-        final int FPS = 60;
-        final long sleepTime = 1000 / FPS; // thời gian nghỉ giữa 2 frame, tính theo mili giây
-
-        while (running) {
-            updateGame();
-            repaint();
-
-            try {
-                Thread.sleep(sleepTime);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+    public void actionPerformed(ActionEvent e) {
+        updateGame();
+        repaint();
     }
-
 
     private void updateGame() {
         if (!gameState.equals("RUNNING")) return;
@@ -151,8 +121,7 @@ public class GameManager extends JPanel implements Runnable, KeyListener {
         // update powerups (falling)
         for (PowerUp p : powerUps) p.update();
 
-        // collisions (ball vs walls / paddle / bricks / powerups)
-        checkCollisions();
+        checkCollisions(paddle, bricks);
 
         // remove expired/collected powerups from list
         powerUps.removeIf(PowerUp::isCollectedOrOffscreen);
@@ -183,129 +152,270 @@ public class GameManager extends JPanel implements Runnable, KeyListener {
         else paddle.setDx(0);
     }
 
-    private void checkCollisions() {
-        // Ball vs Walls
+    public void checkCollisions(Paddle paddle, List<Brick> bricks) {
+        if (!ball.launched) return;
+
+        // Kiểm tra va chạm với tường
+        checkWallCollisions();
+
+        // Kiểm tra va chạm với paddle
+        checkPaddleCollision(paddle);
+
+        // Kiểm tra va chạm với bricks
+        checkBrickCollisions(bricks);
+    }
+
+    private void checkWallCollisions() {
+        boolean collided = false;
+
+        // Tường trái
         if (ball.getX() <= 0) {
             ball.setX(0);
-            ball.setDx(-ball.getDx());
-        } else if (ball.getX() + ball.getWidth() >= WIDTH) {
-            ball.setX(WIDTH - ball.getWidth());
-            ball.setDx(-ball.getDx());
+            ball.setDx(Math.abs(ball.getDx()));
+            collided = true;
         }
+        // Tường phải
+        else if (ball.getX() + ball.getWidth() >= WIDTH) {
+            ball.setX(WIDTH - ball.getWidth());
+            ball.setDx(-Math.abs(ball.getDx()));
+            collided = true;
+        }
+
+        // Tường trên
         if (ball.getY() <= 0) {
             ball.setY(0);
+            ball.setDy(Math.abs(ball.getDy()));
+            collided = true;
+        }
+        // Tường dưới
+        else if (ball.getY() + ball.getHeight() >= HEIGHT) {
+            ball.setY(HEIGHT - ball.getHeight());
+            ball.setDy(-Math.abs(ball.getDy()));
+            Ball.launched = false;
+            ball.setDx(0);
+            ball.setDy(0);
+            lives--;
+            return;
+
+        }
+
+        if (collided) {
+            normalizeVelocity();
+        }
+    }
+
+    private void checkPaddleCollision(Paddle paddle) {
+        Rectangle paddleRect = paddle.getBounds();
+
+        float ballCenterX = ball.getCenterX();
+        float ballCenterY = ball.getCenterY();
+        float ballBottom = ball.getY() + ball.getHeight();
+
+        float paddleTop = paddleRect.y;
+        float paddleBottom = paddleRect.y + paddleRect.height;
+        float paddleLeft = paddleRect.x;
+        float paddleRight = paddleRect.x + paddleRect.width;
+
+        // Kiểm tra overlap
+        boolean overlapX = ballCenterX >= paddleLeft && ballCenterX <= paddleRight;
+        boolean overlapY = ballBottom >= paddleTop && ball.getY() <= paddleBottom;
+
+        if (!overlapX || !overlapY) return;
+
+        float prevY = ball.getY() - ball.getDy();
+        float prevBottom = prevY + ball.getHeight();
+
+        // Va chạm từ trên xuống
+        if (ball.getDy() > 0 && prevBottom <= paddleTop) {
+            handlePaddleTopCollision(paddle, paddleRect, ballCenterX);
+        }
+        // Va chạm từ bên
+        else {
+            handlePaddleSideCollision(paddleRect, ballCenterX, ballCenterY);
+        }
+    }
+
+    private void handlePaddleTopCollision(Paddle paddle, Rectangle paddleRect, float ballCenterX) {
+        // Đặt bóng lên trên paddle
+        ball.setY(paddleRect.y - ball.getHeight() - 0.5f);
+
+        // Tính góc phản xạ dựa trên vị trí va chạm
+        float paddleCenter = paddleRect.x + paddleRect.width / 2f;
+        float hitPosition = (ballCenterX - paddleCenter) / (paddleRect.width / 2f);
+
+        // Clamp hitPosition trong khoảng [-1, 1]
+        hitPosition = Math.max(-1f, Math.min(1f, hitPosition));
+
+        // Tính góc output (90° = thẳng lên, giảm dần về 2 bên)
+        float angleInDegrees = VERTICAL_ANGLE - hitPosition * MAX_BOUNCE_ANGLE;
+
+        // Clamp angle để tránh góc quá ngang
+        angleInDegrees = Math.max(MIN_ANGLE, Math.min(MAX_ANGLE, angleInDegrees));
+
+        // Convert sang radians và set velocity mới
+        double angleInRadians = Math.toRadians(angleInDegrees);
+        float speedMagnitude = ball.getSpeed();
+
+        ball.setDx((float) (speedMagnitude * Math.cos(angleInRadians)));
+        ball.setDy(-(float) (speedMagnitude * Math.sin(angleInRadians)));// Âm vì đi lên
+
+        // Đảm bảo dy luôn âm (đi lên)
+        if (ball.getDy() > 0) {
             ball.setDy(-ball.getDy());
         }
-        if (ball.getY() > HEIGHT) {
-            // lose life
-            lives--;
-            ball.resetToPaddle(paddle);
+    }
+
+    private void handlePaddleSideCollision(Rectangle paddleRect, float ballCenterX, float ballCenterY) {
+        float paddleLeft = paddleRect.x;
+        float paddleRight = paddleRect.x + paddleRect.width;
+
+        float prevX = ball.getX() - ball.getDx();
+        float prevCenterX = prevX + ball.getRadius();
+
+        // Xác định va chạm bên trái hay phải
+        boolean hitFromLeft = prevCenterX < paddleLeft && ballCenterX >= paddleLeft;
+        boolean hitFromRight = prevCenterX > paddleRight && ballCenterX <= paddleRight;
+
+        if (hitFromLeft) {
+            ball.setX(paddleLeft - ball.getWidth() - 0.5f);
+            ball.setDx(-Math.abs(ball.getDx()));
+            normalizeVelocity();
+        } else if (hitFromRight) {
+            ball.setX(paddleRight + 0.5f);
+            ball.setDx(Math.abs(ball.getDx()));
+            normalizeVelocity();
         }
+    }
 
-        // Ball vs Paddle
-        if (ball.intersects(paddle)) {
-            float paddleCenter = paddle.getX() + paddle.getWidth() / 2f;
-            float ballCenter   = ball.getX() + ball.getWidth() / 2f;
-            float diff = (ballCenter - paddleCenter) / (paddle.getWidth() / 2f); // -1..1
-            float angle = diff * (float)Math.toRadians(60); // góc lệch tối đa 60°
-            float speed = (float) Math.hypot(ball.getDx(), ball.getDy());
-            speed = Math.max(speed, 4f);
+    public float clamp(float value, float min, float max) {
+        return Math.max(min, Math.min(value, max));
+    }
 
-            boolean hitSide = Math.abs(diff) > 1f;
+    public boolean circleCheckCollision(Rectangle rect) {
+        float closestX = clamp(ball.getCenterX(), rect.x,rect.x + rect.width );
+        float closestY = clamp(ball.getCenterY(), rect.y,rect.y + rect.height);
 
-            ball.setDx((float)(Math.sin(angle) * speed));
+        float dX = ball.getCenterX() - closestX;
+        float dY = ball.getCenterY() - closestY;
 
-            if (hitSide) {
-                ball.setDy((float)Math.abs(Math.cos(angle) * speed));
-            } else {
-                ball.setDy((float)-Math.abs(Math.cos(angle) * speed));
-            }
+        return (dX * dX + dY * dY) < (ball.getRadius() * ball.getRadius());
+    }
 
-            if (!hitSide) {
-                ball.setY(paddle.getY() - ball.getHeight());
-            }
-        }
+    private void checkBrickCollisions(List<Brick> bricks) {
+        Rectangle ballRect = getBounds();
+        float ballCenterX = ball.getCenterX();
+        float ballCenterY = ball.getCenterY();
 
-
-        // Ball vs Bricks
         Iterator<Brick> it = bricks.iterator();
         while (it.hasNext()) {
-            Brick b = it.next();
-            if (b.isDestroyed()) continue;
+            Brick brick = it.next();
+            Rectangle brickRect = brick.getBounds();
 
-            float ballCenterX = ball.getX() + ball.getWidth() / 2f;
-            float ballCenterY = ball.getY() + ball.getHeight() / 2f;
-            float radius = ball.getWidth() / 2f; // ban kinh bong
+            if (!circleCheckCollision(brickRect)) continue;
 
-            if (circleIntersectsRect(ballCenterX, ballCenterY, radius, b.getBounds())) {
-                Rectangle overlap = ball.getBounds().intersection(b.getBounds());
-                if (overlap.width < overlap.height) {
-                    // horizontal overlap -> reflect dx
-                    if (ball.getX() < b.getX()) ball.setX(ball.getX() - overlap.width);
-                    else ball.setX(ball.getX() + overlap.width);
-                    ball.setDx(-ball.getDx());
+            // Tính vị trí tương đối của ball với brick
+            float brickCenterX = brickRect.x + brickRect.width / 2f;
+            float brickCenterY = brickRect.y + brickRect.height / 2f;
+
+            float deltaX = ballCenterX - brickCenterX;
+            float deltaY = ballCenterY - brickCenterY;
+
+            // Tính overlap cho mỗi cạnh
+            float overlapX = (brickRect.width / 2f + ball.getRadius()) - Math.abs(deltaX);
+            float overlapY = (brickRect.height / 2f + ball.getRadius()) - Math.abs(deltaY);
+
+            // Va chạm theo trục có overlap nhỏ hơn
+            if (overlapX < overlapY) {
+                // Va chạm ngang (trái/phải)
+                if (deltaX > 0) {
+                    // Va chạm từ bên trái brick
+                    ball.setX(brickRect.x + brickRect.width + 0.5f);
                 } else {
-                    // vertical -> reflect dy
-                    if (ball.getY() < b.getY()) ball.setY(ball.getY() - overlap.height);
-                    else ball.setY(ball.getY() + overlap.height);
-                    ball.setDy(-ball.getDy());
+                    // Va chạm từ bên phải brick
+                    ball.setX(brickRect.x - ball.getWidth() - 0.5f);
                 }
-                b.takeHit();
-                if (ball.hasTripleDamage() && !b.isDestroyed()) {
-                    b.takeHit();
-                    b.takeHit();
+                ball.setDx(-ball.getDx());
+            } else {
+                // Va chạm dọc (trên/dưới)
+                if (deltaY > 0) {
+                    // Va chạm từ trên brick
+                    ball.setY(brickRect.y + brickRect.height + 0.5f);
+                } else {
+                    // Va chạm từ dưới brick
+                    ball.setY(brickRect.y - ball.getHeight() - 0.5f);
                 }
+                ball.setDy(-ball.getDy());
+            }
 
-                if (b.isDestroyed()) {
-                    it.remove();
-                    score += 100;
+            // Normalize lại velocity để giữ tốc độ ổn định
+            normalizeVelocity();
 
-                    if (ball.isExplosive()) {
-                        float explosionRadius = 80f * scaleX; // bán kính nổ (tuỳ chỉnh)
-                        ExplosiveBallPowerUp.explodeAt(bricks, b.getX() + b.getWidth()/2f, b.getY() + b.getHeight()/2f, explosionRadius);
-
+            // Xử lý brick
+            brick.takeHit();
+            if (ball.hasTripleDamage() && !brick.isDestroyed()) {
+                brick.takeHit();
+                brick.takeHit();
+            }
+            if (brick.isDestroyed()) {
+                it.remove();
+                score += 100;
+                if (ball.isExplosive()) {
+                    float explosionRadius = 80f * scaleX; // bán kính nổ (tuỳ chỉnh)
+                    ExplosiveBallPowerUp.explodeAt(bricks, brick.getX() + brick.getWidth()/2f, brick.getY() + brick.getHeight()/2f, explosionRadius);
+                }
+                if (rand.nextDouble() < 0.2) {
+                    int type = rand.nextInt(3); // 0,1,2
+                    PowerUp pu;
+                    if (type == 0) {
+                        pu = new ExpandPaddlePowerUp(brick.getX() + brick.getWidth()/2f - 12,
+                                brick.getY() + brick.getHeight()/2f,
+                                24, 24, 8_000);
+                    } else if (type == 1) {
+                        pu = new FastBallPowerUp(brick.getX() + brick.getWidth()/2f - 12,
+                                brick.getY() + brick.getHeight()/2f,
+                                24, 24, 6_000);
+                    } else { // type == 2
+                        pu = new BigBallPowerUp(brick.getX() + brick.getWidth()/2f - 12,
+                                brick.getY() + brick.getHeight()/2f,
+                                24, 24, 7_000);
                     }
-
-                    // random chance to drop powerup
-                    if (rand.nextDouble() < 0.2) {
-                        int type = rand.nextInt(3); // 0,1,2
-                        PowerUp pu;
-                        if (type == 0) {
-                            pu = new ExpandPaddlePowerUp(b.getX() + b.getWidth()/2f - 12,
-                                    b.getY() + b.getHeight()/2f,
-                                    24, 24, 8_000);
-                        } else if (type == 1) {
-                            pu = new FastBallPowerUp(b.getX() + b.getWidth()/2f - 12,
-                                    b.getY() + b.getHeight()/2f,
-                                    24, 24, 6_000);
-                        } else { // type == 2
-                            pu = new BigBallPowerUp(b.getX() + b.getWidth()/2f - 12,
-                                    b.getY() + b.getHeight()/2f,
-                                    24, 24, 7_000);
-                        }
-
-                        powerUps.add(pu);
-                    }
-
+                    powerUps.add(pu);
                 }
-                break; // only one brick per update
             }
         }
+    }
 
-        // Paddle vs PowerUps (collect)
-        Iterator<PowerUp> pit = powerUps.iterator();
-        while (pit.hasNext()) {
-            PowerUp pu = pit.next();
-            if (pu.getY() > HEIGHT) {
-                pu.markCollectedOrOffscreen();
-                pit.remove();
-                continue;
-            }
-            if (pu.intersects(paddle)) {
-                pu.applyEffect(paddle, ball, this);
-                pu.markCollectedOrOffscreen();
-                pit.remove();
-            }
+    /**
+     * Normalize velocity để duy trì tốc độ ổn định
+     * Fix bug: tốc độ bóng tăng/giảm sau nhiều lần va chạm
+     */
+    private void normalizeVelocity() {
+        float currentMagnitude = (float) Math.hypot(ball.getDx(), ball.getDy());
+        if (currentMagnitude > EPSILON && Math.abs(currentMagnitude - ball.getSpeed()) > EPSILON) {
+            ball.setDx((ball.getDx() / currentMagnitude) * ball.getSpeed());
+            ball.setDy((ball.getDy() / currentMagnitude) * ball.getSpeed());
+        }
+    }
+
+    /**
+     * Kiểm tra nếu bóng bị stuck (vận tốc quá nhỏ hoặc góc quá ngang)
+     * Tự động fix bằng cách đẩy bóng đi lên
+     */
+    public void checkAndFixStuck() {
+        if (!Ball.launched) return;
+
+        float currentSpeed = (float) Math.hypot(ball.getDx(), ball.getDy());
+
+        // Nếu tốc độ quá chậm
+        if (currentSpeed < ball.getSpeed() * 0.5f) {
+            ball.launch(0, -1); // Đẩy bóng đi thẳng lên
+        }
+
+        // Nếu góc quá ngang (dy quá nhỏ so với dx)
+        if (Math.abs(ball.getDy()) < Math.abs(ball.getDx()) * 0.1f) {
+            float direction = ball.getDy() >= 0 ? 1 : -1;
+            ball.setDy(direction * Math.abs(ball.getDx()) * 0.3f);
+            normalizeVelocity();
         }
     }
 
@@ -415,5 +525,4 @@ public class GameManager extends JPanel implements Runnable, KeyListener {
         g2d.dispose();
         return resized;
     }
-
 }

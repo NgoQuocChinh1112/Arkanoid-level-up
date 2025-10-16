@@ -13,22 +13,21 @@ import java.util.List;
 import java.util.Random;
 
 
-public class GameManager extends JPanel implements Runnable, KeyListener {
-    private int WIDTH;
-    private int HEIGHT;
+public class GameManager extends JPanel implements KeyListener, ActionListener {
+    public static int WIDTH;
+    public static int HEIGHT;
 
     private float scaleX;
     private float scaleY;
 
-    private Thread gameThread;
-    private boolean running = false;
+    private Timer gameTimer;
     private final int FPS = 60;
     private int currentLevel = 1;
 
     private Paddle paddle;
-    private Ball ball;
+    public Ball ball;
     private List<Brick> bricks;
-    private List<PowerUp> powerUps;
+    public List<PowerUp> powerUps;
 
     private int score = 0;
     private int lives = 3;
@@ -39,7 +38,6 @@ public class GameManager extends JPanel implements Runnable, KeyListener {
 
     private BufferedImage backgroundImage;
 
-    private Random rand = new Random();
 
     public void setGameSize(int width, int height) {
         this.WIDTH = width;
@@ -60,40 +58,19 @@ public class GameManager extends JPanel implements Runnable, KeyListener {
         this.scaleY = (float) HEIGHT / 600f;
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
         setFocusable(true);
-        requestFocus();
+        requestFocusInWindow();
         addKeyListener(this);
 
-        setFocusable(true);
-        requestFocusInWindow();
 
         backgroundImage = Renderer.loadBgroundTexture();
         if (backgroundImage != null) {
             backgroundImage = resizeImage(backgroundImage, width, height);
         }
         initGame();
-    }
 
-    // Check if circle intersecs rectangle
-    private boolean circleIntersectsRect(float cx, float cy, float radius, Rectangle rect) {
-        float closestX;
-        if (cx >= rect.x && cx <= rect.x + rect.width) {
-            closestX = cx;
-        } else if (cx > rect.x + rect.width) {
-            closestX = rect.x + rect.width;
-        } else {
-            closestX = rect.x;
-        }
-        float closestY;
-        if (cy >= rect.y && cy <= rect.y + rect.height) {
-            closestY = cy;
-        } else if (cy > rect.y + rect.height) {
-            closestY = rect.y + rect.height;
-        } else {
-            closestY = rect.y;
-        }
-        float dx = cx - closestX;
-        float dy = cy - closestY;
-        return (dx * dx + dy * dy) < (radius * radius);
+        int delay = 1000 / FPS;
+        gameTimer = new Timer(delay, this);
+        gameTimer.start();
     }
 
     private void initGame() {
@@ -104,29 +81,10 @@ public class GameManager extends JPanel implements Runnable, KeyListener {
         powerUps = new ArrayList<>();
     }
 
-    public void startGameThread() {
-        if (gameThread == null) {
-            running = true;
-            gameThread = new Thread(this, "GameThread");
-            gameThread.start();
-        }
-    }
-
     @Override
-    public void run() {
-        final int FPS = 60;
-        final long sleepTime = 1000 / FPS; // thời gian nghỉ giữa 2 frame, tính theo mili giây
-
-        while (running) {
-            updateGame();
-            repaint();
-
-            try {
-                Thread.sleep(sleepTime);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+    public void actionPerformed(ActionEvent e) {
+        updateGame();
+        repaint();
     }
 
 
@@ -136,6 +94,7 @@ public class GameManager extends JPanel implements Runnable, KeyListener {
         // xử lý input & di chuyển paddle
         handleInput();
         paddle.update();
+
         // clamp paddle inside screen
         if (paddle.getX() < 0) paddle.setX(0);
         if (paddle.getX() + paddle.getWidth() > WIDTH) paddle.setX(WIDTH - paddle.getWidth());
@@ -152,7 +111,7 @@ public class GameManager extends JPanel implements Runnable, KeyListener {
         for (PowerUp p : powerUps) p.update();
 
         // collisions (ball vs walls / paddle / bricks / powerups)
-        checkCollisions();
+        ball.checkCollisions(paddle, bricks);
 
         // remove expired/collected powerups from list
         powerUps.removeIf(PowerUp::isCollectedOrOffscreen);
@@ -163,15 +122,14 @@ public class GameManager extends JPanel implements Runnable, KeyListener {
             if (currentLevel > 3) {
                 gameState = "WIN";
             } else {
-                ball.resetToPaddle(paddle); // reset sets launched=false already
-                // optional: ensure ball not moving
-                ball.setDx(0); ball.setDy(0);
+                ball.resetToPaddle(paddle);
+                ball.setDx(0);
+                ball.setDy(0);
             }
         }
         if (lives <= 0) {
             gameState = "GAMEOVER";
         }
-
         ExplosiveBallPowerUp.updateExplosions();
     }
 
@@ -183,131 +141,7 @@ public class GameManager extends JPanel implements Runnable, KeyListener {
         else paddle.setDx(0);
     }
 
-    private void checkCollisions() {
-        // Ball vs Walls
-        if (ball.getX() <= 0) {
-            ball.setX(0);
-            ball.setDx(-ball.getDx());
-        } else if (ball.getX() + ball.getWidth() >= WIDTH) {
-            ball.setX(WIDTH - ball.getWidth());
-            ball.setDx(-ball.getDx());
-        }
-        if (ball.getY() <= 0) {
-            ball.setY(0);
-            ball.setDy(-ball.getDy());
-        }
-        if (ball.getY() > HEIGHT) {
-            // lose life
-            lives--;
-            ball.resetToPaddle(paddle);
-        }
 
-        // Ball vs Paddle
-        if (ball.intersects(paddle)) {
-            float paddleCenter = paddle.getX() + paddle.getWidth() / 2f;
-            float ballCenter   = ball.getX() + ball.getWidth() / 2f;
-            float diff = (ballCenter - paddleCenter) / (paddle.getWidth() / 2f); // -1..1
-            float angle = diff * (float)Math.toRadians(60); // góc lệch tối đa 60°
-            float speed = (float) Math.hypot(ball.getDx(), ball.getDy());
-            speed = Math.max(speed, 4f);
-
-            boolean hitSide = Math.abs(diff) > 1f;
-
-            ball.setDx((float)(Math.sin(angle) * speed));
-
-            if (hitSide) {
-                ball.setDy((float)Math.abs(Math.cos(angle) * speed));
-            } else {
-                ball.setDy((float)-Math.abs(Math.cos(angle) * speed));
-            }
-
-            if (!hitSide) {
-                ball.setY(paddle.getY() - ball.getHeight());
-            }
-        }
-
-
-        // Ball vs Bricks
-        Iterator<Brick> it = bricks.iterator();
-        while (it.hasNext()) {
-            Brick b = it.next();
-            if (b.isDestroyed()) continue;
-
-            float ballCenterX = ball.getX() + ball.getWidth() / 2f;
-            float ballCenterY = ball.getY() + ball.getHeight() / 2f;
-            float radius = ball.getWidth() / 2f; // ban kinh bong
-
-            if (circleIntersectsRect(ballCenterX, ballCenterY, radius, b.getBounds())) {
-                Rectangle overlap = ball.getBounds().intersection(b.getBounds());
-                if (overlap.width < overlap.height) {
-                    // horizontal overlap -> reflect dx
-                    if (ball.getX() < b.getX()) ball.setX(ball.getX() - overlap.width);
-                    else ball.setX(ball.getX() + overlap.width);
-                    ball.setDx(-ball.getDx());
-                } else {
-                    // vertical -> reflect dy
-                    if (ball.getY() < b.getY()) ball.setY(ball.getY() - overlap.height);
-                    else ball.setY(ball.getY() + overlap.height);
-                    ball.setDy(-ball.getDy());
-                }
-                b.takeHit();
-                if (ball.hasTripleDamage() && !b.isDestroyed()) {
-                    b.takeHit();
-                    b.takeHit();
-                }
-
-                if (b.isDestroyed()) {
-                    it.remove();
-                    score += 100;
-
-                    if (ball.isExplosive()) {
-                        float explosionRadius = 80f * scaleX; // bán kính nổ (tuỳ chỉnh)
-                        ExplosiveBallPowerUp.explodeAt(bricks, b.getX() + b.getWidth()/2f, b.getY() + b.getHeight()/2f, explosionRadius);
-
-                    }
-
-                    // random chance to drop powerup
-                    if (rand.nextDouble() < 0.2) {
-                        int type = rand.nextInt(3); // 0,1,2
-                        PowerUp pu;
-                        if (type == 0) {
-                            pu = new ExpandPaddlePowerUp(b.getX() + b.getWidth()/2f - 12,
-                                    b.getY() + b.getHeight()/2f,
-                                    24, 24, 8_000);
-                        } else if (type == 1) {
-                            pu = new FastBallPowerUp(b.getX() + b.getWidth()/2f - 12,
-                                    b.getY() + b.getHeight()/2f,
-                                    24, 24, 6_000);
-                        } else { // type == 2
-                            pu = new BigBallPowerUp(b.getX() + b.getWidth()/2f - 12,
-                                    b.getY() + b.getHeight()/2f,
-                                    24, 24, 7_000);
-                        }
-
-                        powerUps.add(pu);
-                    }
-
-                }
-                break; // only one brick per update
-            }
-        }
-
-        // Paddle vs PowerUps (collect)
-        Iterator<PowerUp> pit = powerUps.iterator();
-        while (pit.hasNext()) {
-            PowerUp pu = pit.next();
-            if (pu.getY() > HEIGHT) {
-                pu.markCollectedOrOffscreen();
-                pit.remove();
-                continue;
-            }
-            if (pu.intersects(paddle)) {
-                pu.applyEffect(paddle, ball, this);
-                pu.markCollectedOrOffscreen();
-                pit.remove();
-            }
-        }
-    }
 
     @Override
     protected void paintComponent(Graphics g) {
@@ -392,7 +226,6 @@ public class GameManager extends JPanel implements Runnable, KeyListener {
         if (kc == KeyEvent.VK_RIGHT) rightPressed = false;
     }
 
-    public void increaseScore(int v) { score += v; }
     public void restart() {
         score = 0;
         lives = 3;

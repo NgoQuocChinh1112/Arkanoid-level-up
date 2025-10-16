@@ -1,22 +1,42 @@
 package Objects;
 
 import Game.Renderer;
+import Game.GameManager;
+import PowerUps.*;
+
 import java.awt.*;
+import java.util.List;
+import java.util.Iterator;
+import java.util.Random;
 
 public class Ball extends MovableObject {
-    private float speed = 5f;
+    private float speed = 8f;
     private boolean launched = false;
+
+    private Random rand = new Random();
+    public GameManager gm;
+    private static final float MAX_BOUNCE_ANGLE = 60f;
+    private static final float MIN_ANGLE = 15f;
+    private static final float MAX_ANGLE = 165f;
+    private static final float VERTICAL_ANGLE = 90f;
+    private static final float EPSILON = 0.001f; // Để so sánh float
+    private float radius;
+    private Rectangle boundsCache;
 
     public Ball(float x, float y, int width, int height) {
         super(x, y, width, height);
         dx = 0;
         dy = 0;
+        radius = width / 2f;
+        boundsCache = new Rectangle();
         texture = Renderer.loadBallTexture();
     }
 
     @Override
     public void update() {
-        move();
+        if (launched) {
+            move();
+        }
     }
 
     @Override
@@ -25,25 +45,53 @@ public class Ball extends MovableObject {
     }
 
     public void launch(float dx, float dy) {
-        this.dx = dx;
-        this.dy = dy;
-        launched = true;
+        float magnitude = (float) Math.hypot(dx, dy);
+        if (magnitude > EPSILON) {
+            this.dx = (dx /  magnitude) * speed;
+            this.dy = (dy /  magnitude) * speed;
+            launched = true;
+        }
     }
 
-    public boolean isLaunched() { return launched; }
+    public boolean isLaunched() {
+        return launched;
+    }
 
     public void resetToPaddle(Paddle paddle) {
         launched = false;
-        dx = 0; dy = 0;
-        setX(paddle.getX() + paddle.getWidth() / 2f - getWidth() / 2f);
-        setY(paddle.getY() - getHeight() - 1);
+        dx = 0;
+        dy = 0;
+        setX(paddle.getX() + paddle.getWidth() / 2f - width / 2f);
+        setY(paddle.getY() - height - 1);
     }
 
-    public void setSpeed(float s) { this.speed = s; }
-    public float getSpeed() { return speed; }
+    public void setSpeed(float s) {
+        if (s > 0) {
+            this.speed = s;
+            // Cập nhật lại velocity với speed mới nếu đã launch
+            if (launched && (Math.abs(dx) > EPSILON || Math.abs(dy) > EPSILON)) {
+                float magnitude = (float) Math.hypot(dx, dy);
+                dx = (dx / magnitude) * speed;
+                dy = (dy / magnitude) * speed;
+            }
+        }
+    }
+
+    public float getSpeed() {
+        return speed;
+    }
 
     public Rectangle getBounds() {
-        return new Rectangle(Math.round(x), Math.round(y), width, height);
+        boundsCache.setBounds(Math.round(x), Math.round(y), width, height);
+        return boundsCache;
+    }
+
+    public float getCenterX() {
+        return x + radius;
+    }
+
+    public float getCenterY() {
+        return y + radius;
     }
 
     private boolean enlarged = false;
@@ -77,4 +125,269 @@ public class Ball extends MovableObject {
         this.explosive = explosive;
     }
 
+    public void checkCollisions(Paddle paddle, List<Brick> bricks) {
+        if (!launched) return;
+
+        // Kiểm tra va chạm với tường
+        checkWallCollisions();
+
+        // Kiểm tra va chạm với paddle
+        checkPaddleCollision(paddle);
+
+        // Kiểm tra va chạm với bricks
+        checkBrickCollisions(bricks);
+    }
+
+    private void checkWallCollisions() {
+        boolean collided = false;
+
+        // Tường trái
+        if (x <= 0) {
+            x = 0;
+            dx = Math.abs(dx);
+            collided = true;
+        }
+        // Tường phải
+        else if (x + width >= GameManager.WIDTH) {
+            x = GameManager.WIDTH - width;
+            dx = -Math.abs(dx);
+            collided = true;
+        }
+
+        // Tường trên
+        if (y <= 0) {
+            y = 0;
+            dy = Math.abs(dy);
+            collided = true;
+        }
+        // Tường dưới
+        else if (y + height >= GameManager.HEIGHT) {
+            y = GameManager.HEIGHT - height;
+            dy = -Math.abs(dy);
+            launched = false;
+            dx = 0;
+            dy = 0;
+            return;
+        }
+
+        if (collided) {
+            normalizeVelocity();
+        }
+    }
+
+    private void checkPaddleCollision(Paddle paddle) {
+        Rectangle paddleRect = paddle.getBounds();
+
+        float ballCenterX = getCenterX();
+        float ballCenterY = getCenterY();
+        float ballBottom = y + height;
+
+        float paddleTop = paddleRect.y;
+        float paddleBottom = paddleRect.y + paddleRect.height;
+        float paddleLeft = paddleRect.x;
+        float paddleRight = paddleRect.x + paddleRect.width;
+
+        // Kiểm tra overlap
+        boolean overlapX = ballCenterX >= paddleLeft && ballCenterX <= paddleRight;
+        boolean overlapY = ballBottom >= paddleTop && y <= paddleBottom;
+
+        if (!overlapX || !overlapY) return;
+
+        float prevY = y - dy;
+        float prevBottom = prevY + height;
+
+        // Va chạm từ trên xuống
+        if (dy > 0 && prevBottom <= paddleTop) {
+            handlePaddleTopCollision(paddle, paddleRect, ballCenterX);
+        }
+        // Va chạm từ bên
+        else {
+            handlePaddleSideCollision(paddleRect, ballCenterX, ballCenterY);
+        }
+    }
+
+    private void handlePaddleTopCollision(Paddle paddle, Rectangle paddleRect, float ballCenterX) {
+        // Đặt bóng lên trên paddle
+        y = paddleRect.y - height - 0.5f;
+
+        // Tính góc phản xạ dựa trên vị trí va chạm
+        float paddleCenter = paddleRect.x + paddleRect.width / 2f;
+        float hitPosition = (ballCenterX - paddleCenter) / (paddleRect.width / 2f);
+
+        // Clamp hitPosition trong khoảng [-1, 1]
+        hitPosition = Math.max(-1f, Math.min(1f, hitPosition));
+
+        // Tính góc output (90° = thẳng lên, giảm dần về 2 bên)
+        float angleInDegrees = VERTICAL_ANGLE - hitPosition * MAX_BOUNCE_ANGLE;
+
+        // Clamp angle để tránh góc quá ngang
+        angleInDegrees = Math.max(MIN_ANGLE, Math.min(MAX_ANGLE, angleInDegrees));
+
+        // Convert sang radians và set velocity mới
+        double angleInRadians = Math.toRadians(angleInDegrees);
+        float speedMagnitude = speed;
+
+        dx = (float) (speedMagnitude * Math.cos(angleInRadians));
+        dy = -(float) (speedMagnitude * Math.sin(angleInRadians)); // Âm vì đi lên
+
+        // Đảm bảo dy luôn âm (đi lên)
+        if (dy > 0) dy = -dy;
+    }
+
+    private void handlePaddleSideCollision(Rectangle paddleRect, float ballCenterX, float ballCenterY) {
+        float paddleLeft = paddleRect.x;
+        float paddleRight = paddleRect.x + paddleRect.width;
+
+        float prevX = x - dx;
+        float prevCenterX = prevX + radius;
+
+        // Xác định va chạm bên trái hay phải
+        boolean hitFromLeft = prevCenterX < paddleLeft && ballCenterX >= paddleLeft;
+        boolean hitFromRight = prevCenterX > paddleRight && ballCenterX <= paddleRight;
+
+        if (hitFromLeft) {
+            x = paddleLeft - width - 0.5f;
+            dx = -Math.abs(dx);
+            normalizeVelocity();
+        } else if (hitFromRight) {
+            x = paddleRight + 0.5f;
+            dx = Math.abs(dx);
+            normalizeVelocity();
+        }
+    }
+
+    public float clamp(float value, float min, float max) {
+        return Math.max(min, Math.min(value, max));
+    }
+
+    public boolean circleCheckCollision(Rectangle rect) {
+        float closestX = clamp(getCenterX(), rect.x,rect.x + rect.width );
+        float closestY = clamp(getCenterY(), rect.y,rect.y + rect.height);
+
+        float dX = getCenterX() - closestX;
+        float dY = getCenterY() - closestY;
+
+        return (dX * dX + dY * dY) < (radius * radius);
+    }
+
+    private void checkBrickCollisions(List<Brick> bricks) {
+        Rectangle ballRect = getBounds();
+        float ballCenterX = getCenterX();
+        float ballCenterY = getCenterY();
+
+        Iterator<Brick> it = bricks.iterator();
+        while (it.hasNext()) {
+            Brick brick = it.next();
+            Rectangle brickRect = brick.getBounds();
+
+            if (!circleCheckCollision(brickRect)) continue;
+
+            // Tính vị trí tương đối của ball với brick
+            float brickCenterX = brickRect.x + brickRect.width / 2f;
+            float brickCenterY = brickRect.y + brickRect.height / 2f;
+
+            float deltaX = ballCenterX - brickCenterX;
+            float deltaY = ballCenterY - brickCenterY;
+
+            // Tính overlap cho mỗi cạnh
+            float overlapX = (brickRect.width / 2f + radius) - Math.abs(deltaX);
+            float overlapY = (brickRect.height / 2f + radius) - Math.abs(deltaY);
+
+            // Va chạm theo trục có overlap nhỏ hơn
+            if (overlapX < overlapY) {
+                // Va chạm ngang (trái/phải)
+                if (deltaX > 0) {
+                    // Va chạm từ bên trái brick
+                    x = brickRect.x + brickRect.width + 0.5f;
+                } else {
+                    // Va chạm từ bên phải brick
+                    x = brickRect.x - width - 0.5f;
+                }
+                dx = -dx;
+            } else {
+                // Va chạm dọc (trên/dưới)
+                if (deltaY > 0) {
+                    // Va chạm từ trên brick
+                    y = brickRect.y + brickRect.height + 0.5f;
+                } else {
+                    // Va chạm từ dưới brick
+                    y = brickRect.y - height - 0.5f;
+                }
+                dy = -dy;
+            }
+
+            // Normalize lại velocity để giữ tốc độ ổn định
+            normalizeVelocity();
+
+            // Xử lý brick
+            brick.takeHit();
+            if (hasTripleDamage() && !brick.isDestroyed()) {
+                brick.takeHit();
+                brick.takeHit();
+            }
+            if (brick.isDestroyed()) {
+                it.remove();
+
+                if (isExplosive()) {
+                    float explosionRadius = 80f; // bán kính nổ (tuỳ chỉnh)
+                    ExplosiveBallPowerUp.explodeAt(bricks, brick.getX() + brick.getWidth()/2f, brick.getY() + brick.getHeight()/2f, explosionRadius);
+
+                }
+                // random chance to drop powerup
+                if (rand.nextDouble() < 0.2) {
+                    int type = rand.nextInt(3); // 0,1,2
+                    PowerUp pu;
+                    if (type == 0) {
+                        pu = new ExpandPaddlePowerUp(brick.getX() + brick.getWidth()/2f - 12,
+                                brick.getY() + brick.getHeight()/2f,
+                                24, 24, 8_000);
+                    } else if (type == 1) {
+                        pu = new FastBallPowerUp(brick.getX() + brick.getWidth()/2f - 12,
+                                brick.getY() + brick.getHeight()/2f,
+                                24, 24, 6_000);
+                    } else { // type == 2
+                        pu = new BigBallPowerUp(brick.getX() + brick.getWidth()/2f - 12,
+                                brick.getY() + brick.getHeight()/2f,
+                                24, 24, 7_000);
+                    }
+
+                    gm.powerUps.add(pu);
+                }
+            }
+        }
+    }
+
+    /**
+     * Normalize velocity để duy trì tốc độ ổn định
+     * Fix bug: tốc độ bóng tăng/giảm sau nhiều lần va chạm
+     */
+    private void normalizeVelocity() {
+        float currentMagnitude = (float) Math.hypot(dx, dy);
+        if (currentMagnitude > EPSILON && Math.abs(currentMagnitude - speed) > EPSILON) {
+            dx = (dx / currentMagnitude) * speed;
+            dy = (dy / currentMagnitude) * speed;
+        }
+    }
+
+    /**
+     * Kiểm tra nếu bóng bị stuck (vận tốc quá nhỏ hoặc góc quá ngang)
+     * Tự động fix bằng cách đẩy bóng đi lên
+     */
+    public void checkAndFixStuck() {
+        if (!launched) return;
+
+        float currentSpeed = (float) Math.hypot(dx, dy);
+
+        // Nếu tốc độ quá chậm
+        if (currentSpeed < speed * 0.5f) {
+            launch(0, -1); // Đẩy bóng đi thẳng lên
+        }
+
+        // Nếu góc quá ngang (dy quá nhỏ so với dx)
+        if (Math.abs(dy) < Math.abs(dx) * 0.1f) {
+            float direction = dy >= 0 ? 1 : -1;
+            dy = direction * Math.abs(dx) * 0.3f;
+            normalizeVelocity();
+        }
+    }
 }

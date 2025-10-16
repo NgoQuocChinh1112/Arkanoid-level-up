@@ -46,7 +46,6 @@ public class GamePanel extends JPanel {
     public void startGame() {
         cardLayout.show(this, "Game");
         game.setLevel(1);
-        game.startGameThread();
         SwingUtilities.invokeLater(() -> {
             game.setFocusable(true);
             game.requestFocusInWindow();
@@ -57,11 +56,9 @@ public class GamePanel extends JPanel {
     public void startGame(int level) {
         cardLayout.show(this, "Game");
         game.setLevel(level); // khi chọn level cụ thể
-        game.startGameThread();
         SwingUtilities.invokeLater(() -> {
             game.setFocusable(true);
             game.requestFocusInWindow();
         });
     }
 }
-

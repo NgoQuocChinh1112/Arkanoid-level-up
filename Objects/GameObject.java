@@ -33,7 +33,8 @@ public abstract class GameObject {
      * @param other Đối tượng cần kiểm tra va chạm
      * @return true nếu hai đối tượng giao nhau, ngược lại false
      */
-    public boolean intersects(GameObject other) { return this.getBounds().intersects(other.getBounds());
+    public boolean intersects(GameObject other) {
+        return this.getBounds().intersects(other.getBounds());
     }
 
     // getters / setters

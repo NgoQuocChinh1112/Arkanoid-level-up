@@ -1,5 +1,7 @@
 package Objects;
 
+import Game.GameManager;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
@@ -17,6 +19,11 @@ public class Paddle extends MovableObject {
     @Override
     public void update() {
         move();
+        // giữ paddle trong khung
+        if (x < 0) x = 0;
+        if (x + width > GameManager.WIDTH) {
+            x = GameManager.WIDTH - width;
+        }
     }
 
     @Override

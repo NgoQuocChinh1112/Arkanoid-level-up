@@ -32,6 +32,14 @@ public class Renderer {
         }
     }
 
+    public static BufferedImage loadPauseImage() {
+        return loadTexture("/assets/start_top.png");
+    }
+
+    public static BufferedImage loadMenuPauseImage() {
+        return loadTexture("/assets/menu_paused_top.png");
+    }
+
     public static BufferedImage[] loadBrickTexture() {
         BufferedImage[] textures = new  BufferedImage[5];
         textures[0] = loadTexture("/assets/brick_white.png");   // level 1

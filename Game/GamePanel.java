@@ -21,7 +21,7 @@ public class GamePanel extends JPanel {
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
 
         menu = new Menu(this);
-        game = new GameManager(WIDTH, HEIGHT);
+        game = new GameManager(this, WIDTH, HEIGHT);
         levelPanel = new LevelPanel(this);
 
         add(menu, "Menu");

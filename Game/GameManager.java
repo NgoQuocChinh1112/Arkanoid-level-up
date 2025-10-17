@@ -4,7 +4,7 @@ import Objects.*;
 import PowerUps.*;
 
 import javax.swing.*;
-import javax.swing.Timer;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
@@ -15,6 +15,8 @@ import java.util.Random;
 
 
 public class GameManager extends JPanel implements KeyListener, ActionListener {
+    private final GamePanel parent;
+
     private int WIDTH;
     private int HEIGHT;
 
@@ -32,12 +34,14 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
 
     private int score = 0;
     private int lives = 3;
-    private String gameState = "MENU"; // MENU, RUNNING, GAMEOVER, WIN
+    private String gameState = "MENU"; // MENU, RUNNING, GAMEOVER, WIN, PAUSED
 
     private boolean leftPressed = false;
     private boolean rightPressed = false;
 
     private BufferedImage backgroundImage;
+    private BufferedImage pauseImage;
+    private BufferedImage menuPauseImage;
 
     private Random rand = new Random();
 
@@ -62,7 +66,9 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         revalidate(); // cập nhật layout nếu cần
     }
 
-    public GameManager(int width, int height) {
+    public GameManager(GamePanel parent, int width, int height) {
+        this.parent = parent;
+
         this.WIDTH = width;
         this.HEIGHT = height;
         this.scaleX = (float) WIDTH / 800f;
@@ -84,6 +90,32 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         int delay = 1000 / FPS;
         gameTimer = new Timer(delay, this);
         gameTimer.start();
+
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (!gameState.equals("PAUSED")) return;
+
+                Point p = e.getPoint();
+
+                int boxW = 300, boxH = 200;
+                int boxX = (WIDTH - boxW) / 2;
+                int boxY = (HEIGHT - boxH) / 2;
+                int btnW = 200, btnH = 50;
+                int resumeY = boxY + 50;
+                int menuY = resumeY + 70;
+                int btnX = boxX + (boxW - btnW) / 2;
+
+                Rectangle resumeRect = new Rectangle(btnX, resumeY, btnW, btnH);
+                Rectangle menuRect = new Rectangle(btnX, menuY, btnW, btnH);
+
+                if (resumeRect.contains(p)) {
+                    gameState = "RUNNING"; // tiếp tục
+                } else if (menuRect.contains(p)) {
+                    parent.showMenu();
+                }
+            }
+        });
     }
 
     private void initGame() {
@@ -491,6 +523,32 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
             drawCenteredString(g2, "GAME OVER - PRESS R TO RESTART", WIDTH, HEIGHT);
         } else if (gameState.equals("WIN")) {
             drawCenteredString(g2, "YOU WIN! PRESS R TO RESTART", WIDTH, HEIGHT);
+        } else if (gameState.equals("PAUSED")) {
+            // lớp phủ mờ
+            g2.setColor(new Color(0, 0, 0, 150));
+            g2.fillRect(0, 0, WIDTH, HEIGHT);
+
+            // khung menu pause
+            int boxW = 300, boxH = 200;
+            int boxX = (WIDTH - boxW) / 2;
+            int boxY = (HEIGHT - boxH) / 2;
+            g2.setColor(new Color(255, 255, 255, 180));
+            g2.fillRoundRect(boxX, boxY, boxW, boxH, 30, 30);
+
+            int btnW = 200, btnH = 50;
+            int resumeY = boxY + 50;
+            int menuY = resumeY + 70;
+            int btnX = boxX + (boxW - btnW) / 2;
+
+            // Vẽ 2 nút (ảnh hoặc chữ)
+            if (pauseImage != null && menuPauseImage != null) {
+                g2.drawImage(pauseImage, btnX, resumeY, btnW, btnH, null);
+                g2.drawImage(menuPauseImage, btnX, menuY, btnW, btnH, null);
+            } else {
+                g2.setColor(Color.BLACK);
+                g2.drawString("Resume", btnX + 70, resumeY + 30);
+                g2.drawString("Main Menu", btnX + 55, menuY + 30);
+            }
         }
 
         g2.dispose();
@@ -521,6 +579,13 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
                 ball.launch(4f, -4f);
             } else if (gameState.equals("RUNNING")) {
                 if (!ball.isLaunched()) ball.launch(4f, -4f);
+            }
+        }
+        if (kc == KeyEvent.VK_P) {
+            if (gameState.equals("RUNNING")) {
+                gameState = "PAUSED";
+            } else if (gameState.equals("PAUSED")) {
+                gameState = "RUNNING";
             }
         }
         if (kc == KeyEvent.VK_R) {

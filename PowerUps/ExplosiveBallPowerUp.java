@@ -15,14 +15,14 @@ public class ExplosiveBallPowerUp extends PowerUp {
     private static BufferedImage explosionImg;
     private boolean active = false;
 
-
     private static final List<Float> explosionX = new ArrayList<>();
     private static final List<Float> explosionY = new ArrayList<>();
     private static final List<Integer> explosionFrame = new ArrayList<>();
     private static final List<Integer> explosionCounter = new ArrayList<>();
 
-    private static final int TOTAL_FRAMES = 7;  // số khung hình trong ảnh explosion.jpg
-    private static final int FRAME_DELAY = 3;   // số lần cập nhật trước khi chuyển frame
+
+    private static final int TOTAL_FRAMES = 6;   //  6 frame
+    private static final int FRAME_DELAY = 3;    // tốc độ chuyển frame
 
     public ExplosiveBallPowerUp(float x, float y, int width, int height, long durationMs) {
         super(x, y, width, height, durationMs, "EXPLOSIVE_BALL");
@@ -32,7 +32,7 @@ public class ExplosiveBallPowerUp extends PowerUp {
     private void loadImage() {
         if (explosionImg == null) {
             try {
-                explosionImg = ImageIO.read(getClass().getResourceAsStream("/assets/explosive.jpg"));
+                explosionImg = ImageIO.read(getClass().getResourceAsStream("/assets/explosive.png"));
             } catch (IOException | NullPointerException e) {
                 System.err.println("Không thể tải ảnh explosion: " + e.getMessage());
             }
@@ -44,10 +44,8 @@ public class ExplosiveBallPowerUp extends PowerUp {
         if (active) return;
         active = true;
 
-        // Gắn cờ explosive cho bóng
         ball.setExplosive(true);
 
-        // Tạo luồng đếm thời gian hiệu ứng
         new Thread(() -> {
             try {
                 Thread.sleep(durationMs);
@@ -59,46 +57,37 @@ public class ExplosiveBallPowerUp extends PowerUp {
 
     @Override
     public void render(Graphics2D g2) {
-        g2.setColor(Color.RED);
+        g2.setColor(new Color(220, 120, 40));
         g2.fillOval(Math.round(x), Math.round(y), width, height);
         g2.setColor(Color.BLACK);
         g2.drawOval(Math.round(x), Math.round(y), width, height);
         g2.setFont(new Font("Arial", Font.BOLD, 12));
         String s = "E";
         int tw = g2.getFontMetrics().stringWidth(s);
-        g2.drawString(s, Math.round(x) + (width - tw)/2, Math.round(y) + height/2 + 4);
+        g2.drawString(s, Math.round(x) + (width - tw) / 2, Math.round(y) + height / 2 + 4);
     }
 
-    /**
-     * Gọi khi bóng nổ — phá gạch xung quanh và thêm hiệu ứng nổ.
-     */
+    //
     public static void explodeAt(List<Brick> bricks, float centerX, float centerY, float radius) {
-        // 1. Phá gạch trong vùng bán kính
         for (Brick brick : bricks) {
             if (!brick.isDestroyed()) {
                 float bx = brick.getX() + brick.getWidth() / 2f;
                 float by = brick.getY() + brick.getHeight() / 2f;
                 float dist = (float) Math.hypot(centerX - bx, centerY - by);
                 if (dist < radius) {
-                    brick.takeHit(); // phá gạch trong phạm vi
+                    // Phá mạnh hơn một chút
+                    for (int i = 0; i < 5; i++) brick.takeHit();
                 }
             }
         }
 
-        // 2. Thêm vụ nổ mới vào danh sách
+        // Thêm hiệu ứng nổ
         explosionX.add(centerX);
         explosionY.add(centerY);
         explosionFrame.add(0);
         explosionCounter.add(0);
-
-        //  explosion.wav
-        // playExplosionSound();
     }
 
-    /**
-     * Cập nhật frame của tất cả vụ nổ.
-     * Gọi mỗi lần trong updateGame().
-     */
     public static void updateExplosions() {
         for (int i = 0; i < explosionFrame.size(); i++) {
             int counter = explosionCounter.get(i) + 1;
@@ -107,7 +96,6 @@ public class ExplosiveBallPowerUp extends PowerUp {
                 int frame = explosionFrame.get(i) + 1;
                 explosionFrame.set(i, frame);
                 if (frame >= TOTAL_FRAMES) {
-                    // Kết thúc vụ nổ này → xóa khỏi danh sách
                     explosionX.remove(i);
                     explosionY.remove(i);
                     explosionFrame.remove(i);
@@ -120,48 +108,35 @@ public class ExplosiveBallPowerUp extends PowerUp {
         }
     }
 
-    /**
-     * Vẽ tất cả vụ nổ hiện có.
-     * Gọi trong paintComponent(Graphics g).
-     */
     public static void drawExplosions(Graphics2D g2) {
         for (int i = 0; i < explosionFrame.size(); i++) {
             renderExplosion(g2, explosionX.get(i), explosionY.get(i), explosionFrame.get(i));
         }
     }
 
-    /**
-     * Vẽ 1 frame cụ thể của vụ nổ.
-     */
     private static void renderExplosion(Graphics2D g2, float x, float y, int frame) {
         if (explosionImg == null) return;
-        int frameWidth = explosionImg.getWidth() / TOTAL_FRAMES;
-        int frameHeight = explosionImg.getHeight();
 
+        int totalWidth = explosionImg.getWidth();   // ảnh sprite tổng
+        int totalHeight = explosionImg.getHeight(); // chiều cao ảnh
+        int totalFrames = TOTAL_FRAMES;
+
+        // Tính vùng cắt đều chính xác cho 6 frame
+        int frameWidth = Math.round(totalWidth / (float) totalFrames);
+        int sx1 = frame * frameWidth;
+        int sx2 = sx1 + frameWidth;
+
+        int drawSize = 96;
+        int half = drawSize / 2;
+
+        g2.setComposite(AlphaComposite.SrcOver.derive(0.9f));
         g2.drawImage(
                 explosionImg,
-                (int)(x - frameWidth / 2f),
-                (int)(y - frameHeight / 2f),
-                (int)(x + frameWidth / 2f),
-                (int)(y + frameHeight / 2f),
-                frame * frameWidth, 0,
-                (frame + 1) * frameWidth, explosionImg.getHeight(),
+                (int) (x - half), (int) (y - half),
+                (int) (x + half), (int) (y + half),
+                sx1, 0, sx2, totalHeight,
                 null
         );
+        g2.setComposite(AlphaComposite.SrcOver);
     }
-
-
-    /* temp
-    private static void playExplosionSound() {
-        try {
-            javax.sound.sampled.AudioInputStream audioIn = javax.sound.sampled.AudioSystem.getAudioInputStream(
-                    ExplosiveBallPowerUp.class.getResource("/assets/explosion.wav"));
-            javax.sound.sampled.Clip clip = javax.sound.sampled.AudioSystem.getClip();
-            clip.open(audioIn);
-            clip.start();
-        } catch (Exception e) {
-            System.err.println("Không thể phát âm thanh nổ: " + e.getMessage());
-        }
-    }
-    */
 }

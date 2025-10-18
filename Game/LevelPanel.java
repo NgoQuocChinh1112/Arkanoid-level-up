@@ -17,7 +17,8 @@ import java.awt.Point;
 public class LevelPanel extends JPanel {
     private final GamePanel parent;
     private BufferedImage levelsBackGround;
-    private BufferedImage image_level;
+    private BufferedImage[] image_level;
+    private BufferedImage title_choose_level;
     private BufferedImage back_bot;
     private BufferedImage back_top;
 
@@ -25,24 +26,44 @@ public class LevelPanel extends JPanel {
     private static int HEIGHT_BUTTON_LEVEL = 100;
     private static int WIDTH_BUTTON_BACK = 60;
     private static int HEIGHT_BUTTON_BACK = 60;
+    private static int WIDTH_TITLE = 400;
+    private static int HEIGHT_TITLE = 100;
 
     private static int X_BUTTON_LEVEL_1 = 50;
     private static int Y_BUTTON_LEVEL_1 = 200;
     private static int X_BUTTON_BACK = 700;
     private static int Y_BUTTON_BACK = 30;
+    private static int X_TITLE = 200;
+    private static int Y_TITLE = 8;
 
     private Rectangle[] levelsRect;
     private Rectangle back;
 
     private boolean hoverBack = false;
 
+    /**
+     *Tạo panel chọn level, nạp ảnh giao diện và gắn các sự kiện chuột.
+     * @param parent panel cha dùng để chuyển giữa menu và game.
+     */
     public LevelPanel(GamePanel parent) {
         this.parent = parent;
         setLayout(null);
+        image_level = new BufferedImage[10];
 
+        //nap anh
         try {
             levelsBackGround = ImageIO.read(getClass().getResource("/assets/BGLevel.png"));
-            image_level = ImageIO.read(getClass().getResource("/assets/levelImage.png"));
+            image_level[0] = ImageIO.read(getClass().getResource("/assets/lv1.png"));
+            image_level[1] = ImageIO.read(getClass().getResource("/assets/lv2.png"));
+            image_level[2] = ImageIO.read(getClass().getResource("/assets/lv3.png"));
+            image_level[3] = ImageIO.read(getClass().getResource("/assets/lv4.png"));
+            image_level[4] = ImageIO.read(getClass().getResource("/assets/lv5.png"));
+            image_level[5] = ImageIO.read(getClass().getResource("/assets/lv6.png"));
+            image_level[6] = ImageIO.read(getClass().getResource("/assets/lv7.png"));
+            image_level[7] = ImageIO.read(getClass().getResource("/assets/lv8.png"));
+            image_level[8] = ImageIO.read(getClass().getResource("/assets/lv9.png"));
+            image_level[9] = ImageIO.read(getClass().getResource("/assets/lv10.png"));
+            title_choose_level = ImageIO.read(getClass().getResource("/assets/title_choose_level.png"));
             back_bot = ImageIO.read(getClass().getResource("/assets/back_bot.png"));
             back_top = ImageIO.read(getClass().getResource("/assets/back_top.png"));
         } catch (IOException e) {
@@ -52,6 +73,9 @@ public class LevelPanel extends JPanel {
         levelsRect = new Rectangle[10];
         back = new Rectangle();
 
+        /**
+         * Kiem tra click chuot
+         */
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -90,6 +114,9 @@ public class LevelPanel extends JPanel {
             }
         });
 
+        /**
+         * Kiem tra di chuot
+         */
         addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseMoved(MouseEvent e) {
@@ -103,6 +130,7 @@ public class LevelPanel extends JPanel {
         });
     }
 
+    // ve man hinh hien thi level
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -115,6 +143,10 @@ public class LevelPanel extends JPanel {
 
         if (levelsBackGround != null) {
             g2.drawImage(levelsBackGround, 0, 0, getWidth(), getHeight(), null);
+        }
+
+        if (title_choose_level != null) {
+            g2.drawImage(title_choose_level, X_TITLE, Y_TITLE, WIDTH_TITLE, HEIGHT_TITLE, null);
         }
 
         back.setBounds(X_BUTTON_BACK, Y_BUTTON_BACK, WIDTH_BUTTON_BACK, HEIGHT_BUTTON_BACK);
@@ -139,11 +171,11 @@ public class LevelPanel extends JPanel {
 
         if (image_level != null) {
             for (int i = 0; i < 5; ++i) {
-                g2.drawImage(image_level, centerX + i * btnW * 3/2, startY, btnW, btnH, null);
+                g2.drawImage(image_level[i], centerX + i * btnW * 3/2, startY, btnW, btnH, null);
             }
 
             for (int i = 5; i < 10; ++i) {
-                g2.drawImage(image_level, centerX + (i - 5) * btnW * 3/2, startY + btnH * 2, btnW, btnH, null);
+                g2.drawImage(image_level[i], centerX + (i - 5) * btnW * 3/2, startY + btnH * 2, btnW, btnH, null);
             }
         }
     } 

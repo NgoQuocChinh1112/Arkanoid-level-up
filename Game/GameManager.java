@@ -52,6 +52,14 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
     public static final float VERTICAL_ANGLE = 90f;
     public static final float EPSILON = 0.001f; // Để so sánh float
 
+    public int getCurrentLevel() {
+        return currentLevel;
+    }
+
+    public void setCurrentLevel(int level) {
+        this.currentLevel = level;
+    }
+
     // Cache để tránh tính toán lại
 
     public void setGameSize(int width, int height) {
@@ -81,7 +89,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         setFocusable(true);
         requestFocusInWindow();
 
-        backgroundImage = Renderer.loadBgroundTexture();
+        backgroundImage = Renderer.loadBgroundTexture(currentLevel);
         if (backgroundImage != null) {
             backgroundImage = resizeImage(backgroundImage, width, height);
         }
@@ -615,6 +623,10 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
 
     public void setLevel(int level) {
         this.currentLevel = level;
+        backgroundImage = Renderer.loadBgroundTexture(currentLevel);
+        if (backgroundImage != null) {
+            backgroundImage = resizeImage(backgroundImage, WIDTH, HEIGHT);
+        }
         restart(); // khởi động lại game với level mới
     }
 

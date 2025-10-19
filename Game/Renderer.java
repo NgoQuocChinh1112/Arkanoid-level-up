@@ -32,13 +32,7 @@ public class Renderer {
         }
     }
 
-    public static BufferedImage loadPauseImage() {
-        return loadTexture("/assets/start_top.png");
-    }
 
-    public static BufferedImage loadMenuPauseImage() {
-        return loadTexture("/assets/menu_paused_top.png");
-    }
 
     public static BufferedImage[] loadBrickTexture() {
         BufferedImage[] textures = new  BufferedImage[5];
@@ -58,6 +52,21 @@ public class Renderer {
         return loadTexture(("/assets/back_ground.png"));
     }
 
+    public static BufferedImage loadMenuTexture() {
+        return loadTexture(("/assets/menu.png"));
+    }
+    public static BufferedImage loadResumeButton() {
+        return loadTexture(("/assets/resume_button.png"));
+    }
+    public static BufferedImage loadResumeButtonBot() {
+        return loadTexture(("/assets/resume_button_bot.png"));
+    }
+    public  static BufferedImage loadMenuButton() {
+        return loadTexture(("/assets/menu_button.png"));
+    }
+    public static BufferedImage loadMenuButtonBot() {
+        return loadTexture(("/assets/menu_button_bot.png"));
+    }
     public static BufferedImage loadPaddleTexture() {
             return loadTexture("/assets/paddle_1.png");
     }

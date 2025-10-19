@@ -24,11 +24,11 @@ public class Paddle extends MovableObject {
         g2.drawImage(paddleImage, Math.round(x), Math.round(y), width, height, null);
     }
 
-    public void moveLeft() { dx = -speed; }
-    public void moveRight() { dx = speed; }
-
     public float getSpeed() { return speed; }
-    public void setSpeed(float s) { this.speed = s; }
+
+    public void setSpeed(float speed) {
+        this.speed = speed;
+    }
 
     public void setWidth(int w) { this.width = w; }
     public int getWidth() { return width; }

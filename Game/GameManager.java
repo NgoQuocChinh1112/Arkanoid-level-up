@@ -4,7 +4,6 @@ import Objects.*;
 import PowerUps.*;
 
 import javax.swing.*;
-
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
@@ -34,14 +33,19 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
 
     private int score = 0;
     private int lives = 3;
-    private String gameState = "MENU"; // MENU, RUNNING, GAMEOVER, WIN, PAUSED
+    private String gameState = "MENU"; // MENU, RUNNING, GAMEOVER, WIN
 
     private boolean leftPressed = false;
     private boolean rightPressed = false;
 
     private BufferedImage backgroundImage;
-    private BufferedImage pauseImage;
-    private BufferedImage menuPauseImage;
+    private final BufferedImage resumeImageTop = Renderer.loadResumeButton();
+    private final BufferedImage resumeImageBot = Renderer.loadResumeButtonBot();
+    private final BufferedImage menuImageTop =  Renderer.loadMenuButton();
+    private final BufferedImage menuImageBot = Renderer.loadMenuButtonBot();
+    private final BufferedImage menubackgroundImage = Renderer.loadMenuTexture();
+    private boolean hoverResume = false;
+    private boolean hoverMenu = false;
 
     private Random rand = new Random();
 
@@ -51,6 +55,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
     public static final float MAX_ANGLE = 165f;
     public static final float VERTICAL_ANGLE = 90f;
     public static final float EPSILON = 0.001f; // Để so sánh float
+
 
     // Cache để tránh tính toán lại
 
@@ -82,6 +87,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         requestFocusInWindow();
 
         backgroundImage = Renderer.loadBgroundTexture();
+
         if (backgroundImage != null) {
             backgroundImage = resizeImage(backgroundImage, width, height);
         }
@@ -97,7 +103,6 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
                 if (!gameState.equals("PAUSED")) return;
 
                 Point p = e.getPoint();
-
                 int boxW = 300, boxH = 200;
                 int boxX = (WIDTH - boxW) / 2;
                 int boxY = (HEIGHT - boxH) / 2;
@@ -115,6 +120,32 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
                     parent.showMenu();
                 }
             }
+
+            public void mouseExited(MouseEvent e) {
+                hoverResume = hoverMenu = false;
+                repaint();
+            }
+        });
+
+        addMouseMotionListener(new MouseMotionAdapter() {
+            public void mouseMoved(MouseEvent e) {
+                Point p = e.getPoint();
+                int boxW = 300, boxH = 200;
+                int boxX = (WIDTH - boxW) / 2;
+                int boxY = (HEIGHT - boxH) / 2;
+                int btnW = 200, btnH = 50;
+                int resumeY = boxY + 50;
+                int menuY = resumeY + 70;
+                int btnX = boxX + (boxW - btnW) / 2;
+                Rectangle resumeRect = new Rectangle(btnX, resumeY, btnW, btnH);
+                Rectangle menuRect = new Rectangle(btnX, menuY, btnW, btnH);
+
+                boolean oldHoverResume = hoverResume;
+                hoverResume = resumeRect.contains(p);
+                boolean oldHoverMenu = hoverMenu;
+                hoverMenu = menuRect.contains(p);
+                if (oldHoverResume != hoverResume || oldHoverMenu != hoverMenu) repaint();
+            }
         });
     }
 
@@ -131,27 +162,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         updateGame();
         repaint();
     }
-    private boolean circleIntersectsRect(float cx, float cy, float radius, Rectangle rect) {
-        float closestX;
-        if (cx >= rect.x && cx <= rect.x + rect.width) {
-            closestX = cx;
-        } else if (cx > rect.x + rect.width) {
-            closestX = rect.x + rect.width;
-        } else {
-            closestX = rect.x;
-        }
-        float closestY;
-        if (cy >= rect.y && cy <= rect.y + rect.height) {
-            closestY = cy;
-        } else if (cy > rect.y + rect.height) {
-            closestY = rect.y + rect.height;
-        } else {
-            closestY = rect.y;
-        }
-        float dx = cx - closestX;
-        float dy = cy - closestY;
-        return (dx * dx + dy * dy) < (radius * radius);
-    }
+
     private void updateGame() {
         if (!gameState.equals("RUNNING")) return;
 
@@ -532,22 +543,29 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
             int boxW = 300, boxH = 200;
             int boxX = (WIDTH - boxW) / 2;
             int boxY = (HEIGHT - boxH) / 2;
-            g2.setColor(new Color(255, 255, 255, 180));
-            g2.fillRoundRect(boxX, boxY, boxW, boxH, 30, 30);
+            if (menubackgroundImage != null) {
+                g2.drawImage(menubackgroundImage, boxX, boxY, boxW, boxH, null);
+            } else {
+                g2.setColor(new Color(255, 255, 255, 180));
+                g2.fillRoundRect(boxX, boxY, boxW, boxH, 30, 30);
+            }
 
             int btnW = 200, btnH = 50;
-            int resumeY = boxY + 50;
+            int resumeY = boxY + 40;
             int menuY = resumeY + 70;
             int btnX = boxX + (boxW - btnW) / 2;
 
             // Vẽ 2 nút (ảnh hoặc chữ)
-            if (pauseImage != null && menuPauseImage != null) {
-                g2.drawImage(pauseImage, btnX, resumeY, btnW, btnH, null);
-                g2.drawImage(menuPauseImage, btnX, menuY, btnW, btnH, null);
-            } else {
-                g2.setColor(Color.BLACK);
-                g2.drawString("Resume", btnX + 70, resumeY + 30);
-                g2.drawString("Main Menu", btnX + 55, menuY + 30);
+            if (resumeImageTop != null && hoverResume) {
+                g2.drawImage(resumeImageTop, btnX, resumeY, btnW, btnH, null);
+
+            } else if (resumeImageBot != null) {
+                g2.drawImage(resumeImageBot, btnX, resumeY, btnW, btnH, null);
+            }
+            if (menuImageTop != null && hoverMenu) {
+                g2.drawImage(menuImageTop, btnX, menuY, btnW, btnH, null);
+            } else if (menuImageBot != null) {
+                g2.drawImage(menuImageBot, btnX, menuY, btnW, btnH, null);
             }
         }
 

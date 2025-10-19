@@ -10,6 +10,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Renderer {
+
+    private static BufferedImage[] background_level;
+
     public static void drawRect(Graphics2D g2, GameObject obj, Color fill, Color border) {
         g2.setColor(fill);
         g2.fillRect(Math.round(obj.getX()), Math.round(obj.getY()), obj.getWidth(), obj.getHeight());
@@ -32,7 +35,13 @@ public class Renderer {
         }
     }
 
+    public static BufferedImage loadPauseImage() {
+        return loadTexture("/assets/start_top.png");
+    }
 
+    public static BufferedImage loadMenuPauseImage() {
+        return loadTexture("/assets/menu_paused_top.png");
+    }
 
     public static BufferedImage[] loadBrickTexture() {
         BufferedImage[] textures = new  BufferedImage[5];
@@ -48,8 +57,20 @@ public class Renderer {
         return loadTexture("/assets/ball_1.png");
     }
 
-    public static BufferedImage loadBgroundTexture() {
-        return loadTexture(("/assets/back_ground.png"));
+    public static BufferedImage loadBgroundTexture(int currentLevel) {
+        background_level = new BufferedImage[10];
+
+        background_level[0] = loadTexture("/assets/BG_Level_1.png");
+        background_level[1] = loadTexture("/assets/BG_Level_2.jpg");
+        background_level[2] = loadTexture("/assets/BG_Level_3.png");
+        background_level[3] = loadTexture("/assets/BG_Level_4.png");
+        background_level[4] = loadTexture("/assets/BG_Level_5.png");
+        background_level[5] = loadTexture("/assets/BG_Level_6.png");
+        background_level[6] = loadTexture("/assets/BG_Level_7.png");
+        background_level[7] = loadTexture("/assets/BG_Level_8.png");
+        background_level[8] = loadTexture("/assets/BG_Level_9.png");
+        background_level[9] = loadTexture("/assets/BG_Level_10.jpg");
+        return background_level[currentLevel - 1];
     }
 
     public static BufferedImage loadMenuTexture() {
@@ -68,7 +89,7 @@ public class Renderer {
         return loadTexture(("/assets/menu_button_bot.png"));
     }
     public static BufferedImage loadPaddleTexture() {
-            return loadTexture("/assets/paddle_1.png");
+        return loadTexture("/assets/paddle_1.png");
     }
     
 }

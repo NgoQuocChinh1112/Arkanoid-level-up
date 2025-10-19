@@ -4,6 +4,7 @@ import Objects.*;
 import PowerUps.*;
 
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
@@ -33,7 +34,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
 
     private int score = 0;
     private int lives = 3;
-    private String gameState = "MENU"; // MENU, RUNNING, GAMEOVER, WIN
+    private String gameState = "MENU"; // MENU, RUNNING, GAMEOVER, WIN, PAUSED
 
     private boolean leftPressed = false;
     private boolean rightPressed = false;
@@ -56,6 +57,13 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
     public static final float VERTICAL_ANGLE = 90f;
     public static final float EPSILON = 0.001f; // Để so sánh float
 
+    public int getCurrentLevel() {
+        return currentLevel;
+    }
+
+    public void setCurrentLevel(int level) {
+        this.currentLevel = level;
+    }
 
     // Cache để tránh tính toán lại
 
@@ -86,8 +94,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         setFocusable(true);
         requestFocusInWindow();
 
-        backgroundImage = Renderer.loadBgroundTexture();
-
+        backgroundImage = Renderer.loadBgroundTexture(currentLevel);
         if (backgroundImage != null) {
             backgroundImage = resizeImage(backgroundImage, width, height);
         }
@@ -103,6 +110,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
                 if (!gameState.equals("PAUSED")) return;
 
                 Point p = e.getPoint();
+
                 int boxW = 300, boxH = 200;
                 int boxX = (WIDTH - boxW) / 2;
                 int boxY = (HEIGHT - boxH) / 2;
@@ -633,6 +641,10 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
 
     public void setLevel(int level) {
         this.currentLevel = level;
+        backgroundImage = Renderer.loadBgroundTexture(currentLevel);
+        if (backgroundImage != null) {
+            backgroundImage = resizeImage(backgroundImage, WIDTH, HEIGHT);
+        }
         restart(); // khởi động lại game với level mới
     }
 

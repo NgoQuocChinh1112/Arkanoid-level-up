@@ -3,6 +3,9 @@ package Game;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Quản lý giao diện chính của trò chơi, điều hướng giữa menu, level và game.
+ */
 public class GamePanel extends JPanel {
     private CardLayout cardLayout;
     private Menu menu;
@@ -11,6 +14,11 @@ public class GamePanel extends JPanel {
     private int WIDTH;
     private int HEIGHT;
 
+    /**
+     * Khởi tạo GamePanel với kích thước xác định và các màn hình con.
+     * @param width chiều rộng khung game.
+     * @param height chiều cao khung game.
+     */
     public GamePanel(int width, int height) {
         this.WIDTH = width;
         this.HEIGHT = height;
@@ -31,6 +39,11 @@ public class GamePanel extends JPanel {
         showMenu();
     }
 
+    /**
+     * Cập nhật lại kích thước panel và các thành phần bên trong.
+     * @param width chiều rộng mới.
+     * @param height chiều cao mới.
+     */
     public void setPanelSize(int width, int height) {
         this.WIDTH = width;
         this.HEIGHT = height;
@@ -41,16 +54,26 @@ public class GamePanel extends JPanel {
         revalidate(); // cập nhật layout nếu cần
     }
 
+    /**
+     * Hiển thị màn hình menu chính.
+     */
     public void showMenu() {
         cardLayout.show(this, "Menu");
     }
 
+    /**
+     * Hiển thị màn hình chọn level.
+     */
     public void showLevelPanel() {
         cardLayout.show(this, "LevelPanel");
     }
 
+    /**
+     * Bắt đầu trò chơi từ level 1 (mặc định).
+     */
     public void startGame() {
         cardLayout.show(this, "Game");
+        game.setCurrentLevel(1);
         game.setLevel(1);
         SwingUtilities.invokeLater(() -> {
             game.setFocusable(true);
@@ -59,8 +82,13 @@ public class GamePanel extends JPanel {
         });
     }
 
+    /**
+     * Bắt đầu trò chơi tại level được chọn.
+     * @param level cấp độ người chơi chọn để bắt đầu.
+     */
     public void startGame(int level) {
         cardLayout.show(this, "Game");
+        game.setCurrentLevel(level);
         game.setLevel(level); // khi chọn level cụ thể
         SwingUtilities.invokeLater(() -> {
             game.setFocusable(true);

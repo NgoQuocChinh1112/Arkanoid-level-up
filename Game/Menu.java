@@ -31,7 +31,7 @@ public class Menu extends JPanel {
 
         // Nạp ảnh
         try {
-            background = ImageIO.read(getClass().getResource("/assets/back_ground.png"));
+            background = ImageIO.read(getClass().getResource("/assets/BG_Level_1.png"));
             title = ImageIO.read(getClass().getResource("/assets/title.png"));
             startTop = ImageIO.read(getClass().getResource("/assets/start_top.png"));
             startBot = ImageIO.read(getClass().getResource("/assets/start_bot.png"));

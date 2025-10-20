@@ -34,7 +34,7 @@ public class Brick extends GameObject {
     }
 
     public void takeHit() {
-        if (hitPoints > 0) {
+        if (hitPoints > 0 && hitPoints != 6) {
             hitPoints--;
             if (hitPoints > 0) {
                 texture = textures[hitPoints - 1];

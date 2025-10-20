@@ -425,8 +425,16 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
             brick.takeHit();
             if (ball.isEnlarged() && !brick.isDestroyed()) {
                 brick.takeHit();
-                brick.takeHit();
             }
+
+            if (ball.isExplosive()) {
+                float explosionRadius = 80f * scaleX;
+                ExplosiveBallPowerUp.explodeAt(bricks,
+                        ball.getX() + ball.getWidth()/2f,
+                        ball.getY() + ball.getHeight()/2f,
+                        explosionRadius);
+            }
+
             if (brick.isDestroyed()) {
                 it.remove();
                 score += 100;
@@ -445,10 +453,14 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
                         pu = new FastBallPowerUp(brick.getX() + brick.getWidth()/2f - 12,
                                 brick.getY() + brick.getHeight()/2f,
                                 24, 24, 6_000);
-                    } else if ( type == 2) {
+                    } else if (type == 2) {
                         pu = new BigBallPowerUp(brick.getX() + brick.getWidth()/2f - 12,
                                 brick.getY() + brick.getHeight()/2f,
                                 24, 24, 7_000);
+                    } else if (type == 3) {
+                        pu = new ExplosiveBallPowerUp(brick.getX() + brick.getWidth()/2f - 12,
+                                brick.getY() + brick.getHeight()/2f,
+                                24, 24, 6_000);
                     }
                     if (pu != null) {
 

@@ -23,17 +23,8 @@ public abstract class PowerUp extends GameObject {
         y += dy;
     }
 
-    @Override
-    public void render(Graphics2D g2) {
-        g2.setColor(Color.YELLOW);
-        g2.fillOval(Math.round(x), Math.round(y), width, height);
-        g2.setColor(Color.BLACK);
-        g2.drawOval(Math.round(x), Math.round(y), width, height);
-        g2.setFont(new Font("Arial", Font.BOLD, 12));
-        String s = getType().substring(0,1);
-        int tw = g2.getFontMetrics().stringWidth(s);
-        g2.drawString(s, Math.round(x) + (width - tw)/2, Math.round(y) + height/2 + 4);
-    }
+
+    public abstract void render(Graphics2D g2);
 
     public abstract void applyEffect(Paddle paddle, Ball ball, Object gameManager);
 

@@ -20,11 +20,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
     private int WIDTH;
     private int HEIGHT;
 
-    private float scaleX;
-    private float scaleY;
-
     private Timer gameTimer;
-    private final int FPS = 60;
     private int currentLevel = 1;
 
     private Paddle paddle;
@@ -40,13 +36,10 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
     private boolean rightPressed = false;
 
     private BufferedImage backgroundImage;
-    private final BufferedImage resumeImageTop = Renderer.loadResumeButton();
-    private final BufferedImage resumeImageBot = Renderer.loadResumeButtonBot();
-    private final BufferedImage menuImageTop =  Renderer.loadMenuButton();
-    private final BufferedImage menuImageBot = Renderer.loadMenuButtonBot();
-    private final BufferedImage menubackgroundImage = Renderer.loadMenuTexture();
+    private final BufferedImage[] button = Renderer.loadbuttonTexture();
     private boolean hoverResume = false;
     private boolean hoverMenu = false;
+    private boolean hoverLs = false;
 
     private Random rand = new Random();
 
@@ -70,22 +63,19 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
     public void setGameSize(int width, int height) {
         this.WIDTH = width;
         this.HEIGHT = height;
-        this.scaleX = (float) WIDTH / 800f;
-        this.scaleY = (float) HEIGHT / 600f;
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
         if (backgroundImage != null) {
             backgroundImage = resizeImage(backgroundImage, width, height);
         }
+        repaint();
         revalidate(); // cập nhật layout nếu cần
     }
 
     public GameManager(GamePanel parent, int width, int height) {
         this.parent = parent;
+        this.WIDTH = (int)((float)width);
+        this.HEIGHT = (int)((float)height);
 
-        this.WIDTH = width;
-        this.HEIGHT = height;
-        this.scaleX = (float) WIDTH / 800f;
-        this.scaleY = (float) HEIGHT / 600f;
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
         setFocusable(true);
         requestFocus();
@@ -100,6 +90,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         }
         initGame();
 
+        int FPS = 60;
         int delay = 1000 / FPS;
         gameTimer = new Timer(delay, this);
         gameTimer.start();
@@ -107,66 +98,123 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (!gameState.equals("PAUSED")) return;
-
                 Point p = e.getPoint();
-
-                int boxW = 300, boxH = 200;
-                int boxX = (WIDTH - boxW) / 2;
-                int boxY = (HEIGHT - boxH) / 2;
-                int btnW = 200, btnH = 50;
-                int resumeY = boxY + 50;
-                int menuY = resumeY + 70;
-                int btnX = boxX + (boxW - btnW) / 2;
-
-                Rectangle resumeRect = new Rectangle(btnX, resumeY, btnW, btnH);
-                Rectangle menuRect = new Rectangle(btnX, menuY, btnW, btnH);
-
-                if (resumeRect.contains(p)) {
-                    gameState = "RUNNING"; // tiếp tục
-                } else if (menuRect.contains(p)) {
-                    parent.showMenu();
+                if (gameState.equals("RUNNING")) {
+                    int butW = (int)(30 * GamePanel.scaleY), butH = (int)(30 * GamePanel.scaleY);
+                    int butX = WIDTH - (int)(50 * GamePanel.scaleY);
+                    int butY = (int)(20 * GamePanel.scaleY);
+                    Rectangle buttonRect = new Rectangle(butX, butY, butW, butH);
+                    if (buttonRect.contains(p)) {
+                        gameState = "PAUSED";
+                    }
                 }
-            }
+                if (gameState.equals("PAUSED")) {
+                    int boxX = (WIDTH - (int)(300 * GamePanel.scaleY)) / 2;
+                    int boxY = (HEIGHT - (int)(400 * GamePanel.scaleY)) / 2;
+                    int btnW =(int)(180 * GamePanel.scaleY), btnH = (int)(50 * GamePanel.scaleY);
+                    int resumeY = boxY + (int) (60 * GamePanel.scaleY);
+                    int resY = resumeY + (int) (60 * GamePanel.scaleY);
+                    int menuY = resY + (int) (60 * GamePanel.scaleY);
+                    int btnX = boxX + ((int)(300 * GamePanel.scaleY) - btnW) / 2;
 
-            public void mouseExited(MouseEvent e) {
-                hoverResume = hoverMenu = false;
-                repaint();
+                    Rectangle resumeRect = new Rectangle(btnX, resumeY, btnW, btnH);
+                    Rectangle menuRect = new Rectangle(btnX, menuY, btnW, btnH);
+                    Rectangle LsRect = new Rectangle(btnX, resY, btnW, btnH);
+                    if (resumeRect.contains(p)) {
+                        gameState = "RUNNING"; // tiếp tục
+                    } else if (menuRect.contains(p)) {
+                        parent.showMenu();
+                    } else if(LsRect.contains(p)) {
+                        restart();
+                    }
+                }
             }
         });
 
         addMouseMotionListener(new MouseMotionAdapter() {
             public void mouseMoved(MouseEvent e) {
                 Point p = e.getPoint();
-                int boxW = 300, boxH = 200;
+                int boxW = (int)(300 * GamePanel.scaleY), boxH = (int)(400 * GamePanel.scaleY);
                 int boxX = (WIDTH - boxW) / 2;
                 int boxY = (HEIGHT - boxH) / 2;
-                int btnW = 200, btnH = 50;
-                int resumeY = boxY + 50;
-                int menuY = resumeY + 70;
+                int btnW =(int)(180 * GamePanel.scaleY), btnH = (int)(50 * GamePanel.scaleY);
+                int resumeY = boxY + (int) (60 * GamePanel.scaleY);
+                int resY = resumeY + (int) (60 * GamePanel.scaleY);
+                int menuY = resY + (int) (60 * GamePanel.scaleY);
                 int btnX = boxX + (boxW - btnW) / 2;
+
                 Rectangle resumeRect = new Rectangle(btnX, resumeY, btnW, btnH);
                 Rectangle menuRect = new Rectangle(btnX, menuY, btnW, btnH);
-
+                Rectangle LsRect = new Rectangle(btnX, resY, btnW, btnH);
                 boolean oldHoverResume = hoverResume;
                 hoverResume = resumeRect.contains(p);
                 boolean oldHoverMenu = hoverMenu;
                 hoverMenu = menuRect.contains(p);
-                if (oldHoverResume != hoverResume || oldHoverMenu != hoverMenu) repaint();
+                boolean oldHoverLs = hoverLs;
+                hoverLs = LsRect.contains(p);
+                if (oldHoverResume != hoverResume || oldHoverMenu != hoverMenu
+                        || oldHoverLs != hoverLs) {
+                    repaint();
+                }
             }
         });
     }
 
+    private void showMenu(Graphics g) {
+        // lớp phủ mờ
+        g.setColor(new Color(0, 0, 0, 150));
+        g.fillRect(0, 0, WIDTH, HEIGHT);
+
+        // khung menu pause
+        int boxW = (int)(300 * GamePanel.scaleY), boxH = (int)(400 * GamePanel.scaleY);
+        int boxX = (WIDTH - boxW) / 2;
+        int boxY = (HEIGHT - boxH) / 2;
+        if (button[0] != null) {
+            g.drawImage(button[0], boxX, boxY, boxW, boxH, null);
+        } else {
+            g.setColor(new Color(255, 255, 255, 180));
+            g.fillRoundRect(boxX, boxY, boxW, boxH, 30, 30);
+        }
+
+        int btnW =(int)(180 * GamePanel.scaleY), btnH = (int)(50 * GamePanel.scaleY);
+        int resumeY = boxY + (int) (60 * GamePanel.scaleY);
+        int resY = resumeY + (int) (60 * GamePanel.scaleY);
+        int menuY = resY + (int) (60 * GamePanel.scaleY);
+        int btnX = boxX + (boxW - btnW) / 2;
+
+        // Vẽ 2 nút (ảnh hoặc chữ)
+        if (button[4] != null && hoverResume) {
+            g.drawImage(button[4], btnX, resumeY, btnW, btnH, null);
+
+        } else if (button[5] != null) {
+            g.drawImage(button[5], btnX, resumeY, btnW, btnH, null);
+        }
+        if (button[2] != null && hoverMenu) {
+            g.drawImage(button[2], btnX, menuY, btnW, btnH, null);
+        } else if (button[3] != null) {
+            g.drawImage(button[3], btnX, menuY, btnW, btnH, null);
+        }
+        if (button[6] != null && hoverLs) {
+            g.drawImage(button[6], btnX, resY, btnW, btnH, null);
+        } else if (button[7] != null) {
+            g.drawImage(button[7], btnX, resY, btnW, btnH, null);
+        }
+    }
+
     private void initGame() {
-        paddle = new Paddle((WIDTH / 2f - (60 * scaleX)), (HEIGHT - (60 * scaleY)), (int) (120 * scaleX), (int) (16 * scaleY));
-        ball = new Ball(WIDTH / 2f - (8 * scaleX), HEIGHT - 80 * scaleY, (int) (16 * scaleY), (int) (16 * scaleY));
+        System.out.println(WIDTH + " "  + HEIGHT);
+        paddle = new Paddle((WIDTH / 2f - (int)(60 * GamePanel.scaleY)), HEIGHT - (int)(60 * GamePanel.scaleY), (int)(120 * GamePanel.scaleY), (int)(16 * GamePanel.scaleY));
+        ball = new Ball(WIDTH / 2f - (int)(8 * GamePanel.scaleY), HEIGHT - (int)(80 * GamePanel.scaleY), (int)(16 * GamePanel.scaleY), (int)(16 * GamePanel.scaleY));
         bricks = new  ArrayList<>();
-        bricks = Level.buildLevel(currentLevel, WIDTH, HEIGHT, scaleX, scaleY);
+        bricks = Level.buildLevel(currentLevel, WIDTH, HEIGHT, GamePanel.scaleY, GamePanel.scaleY);
         powerUps = new ArrayList<>();
+
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        WIDTH = getWidth();
+        HEIGHT = getHeight();
         updateGame();
         repaint();
     }
@@ -431,7 +479,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
                 it.remove();
                 score += 100;
                 if (ball.isExplosive()) {
-                    float explosionRadius = 80f * scaleX; // bán kính nổ (tuỳ chỉnh)
+                    float explosionRadius = 80f; // bán kính nổ (tuỳ chỉnh)
                     ExplosiveBallPowerUp.explodeAt(bricks, brick.getX() + brick.getWidth()/2f, brick.getY() + brick.getHeight()/2f, explosionRadius);
                 }
                 if (rand.nextDouble() < 0.2) {
@@ -440,18 +488,17 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
                     if (type == 0) {
                         pu = new ExpandPaddlePowerUp(brick.getX() + brick.getWidth()/2f - 12,
                                 brick.getY() + brick.getHeight()/2f,
-                                24, 24, 8_000);
+                                (int)(24 * GamePanel.scaleY), (int)(24 * GamePanel.scaleY), 8_000);
                     } else if (type == 1) {
                         pu = new FastBallPowerUp(brick.getX() + brick.getWidth()/2f - 12,
                                 brick.getY() + brick.getHeight()/2f,
-                                24, 24, 6_000);
+                                (int)(24 * GamePanel.scaleY), (int)(24 * GamePanel.scaleY), 6_000);
                     } else if ( type == 2) {
                         pu = new BigBallPowerUp(brick.getX() + brick.getWidth()/2f - 12,
                                 brick.getY() + brick.getHeight()/2f,
-                                24, 24, 7_000);
+                                (int)(24 * GamePanel.scaleY), (int)(24 * GamePanel.scaleY), 7_000);
                     }
                     if (pu != null) {
-
                         powerUps.add(pu);
                     }
 
@@ -486,28 +533,6 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         }
     }
 
-    /**
-     * Kiểm tra nếu bóng bị stuck (vận tốc quá nhỏ hoặc góc quá ngang)
-     * Tự động fix bằng cách đẩy bóng đi lên
-     */
-    public void checkAndFixStuck() {
-        if (!Ball.launched) return;
-
-        float currentSpeed = (float) Math.hypot(ball.getDx(), ball.getDy());
-
-        // Nếu tốc độ quá chậm
-        if (currentSpeed < ball.getSpeed() * 0.5f) {
-            ball.launch(0, -1); // Đẩy bóng đi thẳng lên
-        }
-
-        // Nếu góc quá ngang (dy quá nhỏ so với dx)
-        if (Math.abs(ball.getDy()) < Math.abs(ball.getDx()) * 0.1f) {
-            float direction = ball.getDy() >= 0 ? 1 : -1;
-            ball.setDy(direction * Math.abs(ball.getDx()) * 0.3f);
-            normalizeVelocity();
-        }
-    }
-
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -522,9 +547,9 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
 
         // draw HUD
         g2.setColor(Color.WHITE);
-        g2.setFont(new Font("Arial", Font.PLAIN, (int) (18 * scaleY)));
-        g2.drawString("Score: " + score, (int)(12 * scaleX), (int) (22 * scaleY));
-        g2.drawString("Lives: " + lives, WIDTH - (int) (90 * scaleY), (int) (22 *  scaleY));
+        g2.setFont(new Font("Arial", Font.PLAIN, (int) (18 * GamePanel.scaleY)));
+        g2.drawString("Score: " + score, (int)(12 * GamePanel.scaleY), (int) (22 * GamePanel.scaleY));
+        g2.drawString("Lives: " + lives, (int)(12* GamePanel.scaleY), (int) (44* GamePanel.scaleY));
 
         // draw paddles, ball, bricks, powerups
         paddle.render(g2);
@@ -543,41 +568,19 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         } else if (gameState.equals("WIN")) {
             drawCenteredString(g2, "YOU WIN! PRESS R TO RESTART", WIDTH, HEIGHT);
         } else if (gameState.equals("PAUSED")) {
-            // lớp phủ mờ
-            g2.setColor(new Color(0, 0, 0, 150));
-            g2.fillRect(0, 0, WIDTH, HEIGHT);
-
-            // khung menu pause
-            int boxW = 300, boxH = 200;
-            int boxX = (WIDTH - boxW) / 2;
-            int boxY = (HEIGHT - boxH) / 2;
-            if (menubackgroundImage != null) {
-                g2.drawImage(menubackgroundImage, boxX, boxY, boxW, boxH, null);
-            } else {
-                g2.setColor(new Color(255, 255, 255, 180));
-                g2.fillRoundRect(boxX, boxY, boxW, boxH, 30, 30);
-            }
-
-            int btnW = 200, btnH = 50;
-            int resumeY = boxY + 40;
-            int menuY = resumeY + 70;
-            int btnX = boxX + (boxW - btnW) / 2;
-
-            // Vẽ 2 nút (ảnh hoặc chữ)
-            if (resumeImageTop != null && hoverResume) {
-                g2.drawImage(resumeImageTop, btnX, resumeY, btnW, btnH, null);
-
-            } else if (resumeImageBot != null) {
-                g2.drawImage(resumeImageBot, btnX, resumeY, btnW, btnH, null);
-            }
-            if (menuImageTop != null && hoverMenu) {
-                g2.drawImage(menuImageTop, btnX, menuY, btnW, btnH, null);
-            } else if (menuImageBot != null) {
-                g2.drawImage(menuImageBot, btnX, menuY, btnW, btnH, null);
-            }
+            showMenu(g2);
+        } else if (gameState.equals("RUNNING")) {
+            buttonMenu(g2);
         }
+    }
 
-        g2.dispose();
+    private void buttonMenu (Graphics g) {
+        int butW = (int)(30 * GamePanel.scaleY), butH = (int)(30 * GamePanel.scaleY);
+        int butX = WIDTH - (int)(50 * GamePanel.scaleY);
+        int butY = (int)(20 *  GamePanel.scaleY);
+        if (button[1] != null) {
+            g.drawImage(button[1], butX, butY, butW, butH, null);
+        }
     }
 
     private void drawCenteredString(Graphics2D g2, String text, int w, int h) {
@@ -618,10 +621,6 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
             if (gameState.equals("GAMEOVER") || gameState.equals("WIN")) {
                 restart();
             }
-        }
-        if (kc == KeyEvent.VK_F11) {
-            Main.onFullscreen();
-            initGame();
         }
     }
     @Override

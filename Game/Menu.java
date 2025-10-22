@@ -55,11 +55,11 @@ public class Menu extends JPanel {
                 Point p = e.getPoint();
                 int w = getWidth();
                 int h = getHeight();
-                int btnW = 140, btnH = 80;
+                int btnW = 90, btnH = 90;
                 int centerX = w/2 - btnW/2;
                 int startY = h/2 - 40;
-                int chooseY = startY + 100;
-                int exitY = chooseY + 100;
+                int chooseY = startY + 105;
+                int exitY = chooseY + 105;
 
                 Rectangle startRectLocal = new Rectangle(centerX, startY, btnW, btnH);
                 Rectangle chooseRectLocal = new Rectangle(centerX, chooseY, btnW, btnH);
@@ -87,11 +87,11 @@ public class Menu extends JPanel {
                 Point p = e.getPoint();
                 int w = getWidth();
                 int h = getHeight();
-                int btnW = 140, btnH = 80;
+                int btnW = 90, btnH = 90;
                 int centerX = w/2 - btnW/2;
                 int startY = h/2 - 40;
-                int chooseY = startY + 100;
-                int exitY = chooseY + 100;
+                int chooseY = startY + 105;
+                int exitY = chooseY + 105;
 
                 Rectangle startRectLocal = new Rectangle(centerX, startY, btnW, btnH);
                 Rectangle chooseRectLocal = new Rectangle(centerX, chooseY, btnW, btnH);
@@ -133,12 +133,12 @@ public class Menu extends JPanel {
         }
 
         // Kích thước nút
-        int btnW = 140;
-        int btnH = 80;
+        int btnW = 90;
+        int btnH = 90;
         int centerX = w / 2 - btnW / 2;
         int startY = h / 2 - 40;
-        int chooseY = startY + 100;
-        int exitY = chooseY + 100;
+        int chooseY = startY + 105;
+        int exitY = chooseY + 105;
 
         // Cập nhật vùng click
         startRect.setBounds(centerX, startY, btnW, btnH);

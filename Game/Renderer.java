@@ -73,23 +73,22 @@ public class Renderer {
         return background_level[currentLevel - 1];
     }
 
-    public static BufferedImage loadMenuTexture() {
-        return loadTexture(("/assets/menu.png"));
+    public static BufferedImage[] loadbuttonTexture() {
+        BufferedImage[] button = new BufferedImage[8];
+        button[0] = loadTexture(("/assets/menu.png"));
+        button[1] = loadTexture(("/assets/pause_button.png"));
+        button[2] = loadTexture(("/assets/menu_button.png"));
+        button[3] = loadTexture(("/assets/menu_button_bot.png"));
+        button[4] = loadTexture(("/assets/resume_button.png"));
+        button[5] = loadTexture(("/assets/resume_button_bot.png"));
+        button[6] = loadTexture(("/assets/restart_button.png"));
+        button[7] = loadTexture(("/assets/restart_button_bot.png"));
+        return button;
     }
-    public static BufferedImage loadResumeButton() {
-        return loadTexture(("/assets/resume_button.png"));
-    }
-    public static BufferedImage loadResumeButtonBot() {
-        return loadTexture(("/assets/resume_button_bot.png"));
-    }
-    public  static BufferedImage loadMenuButton() {
-        return loadTexture(("/assets/menu_button.png"));
-    }
-    public static BufferedImage loadMenuButtonBot() {
-        return loadTexture(("/assets/menu_button_bot.png"));
-    }
+
     public static BufferedImage loadPaddleTexture() {
         return loadTexture("/assets/paddle_1.png");
     }
+
     
 }

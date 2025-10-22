@@ -2,6 +2,8 @@ package Game;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 
 /**
  * Quản lý giao diện chính của trò chơi, điều hướng giữa menu, level và game.
@@ -11,14 +13,19 @@ public class GamePanel extends JPanel {
     private Menu menu;
     private GameManager game;
     private LevelPanel levelPanel;
+
     private int WIDTH;
     private int HEIGHT;
+
+    public static float scaleX = 1f;
+    public static float scaleY = 1f;
 
     /**
      * Khởi tạo GamePanel với kích thước xác định và các màn hình con.
      * @param width chiều rộng khung game.
      * @param height chiều cao khung game.
      */
+
     public GamePanel(int width, int height) {
         this.WIDTH = width;
         this.HEIGHT = height;
@@ -32,10 +39,21 @@ public class GamePanel extends JPanel {
         game = new GameManager(this, WIDTH, HEIGHT);
         levelPanel = new LevelPanel(this);
 
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                WIDTH = getWidth();
+                HEIGHT = getHeight();
+                setPanelSize(WIDTH, HEIGHT);
+                scaleX = (float) WIDTH / 800f;
+                scaleY = (float) HEIGHT / 600f;
+                System.out.println(scaleX + " " + scaleY);
+            }
+        });
+
         add(menu, "Menu");
         add(game, "Game");
         add(levelPanel, "LevelPanel");
-
         showMenu();
     }
 

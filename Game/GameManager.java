@@ -485,21 +485,21 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
                 it.remove();
                 score += 100;
 
-                if (rand.nextDouble() < 0.99) {
-                    int type = 3;//rand.nextInt(4);
+                if (rand.nextDouble() < 0.2) {
+                    int type = rand.nextInt(4);
                     PowerUp pu = null  ;
                     if (type == 0) {
                         pu = new ExpandPaddlePowerUp(brick.getX() + brick.getWidth()/2f - 12,
                                 brick.getY() + brick.getHeight()/2f,
-                                (int)(24 * GamePanel.scaleY), (int)(24 * GamePanel.scaleY), 6000);
+                                (int)(24 * GamePanel.scaleY), (int)(24 * GamePanel.scaleY), 5000);
                     } else if (type == 1) {
                         pu = new FastBallPowerUp(brick.getX() + brick.getWidth()/2f - 12,
                                 brick.getY() + brick.getHeight()/2f,
-                                (int)(24 * GamePanel.scaleY), (int)(24 * GamePanel.scaleY), 6000);
+                                (int)(24 * GamePanel.scaleY), (int)(24 * GamePanel.scaleY), 5000);
                     } else if ( type == 2) {
                         pu = new BigBallPowerUp(brick.getX() + brick.getWidth()/2f - 12,
                                 brick.getY() + brick.getHeight()/2f,
-                                (int)(24 * GamePanel.scaleY), (int)(24 * GamePanel.scaleY), 6000);
+                                (int)(24 * GamePanel.scaleY), (int)(24 * GamePanel.scaleY), 5000);
                     } else if (type == 3) {
                         pu = new ExplosiveBallPowerUp(brick.getX() + brick.getWidth()/2f - 12,
                                 brick.getY() + brick.getHeight()/2f,

@@ -48,11 +48,6 @@ public class BigBallPowerUp extends PowerUp {
     }
 
 
-
-
-
-
-
     @Override
     public void render(java.awt.Graphics2D g2) {
         g2.setColor(new Color(220, 120, 40));

@@ -438,21 +438,18 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
             if (brick.isDestroyed()) {
                 it.remove();
                 score += 100;
-                if (ball.isExplosive()) {
-                    float explosionRadius = 80f * scaleX; // bán kính nổ (tuỳ chỉnh)
-                    ExplosiveBallPowerUp.explodeAt(bricks, brick.getX() + brick.getWidth()/2f, brick.getY() + brick.getHeight()/2f, explosionRadius);
-                }
-                if (rand.nextDouble() < 0.2) {
-                    int type = rand.nextInt(3); // 0,1,2
+
+                if (rand.nextDouble() < 0.99) {
+                    int type = 3;//rand.nextInt(4);
                     PowerUp pu = null  ;
                     if (type == 0) {
                         pu = new ExpandPaddlePowerUp(brick.getX() + brick.getWidth()/2f - 12,
                                 brick.getY() + brick.getHeight()/2f,
-                                24, 24, 8_000);
+                                24, 24, 7_000);
                     } else if (type == 1) {
                         pu = new FastBallPowerUp(brick.getX() + brick.getWidth()/2f - 12,
                                 brick.getY() + brick.getHeight()/2f,
-                                24, 24, 6_000);
+                                24, 24, 7_000);
                     } else if (type == 2) {
                         pu = new BigBallPowerUp(brick.getX() + brick.getWidth()/2f - 12,
                                 brick.getY() + brick.getHeight()/2f,
@@ -460,7 +457,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
                     } else if (type == 3) {
                         pu = new ExplosiveBallPowerUp(brick.getX() + brick.getWidth()/2f - 12,
                                 brick.getY() + brick.getHeight()/2f,
-                                24, 24, 6_000);
+                                24, 24, 2_000);
                     }
                     if (pu != null) {
 

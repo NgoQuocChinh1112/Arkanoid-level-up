@@ -12,16 +12,20 @@ public class FastBallPowerUp extends PowerUp {
 
     public FastBallPowerUp(float x, float y, int width, int height, long durationMs) {
         super(x, y, width, height, durationMs, "FAST_BALL");
+        loadSound("assets/FastBall.wav");
     }
 
     @Override
     public void applyEffect(Paddle paddle, Ball ball, Object gameManager) {
         if (ball.isFast()) return;
 
+        playSound("assets/FastBall.wav");
+
         float factor = 1.6f;
         ball.setFast(true);
         ball.setDx(ball.getDx() * factor);
         ball.setDy(ball.getDy() * factor);
+
 
         timer = new Timer((int) durationMs, e -> {
             ball.setFast(false);

@@ -470,6 +470,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
 
             // Xử lý brick
             brick.takeHit();
+
             if (ball.isEnlarged() && !brick.isDestroyed()) {
                 brick.takeHit();
             }
@@ -485,7 +486,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
                 score += 100;
 
                 if (rand.nextDouble() < 0.99) {
-                    int type = 3;//rand.nextInt(4); // 0,1,2
+                    int type = 1;//rand.nextInt(4); // 0,1,2
                     PowerUp pu = null  ;
                     if (type == 0) {
                         pu = new ExpandPaddlePowerUp(brick.getX() + brick.getWidth()/2f - 12,
@@ -533,6 +534,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
      * Fix bug: tốc độ bóng tăng/giảm sau nhiều lần va chạm
      */
     private void normalizeVelocity() {
+        if (ball.isFast()) return; // ko reset tốc độ khi tăng tốc
         float currentMagnitude = (float) Math.hypot(ball.getDx(), ball.getDy());
         if (currentMagnitude > EPSILON && Math.abs(currentMagnitude - ball.getSpeed()) > EPSILON) {
             ball.setDx((ball.getDx() / currentMagnitude) * ball.getSpeed());

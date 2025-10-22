@@ -5,6 +5,7 @@ import Objects.GameObject;
 import Objects.Paddle;
 
 import java.awt.*;
+import javax.swing.Timer;
 
 public abstract class PowerUp extends GameObject {
     protected long durationMs;

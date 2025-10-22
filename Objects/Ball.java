@@ -125,6 +125,18 @@ public class Ball extends MovableObject {
         return y + radius;
     }
 
+
+
+    private boolean fast = false;
+
+    public boolean isFast() {
+        return fast;
+    }
+
+    public void setFast(boolean isFast) {
+        this.fast = isFast;
+    }
+
     private boolean enlarged = false;
 
     public boolean isEnlarged() {

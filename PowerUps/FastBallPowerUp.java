@@ -4,6 +4,7 @@ import Objects.Ball;
 import Objects.Paddle;
 
 import java.awt.*;
+import javax.swing.Timer;
 
 public class FastBallPowerUp extends PowerUp {
     public FastBallPowerUp(float x, float y, int width, int height, long durationMs) {
@@ -12,20 +13,30 @@ public class FastBallPowerUp extends PowerUp {
 
     @Override
     public void applyEffect(Paddle paddle, Ball ball, Object gameManager) {
-        // increase ball speed for duration
+        if (ball.isFast()) return;
+
+        // Lưu tốc độ ban đầu
         float oldDx = ball.getDx();
         float oldDy = ball.getDy();
         float factor = 1.6f;
+
+        // Đánh dấu trạng thái
+        ball.setFast(true);
+
+        // Tăng tốc độ
         ball.setDx(ball.getDx() * factor);
         ball.setDy(ball.getDy() * factor);
-        new Thread(() -> {
-            try {
-                Thread.sleep(durationMs);
-            } catch (InterruptedException ignored) {}
-            // reduce back if still in motion (approx)
+
+        // Tạo timer để khôi phục sau durationMs mili-giây
+        Timer timer = new Timer((int) durationMs, e -> {
+            // Chỉ khôi phục nếu bóng vẫn tồn tại
             ball.setDx(oldDx);
             ball.setDy(oldDy);
-        }).start();
+            ball.setFast(false);
+        });
+
+        timer.setRepeats(false);
+        timer.start();
     }
 
     @Override

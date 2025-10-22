@@ -67,15 +67,13 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         if (backgroundImage != null) {
             backgroundImage = resizeImage(backgroundImage, width, height);
         }
-        repaint();
         revalidate(); // cập nhật layout nếu cần
     }
 
     public GameManager(GamePanel parent, int width, int height) {
         this.parent = parent;
-        this.WIDTH = (int)((float)width);
-        this.HEIGHT = (int)((float)height);
-
+        this.WIDTH = width;
+        this.HEIGHT = height;
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
         setFocusable(true);
         requestFocus();
@@ -213,8 +211,6 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        WIDTH = getWidth();
-        HEIGHT = getHeight();
         updateGame();
         repaint();
     }
@@ -479,7 +475,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
                 it.remove();
                 score += 100;
                 if (ball.isExplosive()) {
-                    float explosionRadius = 80f; // bán kính nổ (tuỳ chỉnh)
+                    float explosionRadius = 80f * GamePanel.scaleY; // bán kính nổ (tuỳ chỉnh)
                     ExplosiveBallPowerUp.explodeAt(bricks, brick.getX() + brick.getWidth()/2f, brick.getY() + brick.getHeight()/2f, explosionRadius);
                 }
                 if (rand.nextDouble() < 0.2) {
@@ -497,8 +493,13 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
                         pu = new BigBallPowerUp(brick.getX() + brick.getWidth()/2f - 12,
                                 brick.getY() + brick.getHeight()/2f,
                                 (int)(24 * GamePanel.scaleY), (int)(24 * GamePanel.scaleY), 7_000);
+                    } else if (type == 3) {
+                        pu = new ExplosiveBallPowerUp(brick.getX() + brick.getWidth()/2f - 12,
+                                brick.getY() + brick.getHeight()/2f,
+                                24, 24, 6_000);
                     }
                     if (pu != null) {
+
                         powerUps.add(pu);
                     }
 

@@ -44,12 +44,13 @@ public class Renderer {
     }
 
     public static BufferedImage[] loadBrickTexture() {
-        BufferedImage[] textures = new  BufferedImage[5];
-        textures[0] = loadTexture("/assets/brick_white.png");   // level 1
-        textures[1] = loadTexture("/assets/brick_blue.png");    // level 2
-        textures[2] = loadTexture("/assets/brick_green.png");   // level 3
-        textures[3] = loadTexture("/assets/brick_yellow.png");  // level 4
-        textures[4] = loadTexture("/assets/brick_red.png");     // level 5
+        BufferedImage[] textures = new  BufferedImage[6];
+        textures[0] = loadTexture("/assets/brick_white.png");           // level 1
+        textures[1] = loadTexture("/assets/brick_blue.png");            // level 2
+        textures[2] = loadTexture("/assets/brick_green.png");           // level 3
+        textures[3] = loadTexture("/assets/brick_yellow.png");          // level 4
+        textures[4] = loadTexture("/assets/brick_red.png");             // level 5
+        textures[5] = loadTexture("/assets/unbreakable_brick.png");     // level 6
         return textures;
     }
 

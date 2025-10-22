@@ -15,7 +15,7 @@ public class BigBallPowerUp extends PowerUp {
 
         int oldWidth = ball.getWidth();
         int oldHeight = ball.getHeight();
-        int factor = 3;
+        int factor = 2;
 
         // Lấy tâm thật của bóng
         float oldCenterX = ball.getX() + ball.getWidth() / 2f;

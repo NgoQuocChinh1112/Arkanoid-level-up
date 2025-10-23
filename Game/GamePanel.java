@@ -47,7 +47,6 @@ public class GamePanel extends JPanel {
                 setPanelSize(WIDTH, HEIGHT);
                 scaleX = (float) WIDTH / 800f;
                 scaleY = (float) HEIGHT / 600f;
-                System.out.println(scaleX + " " + scaleY);
             }
         });
 

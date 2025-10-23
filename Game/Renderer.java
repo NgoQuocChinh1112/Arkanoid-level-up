@@ -75,7 +75,7 @@ public class Renderer {
     }
 
     public static BufferedImage[] loadbuttonTexture() {
-        BufferedImage[] button = new BufferedImage[8];
+        BufferedImage[] button = new BufferedImage[12];
         button[0] = loadTexture(("/assets/menu.png"));
         button[1] = loadTexture(("/assets/pause_button.png"));
         button[2] = loadTexture(("/assets/menu_button.png"));
@@ -84,6 +84,10 @@ public class Renderer {
         button[5] = loadTexture(("/assets/resume_button_bot.png"));
         button[6] = loadTexture(("/assets/restart_button.png"));
         button[7] = loadTexture(("/assets/restart_button_bot.png"));
+        button[8] = loadTexture(("/assets/setting_button.png"));
+        button[9] = loadTexture(("/assets/setting_button_bot.png"));
+        button[10] = loadTexture(("/assets/level_button.png"));
+        button[11] = loadTexture(("/assets/level_button_bot.png"));
         return button;
     }
 

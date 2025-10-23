@@ -5,7 +5,6 @@ import java.awt.*;
 
 public class Main {
     private static JFrame frame;
-    private static GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
     private static int width = 800;
     private static int height = 600;
     private static GamePanel gamePanel;

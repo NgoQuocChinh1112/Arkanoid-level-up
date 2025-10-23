@@ -1,8 +1,6 @@
 package Game;
 
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.security.PublicKey;
@@ -11,7 +9,6 @@ import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import java.awt.event.*;
-import java.awt.Point;
 
 
 public class LevelPanel extends JPanel {
@@ -21,20 +18,19 @@ public class LevelPanel extends JPanel {
     private BufferedImage title_choose_level;
     private BufferedImage back_bot;
     private BufferedImage back_top;
+    private static int WIDTH_BUTTON_LEVEL = (int)(100 * GamePanel.scaleY);
+    private static int HEIGHT_BUTTON_LEVEL = (int)(100 * GamePanel.scaleY);
+    private static int WIDTH_BUTTON_BACK = (int)(60 * GamePanel.scaleY);
+    private static int HEIGHT_BUTTON_BACK = (int)(60 * GamePanel.scaleY);
+    private static int WIDTH_TITLE = (int)(400 *  GamePanel.scaleY);
+    private static int HEIGHT_TITLE = (int)(100 *  GamePanel.scaleY);
 
-    private static int WIDTH_BUTTON_LEVEL = 100;
-    private static int HEIGHT_BUTTON_LEVEL = 100;
-    private static int WIDTH_BUTTON_BACK = 60;
-    private static int HEIGHT_BUTTON_BACK = 60;
-    private static int WIDTH_TITLE = 400;
-    private static int HEIGHT_TITLE = 100;
-
-    private static int X_BUTTON_LEVEL_1 = 50;
-    private static int Y_BUTTON_LEVEL_1 = 200;
-    private static int X_BUTTON_BACK = 700;
-    private static int Y_BUTTON_BACK = 30;
-    private static int X_TITLE = 200;
-    private static int Y_TITLE = 8;
+    private static int X_BUTTON_LEVEL_1 = (int)(50 * GamePanel.scaleX);
+    private static int Y_BUTTON_LEVEL_1 = (int)(200 * GamePanel.scaleY);
+    private static int X_BUTTON_BACK = (int)(700 * GamePanel.scaleX);
+    private static int Y_BUTTON_BACK = (int)(30 *  GamePanel.scaleY);
+    private static int X_TITLE = (int)(200 *  GamePanel.scaleX);
+    private static int Y_TITLE = (int)(8 *  GamePanel.scaleY);
 
     private Rectangle[] levelsRect;
     private Rectangle back;
@@ -49,7 +45,6 @@ public class LevelPanel extends JPanel {
         this.parent = parent;
         setLayout(null);
         image_level = new BufferedImage[10];
-
         //nap anh
         try {
             levelsBackGround = ImageIO.read(getClass().getResource("/assets/BGLevel.png"));
@@ -80,13 +75,14 @@ public class LevelPanel extends JPanel {
             @Override
             public void mouseClicked(MouseEvent e) {
                 Point p = e.getPoint();
-                int btnW = WIDTH_BUTTON_LEVEL;
-                int btnH = HEIGHT_BUTTON_LEVEL;
-                int centerX = X_BUTTON_LEVEL_1;
-                int startY = Y_BUTTON_LEVEL_1;
+                int btnW = (int)(100 * GamePanel.scaleY);
+                int btnH = (int)(100 * GamePanel.scaleY);
+                int centerX = (int)(50 * GamePanel.scaleX);
+                int startY = (int)(200 * GamePanel.scaleY);
 
                 Rectangle[] levelsRectLocal = new Rectangle[10];
-                Rectangle backLocal = new Rectangle(X_BUTTON_BACK, Y_BUTTON_BACK, WIDTH_BUTTON_BACK, HEIGHT_BUTTON_BACK);
+                Rectangle backLocal = new Rectangle((int)(700 * GamePanel.scaleX), (int)(30 *  GamePanel.scaleY),
+                        (int)(60 * GamePanel.scaleY), (int)(60 * GamePanel.scaleY));
 
                 for (int i = 0; i < 5; i++) {
                     levelsRectLocal[i] = new Rectangle(centerX + i * btnW * 3/2, startY, btnW, btnH);
@@ -121,7 +117,8 @@ public class LevelPanel extends JPanel {
             @Override
             public void mouseMoved(MouseEvent e) {
                 Point p = e.getPoint();
-                Rectangle backLocal = new Rectangle(X_BUTTON_BACK, Y_BUTTON_BACK, WIDTH_BUTTON_BACK, HEIGHT_BUTTON_BACK);
+                Rectangle backLocal = new Rectangle((int)(700 * GamePanel.scaleX), (int)(30 *  GamePanel.scaleY),
+                        (int)(60 * GamePanel.scaleY), (int)(60 * GamePanel.scaleY));
 
                 boolean oldHoverBack = hoverBack;
                 hoverBack = backLocal.contains(p);
@@ -136,20 +133,22 @@ public class LevelPanel extends JPanel {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
 
-        int btnW = WIDTH_BUTTON_LEVEL;
-        int btnH = HEIGHT_BUTTON_LEVEL;
-        int centerX = X_BUTTON_LEVEL_1;
-        int startY = Y_BUTTON_LEVEL_1;
+        int btnW = (int)(100 * GamePanel.scaleY);
+        int btnH = (int)(100 * GamePanel.scaleY);
+        int centerX = (int)(50 * GamePanel.scaleX);
+        int startY = (int)(200 * GamePanel.scaleY);
 
         if (levelsBackGround != null) {
             g2.drawImage(levelsBackGround, 0, 0, getWidth(), getHeight(), null);
         }
 
         if (title_choose_level != null) {
-            g2.drawImage(title_choose_level, X_TITLE, Y_TITLE, WIDTH_TITLE, HEIGHT_TITLE, null);
+            g2.drawImage(title_choose_level, (int)(200 *  GamePanel.scaleY), (int)(8 *  GamePanel.scaleY),
+                    (int)(400 *  GamePanel.scaleY), (int)(100 *  GamePanel.scaleY), null);
         }
 
-        back.setBounds(X_BUTTON_BACK, Y_BUTTON_BACK, WIDTH_BUTTON_BACK, HEIGHT_BUTTON_BACK);
+        back.setBounds((int)(700 * GamePanel.scaleX), (int)(30 *  GamePanel.scaleY),
+                (int)(60 * GamePanel.scaleY), (int)(60 * GamePanel.scaleY));
 
         for (int i = 0; i < 10; ++i) {
             levelsRect[i] = new Rectangle();
@@ -164,9 +163,11 @@ public class LevelPanel extends JPanel {
         }
 
         if (hoverBack && back_top != null) {
-            g2.drawImage(back_top, X_BUTTON_BACK, Y_BUTTON_BACK, WIDTH_BUTTON_BACK, HEIGHT_BUTTON_BACK, null);
+            g2.drawImage(back_top, (int)(700 * GamePanel.scaleX), (int)(30 *  GamePanel.scaleY),
+                    (int)(60 * GamePanel.scaleY), (int)(60 * GamePanel.scaleY), null);
         } else if (back_bot != null) {
-            g2.drawImage(back_bot, X_BUTTON_BACK, Y_BUTTON_BACK, WIDTH_BUTTON_BACK, HEIGHT_BUTTON_BACK, null);
+            g2.drawImage(back_bot, (int)(700 * GamePanel.scaleX), (int)(30 *  GamePanel.scaleY),
+                    (int)(60 * GamePanel.scaleY), (int)(60 * GamePanel.scaleY), null);
         }
 
         if (image_level != null) {

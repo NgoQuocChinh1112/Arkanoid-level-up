@@ -15,6 +15,7 @@ public class ExpandPaddlePowerUp extends PowerUp {
 
     public ExpandPaddlePowerUp(float x, float y, int width, int height, long durationMs) {
         super(x, y, width, height, durationMs, "EXPAND_PADDLE");
+        loadSound("assets/ExpandPaddle.wav");
     }
 
     public void applyEffect(Paddle paddle, Ball ball, Object gameManager) {
@@ -30,6 +31,9 @@ public class ExpandPaddlePowerUp extends PowerUp {
         }
 
         int expandedWidth = Math.min(300, originalWidth + 80);
+
+        playSound("assets/ExpandPaddle.wav");
+
         paddle.setWidth(expandedWidth);
 
         if (currentTask != null) {

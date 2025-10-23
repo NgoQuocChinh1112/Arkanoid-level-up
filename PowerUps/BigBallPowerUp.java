@@ -4,14 +4,18 @@ import Objects.Ball;
 import Objects.Paddle;
 
 import java.awt.*;
+import javax.swing.Timer;
 
 public class BigBallPowerUp extends PowerUp {
     public BigBallPowerUp(float x, float y, int width, int height, long durationMs) {
         super(x, y, width, height, durationMs, "BIG_BALL");
+        loadSound("assets/BigBall.wav");
     }
 
     public void applyEffect(Paddle paddle, Ball ball, Object gameManager) {
         if (ball.isEnlarged()) return;
+
+        playSound("assets/BigBall.wav");
 
         int oldWidth = ball.getWidth();
         int oldHeight = ball.getHeight();
@@ -29,7 +33,7 @@ public class BigBallPowerUp extends PowerUp {
         ball.setX(oldCenterX - ball.getWidth() / 2f);
         ball.setY(oldCenterY - ball.getHeight() / 2f);
 
-        javax.swing.Timer timer = new javax.swing.Timer((int) durationMs, e -> {
+        Timer timer = new javax.swing.Timer((int) durationMs, e -> {
             // Tính tâm hiện tại trước khi thu nhỏ
             float currentCenterX = ball.getX() + ball.getWidth() / 2f;
             float currentCenterY = ball.getY() + ball.getHeight() / 2f;
@@ -41,16 +45,13 @@ public class BigBallPowerUp extends PowerUp {
             ball.setX(currentCenterX - ball.getWidth() / 2f);
             ball.setY(currentCenterY - ball.getHeight() / 2f);
             ball.setEnlarged(false);
+
+
         });
 
         timer.setRepeats(false);
         timer.start();
     }
-
-
-
-
-
 
 
     @Override

@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Random;
 
 
+
 public class GameManager extends JPanel implements KeyListener, ActionListener {
     private final GamePanel parent;
 
@@ -22,6 +23,8 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
 
     private Timer gameTimer;
     private int currentLevel = 1;
+
+    private float scaleX;
 
     private Paddle paddle;
     private Ball ball;
@@ -496,36 +499,41 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
 
             // Xử lý brick
             brick.takeHit();
+
             if (ball.isEnlarged() && !brick.isDestroyed()) {
                 brick.takeHit();
-                brick.takeHit();
+            }
+            if (ball.isExplosive()) {
+                float explosionRadius = 80f * scaleX;
+                ExplosiveBallPowerUp.explodeAt(bricks,
+                        ball.getX() + ball.getWidth()/2f,
+                        ball.getY() + ball.getHeight()/2f,
+                        explosionRadius);
             }
             if (brick.isDestroyed()) {
                 it.remove();
                 score += 100;
-                if (ball.isExplosive()) {
-                    float explosionRadius = 80f * GamePanel.scaleY; // bán kính nổ (tuỳ chỉnh)
-                    ExplosiveBallPowerUp.explodeAt(bricks, brick.getX() + brick.getWidth()/2f, brick.getY() + brick.getHeight()/2f, explosionRadius);
-                }
+
                 if (rand.nextDouble() < 0.2) {
-                    int type = rand.nextInt(3); // 0,1,2
+                    int type = rand.nextInt(4);
                     PowerUp pu = null  ;
                     if (type == 0) {
                         pu = new ExpandPaddlePowerUp(brick.getX() + brick.getWidth()/2f - 12,
                                 brick.getY() + brick.getHeight()/2f,
-                                (int)(24 * GamePanel.scaleY), (int)(24 * GamePanel.scaleY), 8_000);
+                                (int)(24 * GamePanel.scaleY), (int)(24 * GamePanel.scaleY), 5000);
                     } else if (type == 1) {
                         pu = new FastBallPowerUp(brick.getX() + brick.getWidth()/2f - 12,
                                 brick.getY() + brick.getHeight()/2f,
-                                (int)(24 * GamePanel.scaleY), (int)(24 * GamePanel.scaleY), 6_000);
+                                (int)(24 * GamePanel.scaleY), (int)(24 * GamePanel.scaleY), 5000);
                     } else if ( type == 2) {
                         pu = new BigBallPowerUp(brick.getX() + brick.getWidth()/2f - 12,
                                 brick.getY() + brick.getHeight()/2f,
-                                (int)(24 * GamePanel.scaleY), (int)(24 * GamePanel.scaleY), 7_000);
+                                (int)(24 * GamePanel.scaleY), (int)(24 * GamePanel.scaleY), 5000);
                     } else if (type == 3) {
                         pu = new ExplosiveBallPowerUp(brick.getX() + brick.getWidth()/2f - 12,
                                 brick.getY() + brick.getHeight()/2f,
-                                24, 24, 6_000);
+                                (int)(24 * GamePanel.scaleY), (int)(24 * GamePanel.scaleY), 2000);
+
                     }
                     if (pu != null) {
 
@@ -556,6 +564,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
      * Fix bug: tốc độ bóng tăng/giảm sau nhiều lần va chạm
      */
     private void normalizeVelocity() {
+        if (ball.isFast()) return; // ko reset tốc độ khi tăng tốc
         float currentMagnitude = (float) Math.hypot(ball.getDx(), ball.getDy());
         if (currentMagnitude > EPSILON && Math.abs(currentMagnitude - ball.getSpeed()) > EPSILON) {
             ball.setDx((ball.getDx() / currentMagnitude) * ball.getSpeed());

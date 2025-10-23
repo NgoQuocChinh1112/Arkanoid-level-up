@@ -22,9 +22,9 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
     private int HEIGHT;
 
     private Timer gameTimer;
+    private final int FPS = 60;
     private int currentLevel = 1;
 
-    private float scaleX;
 
     private Paddle paddle;
     private Ball ball;
@@ -33,7 +33,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
 
     private int score = 0;
     private int lives = 3;
-    private String gameState = "MENU"; // MENU, RUNNING, LOSED, WIN, PAUSED
+    private String gameState = "MENU"; // MENU, RUNNING, GAMEOVER, WIN, PAUSED
 
     private boolean leftPressed = false;
     private boolean rightPressed = false;
@@ -238,7 +238,6 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         bricks = new  ArrayList<>();
         bricks = Level.buildLevel(currentLevel, WIDTH, HEIGHT, GamePanel.scaleX, GamePanel.scaleY);
         powerUps = new ArrayList<>();
-
     }
 
     @Override
@@ -499,17 +498,18 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
 
             // Xử lý brick
             brick.takeHit();
-
             if (ball.isEnlarged() && !brick.isDestroyed()) {
                 brick.takeHit();
             }
+
             if (ball.isExplosive()) {
-                float explosionRadius = 80f * scaleX;
+                float explosionRadius = 80f * GamePanel.scaleX;
                 ExplosiveBallPowerUp.explodeAt(bricks,
                         ball.getX() + ball.getWidth()/2f,
                         ball.getY() + ball.getHeight()/2f,
                         explosionRadius);
             }
+
             if (brick.isDestroyed()) {
                 it.remove();
                 score += 100;
@@ -525,7 +525,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
                         pu = new FastBallPowerUp(brick.getX() + brick.getWidth()/2f - 12,
                                 brick.getY() + brick.getHeight()/2f,
                                 (int)(24 * GamePanel.scaleY), (int)(24 * GamePanel.scaleY), 5000);
-                    } else if ( type == 2) {
+                    } else if (type == 2) {
                         pu = new BigBallPowerUp(brick.getX() + brick.getWidth()/2f - 12,
                                 brick.getY() + brick.getHeight()/2f,
                                 (int)(24 * GamePanel.scaleY), (int)(24 * GamePanel.scaleY), 5000);
@@ -533,7 +533,6 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
                         pu = new ExplosiveBallPowerUp(brick.getX() + brick.getWidth()/2f - 12,
                                 brick.getY() + brick.getHeight()/2f,
                                 (int)(24 * GamePanel.scaleY), (int)(24 * GamePanel.scaleY), 2000);
-
                     }
                     if (pu != null) {
 
@@ -654,7 +653,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
             }
         }
         if (kc == KeyEvent.VK_R) {
-            if (gameState.equals("LOSED") || gameState.equals("WIN")) {
+            if (gameState.equals("GAMEOVER") || gameState.equals("WIN")) {
                 restart();
             }
         }
@@ -666,6 +665,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         if (kc == KeyEvent.VK_RIGHT) rightPressed = false;
     }
 
+    public void increaseScore(int v) { score += v; }
     public void restart() {
         score = 0;
         lives = 3;

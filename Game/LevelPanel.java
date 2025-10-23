@@ -14,7 +14,7 @@ import java.awt.event.*;
 public class LevelPanel extends JPanel {
     private final GamePanel parent;
     private BufferedImage levelsBackGround;
-    private BufferedImage[] image_level;
+    private final BufferedImage[] image_level;
     private BufferedImage title_choose_level;
     private BufferedImage back_bot;
     private BufferedImage back_top;

@@ -3,6 +3,7 @@ package Game;
 import Objects.*;
 import PowerUps.*;
 
+import javax.sound.sampled.Clip;
 import javax.swing.*;
 
 import java.awt.*;
@@ -62,7 +63,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         this.currentLevel = level;
     }
 
-    // Cache để tránh tính toán lại
+    private SoundEffect bgm;
 
     public void setGameSize(int width, int height) {
         this.WIDTH = width;
@@ -333,6 +334,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
             ball.setDy(Math.abs(ball.getDy()));
             collided = true;
         }
+
         // Tường dưới
         else if (ball.getY() + ball.getHeight() >= HEIGHT) {
             ball.setY(HEIGHT - ball.getHeight());
@@ -347,6 +349,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
 
         if (collided) {
             normalizeVelocity();
+            SoundEffect.play("collision");
         }
     }
 
@@ -374,10 +377,12 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         // Va chạm từ trên xuống
         if (ball.getDy() > 0 && prevBottom <= paddleTop) {
             handlePaddleTopCollision(paddle, paddleRect, ballCenterX);
+            SoundEffect.play("collision");
         }
         // Va chạm từ bên
         else {
             handlePaddleSideCollision(paddleRect, ballCenterX, ballCenterY);
+            SoundEffect.play("collision");
         }
     }
 

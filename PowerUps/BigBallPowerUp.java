@@ -1,5 +1,6 @@
 package PowerUps;
 
+import Game.SoundEffect;
 import Objects.Ball;
 import Objects.Paddle;
 
@@ -9,13 +10,12 @@ import javax.swing.Timer;
 public class BigBallPowerUp extends PowerUp {
     public BigBallPowerUp(float x, float y, int width, int height, long durationMs) {
         super(x, y, width, height, durationMs, "BIG_BALL");
-        loadSound("assets/BigBall.wav");
     }
 
     public void applyEffect(Paddle paddle, Ball ball, Object gameManager) {
         if (ball.isEnlarged()) return;
 
-        playSound("assets/BigBall.wav");
+        SoundEffect.play("bigball");
 
         int oldWidth = ball.getWidth();
         int oldHeight = ball.getHeight();

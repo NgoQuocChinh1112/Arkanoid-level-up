@@ -1,5 +1,6 @@
 package PowerUps;
 
+import Game.SoundEffect;
 import Objects.Ball;
 import Objects.Paddle;
 
@@ -12,14 +13,13 @@ public class FastBallPowerUp extends PowerUp {
 
     public FastBallPowerUp(float x, float y, int width, int height, long durationMs) {
         super(x, y, width, height, durationMs, "FAST_BALL");
-        loadSound("assets/FastBall.wav");
     }
 
     @Override
     public void applyEffect(Paddle paddle, Ball ball, Object gameManager) {
         if (ball.isFast()) return;
 
-        playSound("assets/FastBall.wav");
+        SoundEffect.play("fastball");
 
         float factor = 1.6f;
         ball.setFast(true);

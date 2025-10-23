@@ -1,5 +1,6 @@
 package PowerUps;
 
+import Game.SoundEffect;
 import Objects.Ball;
 import Objects.Paddle;
 import Objects.Brick;
@@ -29,7 +30,6 @@ public class ExplosiveBallPowerUp extends PowerUp {
     public ExplosiveBallPowerUp(float x, float y, int width, int height, long durationMs) {
         super(x, y, width, height, durationMs, "EXPLOSIVE_BALL");
         loadImage();
-        loadSound("assets/ExplosiveBall.wav");
     }
 
     private void loadImage() {
@@ -75,7 +75,7 @@ public class ExplosiveBallPowerUp extends PowerUp {
 
     //
     public static void explodeAt(List<Brick> bricks, float centerX, float centerY, float radius) {
-        playSound("assets/ExplosiveBall.wav");
+        SoundEffect.play("explosive");
         for (Brick brick : bricks) {
             if (!brick.isDestroyed()) {
                 float bx = brick.getX() + brick.getWidth() / 2f;

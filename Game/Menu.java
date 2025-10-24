@@ -16,14 +16,18 @@ public class Menu extends JPanel {
     private BufferedImage startTop, startBot;
     private BufferedImage exitTop, exitBot;
     private BufferedImage chooseTop, chooseBot;
+    private BufferedImage onePlayerTop, onePlayerBot;
+    private BufferedImage twoPlayerTop, twoPlayerBot;
 
     private boolean hoverStart = false;
     private boolean hoverExit = false;
     private boolean hoverChoose = false;
+    private boolean hoverRegime = false;
 
     private Rectangle startRect;
     private Rectangle exitRect;
     private Rectangle chooseRect;
+    private Rectangle regimeRect;
 
     public Menu(GamePanel parent) {
         this.parent = parent;
@@ -39,6 +43,10 @@ public class Menu extends JPanel {
             exitBot = ImageIO.read(getClass().getResource("/assets/exit_bot.png"));
             chooseTop = ImageIO.read(getClass().getResource("/assets/choose_levels_top.png"));
             chooseBot = ImageIO.read(getClass().getResource("/assets/choose_levels_bot.png"));
+            onePlayerTop = ImageIO.read(getClass().getResource("/assets/one_player_top.png"));
+            onePlayerBot = ImageIO.read(getClass().getResource("/assets/one_player_bot.png"));
+            twoPlayerTop = ImageIO.read(getClass().getResource("/assets/two_player_top.png"));
+            twoPlayerBot = ImageIO.read(getClass().getResource("/assets/two_player_bot.png"));
         } catch (IOException | IllegalArgumentException e) {
             e.printStackTrace();
         }
@@ -47,6 +55,7 @@ public class Menu extends JPanel {
         startRect = new Rectangle();
         exitRect = new Rectangle();
         chooseRect = new Rectangle();
+        regimeRect = new Rectangle();
 
         // Mouse
         addMouseListener(new MouseAdapter() {
@@ -57,26 +66,31 @@ public class Menu extends JPanel {
                 int h = getHeight();
                 int btnW = 90, btnH = 90;
                 int centerX = w/2 - btnW/2;
-                int startY = h/2 - 40;
+                int startY = h/2 - 130;
                 int chooseY = startY + 105;
-                int exitY = chooseY + 105;
+                int regimeY = chooseY + 105;
+                int exitY = regimeY + 105;
 
                 Rectangle startRectLocal = new Rectangle(centerX, startY, btnW, btnH);
                 Rectangle chooseRectLocal = new Rectangle(centerX, chooseY, btnW, btnH);
+                Rectangle regimeRectLocal = new Rectangle(centerX, regimeY, btnW, btnH);
                 Rectangle exitRectLocal = new Rectangle(centerX, exitY, btnW, btnH);
 
                 if (startRectLocal.contains(p)) {
                     parent.startGame();
-                } else if (exitRectLocal.contains(p)) {
-                    System.exit(0);
                 } else if (chooseRectLocal.contains(p)) {
                     parent.showLevelPanel();
-                }    
+                } else if (regimeRectLocal.contains(p)) {
+                    parent.getGameManager().setTwoPlayerMode();
+                    repaint();
+                } else if (exitRectLocal.contains(p)) {
+                    System.exit(0);
+                }
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
-                hoverStart = hoverExit = hoverChoose = false;
+                hoverStart = hoverChoose = hoverRegime = hoverExit = false;
                 repaint();
             }
         });
@@ -89,20 +103,23 @@ public class Menu extends JPanel {
                 int h = getHeight();
                 int btnW = 90, btnH = 90;
                 int centerX = w/2 - btnW/2;
-                int startY = h/2 - 40;
+                int startY = h/2 - 130;
                 int chooseY = startY + 105;
-                int exitY = chooseY + 105;
+                int regimeY = chooseY + 105;
+                int exitY = regimeY + 105;
 
                 Rectangle startRectLocal = new Rectangle(centerX, startY, btnW, btnH);
                 Rectangle chooseRectLocal = new Rectangle(centerX, chooseY, btnW, btnH);
+                Rectangle regimeRectLocal = new Rectangle(centerX, regimeY, btnW, btnH);
                 Rectangle exitRectLocal = new Rectangle(centerX, exitY, btnW, btnH);
 
-                boolean oldStart = hoverStart, oldChoose = hoverChoose, oldExit = hoverExit;
+                boolean oldStart = hoverStart, oldChoose = hoverChoose, oldRegime = hoverRegime, oldExit = hoverExit;
                 hoverStart = startRectLocal.contains(p);
                 hoverChoose = chooseRectLocal.contains(p);
+                hoverRegime = regimeRectLocal.contains(p);
                 hoverExit = exitRectLocal.contains(p);
 
-                if (hoverStart != oldStart || hoverChoose != oldChoose || hoverExit != oldExit) repaint();
+                if (hoverStart != oldStart || hoverChoose != oldChoose || hoverRegime != oldRegime || hoverExit != oldExit) repaint();
             }
         });
     }
@@ -128,7 +145,7 @@ public class Menu extends JPanel {
             int titleW = (int)(title.getWidth() * 1.2);
             int titleH = (int)(title.getHeight() * 1.2);
             int titleX = w / 2 - titleW / 2;
-            int titleY = h / 6;
+            int titleY = h / 20;
             g2.drawImage(title, titleX, titleY, titleW, titleH, null);
         }
 
@@ -136,13 +153,15 @@ public class Menu extends JPanel {
         int btnW = 90;
         int btnH = 90;
         int centerX = w / 2 - btnW / 2;
-        int startY = h / 2 - 40;
+        int startY = h / 2 - 130;
         int chooseY = startY + 105;
-        int exitY = chooseY + 105;
+        int regimeY = chooseY + 105;
+        int exitY = regimeY + 105;
 
         // Cập nhật vùng click
         startRect.setBounds(centerX, startY, btnW, btnH);
         chooseRect.setBounds(centerX, chooseY, btnW, btnH);
+        regimeRect.setBounds(centerX, regimeY, btnW, btnH);
         exitRect.setBounds(centerX, exitY, btnW, btnH);
 
         // Vẽ nút start
@@ -156,6 +175,21 @@ public class Menu extends JPanel {
             g2.drawImage(chooseTop, centerX, chooseY, btnW, btnH, null);
         else if (chooseBot != null)
             g2.drawImage(chooseBot, centerX, chooseY, btnW, btnH, null);
+
+        // Vẽ nút regime
+        if (!parent.getGameManager().getTwoPlayerMode()) {
+            if (hoverRegime && onePlayerTop != null) {
+                g2.drawImage(onePlayerTop, centerX, regimeY, btnW,btnH, null);
+            } else if (onePlayerBot != null) {
+                g2.drawImage(onePlayerBot, centerX, regimeY, btnW,btnH, null);
+            }
+        } else {
+            if (hoverRegime && twoPlayerTop != null) {
+                g2.drawImage(twoPlayerTop, centerX, regimeY, btnW,btnH, null);
+            } else if (twoPlayerBot != null) {
+                g2.drawImage(twoPlayerBot, centerX, regimeY, btnW,btnH, null);
+            }
+        }
 
         // Vẽ nút exit
         if (hoverExit && exitTop != null)

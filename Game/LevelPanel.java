@@ -40,6 +40,7 @@ public class LevelPanel extends JPanel {
     private Rectangle back;
 
     private boolean hoverBack = false;
+    private boolean[] hoverlevel = {false, false, false, false, false, false, false, false, false, false};
 
     /**
      *Tạo panel chọn level, nạp ảnh giao diện và gắn các sự kiện chuột.
@@ -121,11 +122,36 @@ public class LevelPanel extends JPanel {
             @Override
             public void mouseMoved(MouseEvent e) {
                 Point p = e.getPoint();
-                Rectangle backLocal = new Rectangle(X_BUTTON_BACK, Y_BUTTON_BACK, WIDTH_BUTTON_BACK, HEIGHT_BUTTON_BACK);
+                int btnW = WIDTH_BUTTON_LEVEL;
+                int btnH = HEIGHT_BUTTON_LEVEL;
+                int centerX = X_BUTTON_LEVEL_1;
+                int startY = Y_BUTTON_LEVEL_1;
 
+                Rectangle[] levelsRectLocal = new Rectangle[10];
+
+                Rectangle backLocal = new Rectangle(X_BUTTON_BACK, Y_BUTTON_BACK, WIDTH_BUTTON_BACK, HEIGHT_BUTTON_BACK);
+                for (int i = 0; i < 5; i++) {
+                    levelsRectLocal[i] = new Rectangle(centerX + i * btnW * 3/2, startY, btnW, btnH);
+                }
+
+                for (int i = 5; i < 10; ++i) {
+                    levelsRectLocal[i] = new Rectangle(centerX + (i - 5) * btnW * 3/2, startY + btnH * 2, btnW, btnH);
+                }
+
+                boolean oldHoverLevel[] = new boolean[10];
+                for (int i = 0; i < 10; ++i) {
+                    oldHoverLevel[i] = hoverlevel[i];
+                }
                 boolean oldHoverBack = hoverBack;
+
                 hoverBack = backLocal.contains(p);
+                for (int i = 0; i < 10; ++i) {
+                    hoverlevel[i] = levelsRectLocal[i].contains(p);
+                }
                 if (oldHoverBack != hoverBack) repaint();
+                for (int i = 0; i < 10; ++i) {
+                    if (oldHoverLevel[i] != hoverlevel[i]) repaint();
+                }
             }
         });
     }
@@ -170,12 +196,27 @@ public class LevelPanel extends JPanel {
         }
 
         if (image_level != null) {
-            for (int i = 0; i < 5; ++i) {
-                g2.drawImage(image_level[i], centerX + i * btnW * 3/2, startY, btnW, btnH, null);
-            }
+            for (int i = 0; i < 10; ++i) {
+                int x, y;
+                if (i < 5) {
+                    x = centerX + i * btnW * 3 / 2;
+                    y = startY;
+                } else {
+                    x = centerX + (i - 5) * btnW * 3 / 2;
+                    y = startY + btnH * 2;
+                }
 
-            for (int i = 5; i < 10; ++i) {
-                g2.drawImage(image_level[i], centerX + (i - 5) * btnW * 3/2, startY + btnH * 2, btnW, btnH, null);
+                // Nếu đang hover → phóng to 10%
+                int drawW = btnW;
+                int drawH = btnH;
+                if (hoverlevel[i]) {
+                    drawW = (int) (btnW * 1.1);
+                    drawH = (int) (btnH * 1.1);
+                    x -= (drawW - btnW) / 2;  // căn giữa ảnh phóng to
+                    y -= (drawH - btnH) / 2;
+                }
+
+                g2.drawImage(image_level[i], x, y, drawW, drawH, null);
             }
         }
     } 

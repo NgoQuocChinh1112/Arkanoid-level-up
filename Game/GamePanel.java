@@ -26,6 +26,10 @@ public class GamePanel extends JPanel {
      * @param height chiều cao khung game.
      */
 
+     public GameManager getGameManager() {
+        return game;
+     }
+
     public GamePanel(int width, int height) {
         this.WIDTH = width;
         this.HEIGHT = height;

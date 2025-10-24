@@ -1,5 +1,6 @@
 package PowerUps;
 
+import Game.SoundEffect;
 import Objects.Ball;
 import Objects.Paddle;
 import Objects.Brick;
@@ -53,6 +54,7 @@ public class ExplosiveBallPowerUp extends PowerUp {
         Timer timer = new Timer((int) durationMs, e -> {
             ball.setExplosive(false);
             active = false;
+
         });
 
         timer.setRepeats(false); // chỉ chạy một lần
@@ -73,6 +75,7 @@ public class ExplosiveBallPowerUp extends PowerUp {
 
     //
     public static void explodeAt(List<Brick> bricks, float centerX, float centerY, float radius) {
+        SoundEffect.play("explosive");
         for (Brick brick : bricks) {
             if (!brick.isDestroyed()) {
                 float bx = brick.getX() + brick.getWidth() / 2f;
@@ -80,7 +83,9 @@ public class ExplosiveBallPowerUp extends PowerUp {
                 float dist = (float) Math.hypot(centerX - bx, centerY - by);
                 if (dist < radius) {
 
-                    for (int i = 0; i < 5; i++) brick.takeHit();
+                    for (int i = 0; i < 5; i++) {
+                        brick.takeHit();
+                    }
                 }
             }
         }

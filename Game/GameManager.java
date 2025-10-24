@@ -3,6 +3,7 @@ package Game;
 import Objects.*;
 import PowerUps.*;
 
+import javax.sound.sampled.Clip;
 import javax.swing.*;
 
 import java.awt.*;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.Random;
 
 
+
 public class GameManager extends JPanel implements KeyListener, ActionListener {
     private final GamePanel parent;
 
@@ -21,6 +23,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
     private int HEIGHT;
 
     private Timer gameTimer;
+    private final int FPS = 60;
     private int currentLevel = 1;
 
     private Paddle paddle1;
@@ -45,6 +48,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
     private boolean hoverResume = false;
     private boolean hoverMenu = false;
     private boolean hoverLs = false;
+    private boolean hoverSt = false;
 
     private Random rand = new Random();
 
@@ -72,7 +76,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         this.currentLevel = level;
     }
 
-    // Cache để tránh tính toán lại
+    private SoundEffect bgm;
 
     public void setGameSize(int width, int height) {
         this.WIDTH = width;
@@ -120,20 +124,26 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
                         gameState = "PAUSED";
                     }
                 }
-                if (gameState.equals("PAUSED")) {
+                if (gameState.equals("PAUSED") || gameState.equals("LOSED")) {
                     int boxX = (WIDTH - (int)(300 * GamePanel.scaleY)) / 2;
-                    int boxY = (HEIGHT - (int)(400 * GamePanel.scaleY)) / 2;
-                    int btnW =(int)(180 * GamePanel.scaleY), btnH = (int)(50 * GamePanel.scaleY);
-                    int resumeY = boxY + (int) (60 * GamePanel.scaleY);
-                    int resY = resumeY + (int) (60 * GamePanel.scaleY);
-                    int menuY = resY + (int) (60 * GamePanel.scaleY);
+                    int boxY = (HEIGHT - (int)(330 * GamePanel.scaleY)) / 2;
+                    int btnW =(int)(180 * GamePanel.scaleY);
+                    int btnH = (int)(50 * GamePanel.scaleY);
+                    int resY = boxY + (int) (45 * GamePanel.scaleY);
+                    int resumeY = resY + (int) (60 * GamePanel.scaleY);
+                    int setY = resumeY + (int) (60 * GamePanel.scaleY);
+                    int menuY = setY + (int) (60 * GamePanel.scaleY);
                     int btnX = boxX + ((int)(300 * GamePanel.scaleY) - btnW) / 2;
 
                     Rectangle resumeRect = new Rectangle(btnX, resumeY, btnW, btnH);
                     Rectangle menuRect = new Rectangle(btnX, menuY, btnW, btnH);
                     Rectangle LsRect = new Rectangle(btnX, resY, btnW, btnH);
                     if (resumeRect.contains(p)) {
-                        gameState = "RUNNING"; // tiếp tục
+                        if (gameState.equals("PAUSED")) {
+                            gameState = "RUNNING";
+                        } else if (gameState.equals("LOSED")) {
+                            parent.showLevelPanel();
+                        }
                     } else if (menuRect.contains(p)) {
                         parent.showMenu();
                     } else if(LsRect.contains(p)) {
@@ -146,26 +156,33 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         addMouseMotionListener(new MouseMotionAdapter() {
             public void mouseMoved(MouseEvent e) {
                 Point p = e.getPoint();
-                int boxW = (int)(300 * GamePanel.scaleY), boxH = (int)(400 * GamePanel.scaleY);
+                int boxW = (int)(300 * GamePanel.scaleY);
+                int boxH = (int)(330 * GamePanel.scaleY);
                 int boxX = (WIDTH - boxW) / 2;
                 int boxY = (HEIGHT - boxH) / 2;
-                int btnW =(int)(180 * GamePanel.scaleY), btnH = (int)(50 * GamePanel.scaleY);
-                int resumeY = boxY + (int) (60 * GamePanel.scaleY);
-                int resY = resumeY + (int) (60 * GamePanel.scaleY);
-                int menuY = resY + (int) (60 * GamePanel.scaleY);
+                int btnW =(int)(180 * GamePanel.scaleY);
+                int btnH = (int)(50 * GamePanel.scaleY);
+                int resY = boxY + (int) (45 * GamePanel.scaleY);
+                int resumeY = resY + (int) (60 * GamePanel.scaleY);
+                int setY = resumeY + (int) (60 * GamePanel.scaleY);
+                int menuY = setY + (int) (60 * GamePanel.scaleY);
                 int btnX = boxX + (boxW - btnW) / 2;
 
                 Rectangle resumeRect = new Rectangle(btnX, resumeY, btnW, btnH);
                 Rectangle menuRect = new Rectangle(btnX, menuY, btnW, btnH);
+                Rectangle StRect = new Rectangle(btnX, setY, btnW, btnH);
                 Rectangle LsRect = new Rectangle(btnX, resY, btnW, btnH);
+
                 boolean oldHoverResume = hoverResume;
                 hoverResume = resumeRect.contains(p);
                 boolean oldHoverMenu = hoverMenu;
                 hoverMenu = menuRect.contains(p);
                 boolean oldHoverLs = hoverLs;
                 hoverLs = LsRect.contains(p);
+                boolean oldHoverSt = hoverSt;
+                hoverSt = StRect.contains(p);
                 if (oldHoverResume != hoverResume || oldHoverMenu != hoverMenu
-                        || oldHoverLs != hoverLs) {
+                        || oldHoverLs != hoverLs ||  oldHoverSt != hoverSt) {
                     repaint();
                 }
             }
@@ -178,7 +195,8 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         g.fillRect(0, 0, WIDTH, HEIGHT);
 
         // khung menu pause
-        int boxW = (int)(300 * GamePanel.scaleY), boxH = (int)(400 * GamePanel.scaleY);
+        int boxW = (int)(300 * GamePanel.scaleY);
+        int boxH = (int)(330 * GamePanel.scaleY);
         int boxX = (WIDTH - boxW) / 2;
         int boxY = (HEIGHT - boxH) / 2;
         if (button[0] != null) {
@@ -189,17 +207,27 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         }
 
         int btnW =(int)(180 * GamePanel.scaleY), btnH = (int)(50 * GamePanel.scaleY);
-        int resumeY = boxY + (int) (60 * GamePanel.scaleY);
-        int resY = resumeY + (int) (60 * GamePanel.scaleY);
-        int menuY = resY + (int) (60 * GamePanel.scaleY);
+        int resY = boxY + (int) (45 * GamePanel.scaleY);
+        int resumeY = resY + (int) (60 * GamePanel.scaleY);
+        int setY = resumeY + (int) (60 * GamePanel.scaleY);
+        int menuY = setY + (int) (60 * GamePanel.scaleY);
         int btnX = boxX + (boxW - btnW) / 2;
 
         // Vẽ 2 nút (ảnh hoặc chữ)
-        if (button[4] != null && hoverResume) {
-            g.drawImage(button[4], btnX, resumeY, btnW, btnH, null);
+        if (gameState.equals("PAUSED")) {
+            if (button[4] != null && hoverResume) {
+                g.drawImage(button[4], btnX, resumeY, btnW, btnH, null);
 
-        } else if (button[5] != null) {
-            g.drawImage(button[5], btnX, resumeY, btnW, btnH, null);
+            } else if (button[5] != null) {
+                g.drawImage(button[5], btnX, resumeY, btnW, btnH, null);
+            }
+        } else if (gameState.equals("LOSED")) {
+            if (button[10] != null && hoverResume) {
+                g.drawImage(button[10], btnX, resumeY, btnW, btnH, null);
+
+            } else if (button[11] != null) {
+                g.drawImage(button[11], btnX, resumeY, btnW, btnH, null);
+            }
         }
         if (button[2] != null && hoverMenu) {
             g.drawImage(button[2], btnX, menuY, btnW, btnH, null);
@@ -210,6 +238,11 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
             g.drawImage(button[6], btnX, resY, btnW, btnH, null);
         } else if (button[7] != null) {
             g.drawImage(button[7], btnX, resY, btnW, btnH, null);
+        }
+        if (button[8] != null && hoverSt) {
+            g.drawImage(button[8], btnX, setY, btnW, btnH, null);
+        } else if (button[9] != null) {
+            g.drawImage(button[9], btnX, setY, btnW, btnH, null);
         }
     }
 
@@ -234,9 +267,8 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         }
 
         bricks = new  ArrayList<>();
-        bricks = Level.buildLevel(currentLevel, WIDTH, HEIGHT, GamePanel.scaleY, GamePanel.scaleY);
+        bricks = Level.buildLevel(currentLevel, WIDTH, HEIGHT, GamePanel.scaleX, GamePanel.scaleY);
         powerUps = new ArrayList<>();
-
     }
 
     @Override
@@ -297,7 +329,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
             }
         }
         if (lives <= 0) {
-            gameState = "GAMEOVER";
+            gameState = "LOSED";
         }
 
         ExplosiveBallPowerUp.updateExplosions();
@@ -352,6 +384,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
             ball.setDy(Math.abs(ball.getDy()));
             collided = true;
         }
+
         // Tường dưới
         else if (ball.getY() + ball.getHeight() >= HEIGHT) {
             ball.setY(HEIGHT - ball.getHeight());
@@ -366,6 +399,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
 
         if (collided) {
             normalizeVelocity();
+            SoundEffect.play("collision");
         }
     }
 
@@ -399,10 +433,12 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         // Va chạm từ trên xuống
         if (ball.getDy() > 0 && prevBottom <= paddleTop) {
             handlePaddleTopCollision(paddle, paddleRect, ballCenterX);
+            SoundEffect.play("collision");
         }
         // Va chạm từ bên
         else {
             handlePaddleSideCollision(paddleRect, ballCenterX, ballCenterY);
+            SoundEffect.play("collision");
         }
     }
 
@@ -525,34 +561,39 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
             brick.takeHit();
             if (ball.isEnlarged() && !brick.isDestroyed()) {
                 brick.takeHit();
-                brick.takeHit();
             }
+
+            if (ball.isExplosive()) {
+                float explosionRadius = 80f * GamePanel.scaleX;
+                ExplosiveBallPowerUp.explodeAt(bricks,
+                        ball.getX() + ball.getWidth()/2f,
+                        ball.getY() + ball.getHeight()/2f,
+                        explosionRadius);
+            }
+
             if (brick.isDestroyed()) {
                 it.remove();
                 score += 100;
-                if (ball.isExplosive()) {
-                    float explosionRadius = 80f * GamePanel.scaleY; // bán kính nổ (tuỳ chỉnh)
-                    ExplosiveBallPowerUp.explodeAt(bricks, brick.getX() + brick.getWidth()/2f, brick.getY() + brick.getHeight()/2f, explosionRadius);
-                }
+
                 if (rand.nextDouble() < 0.2) {
-                    int type = rand.nextInt(3); // 0,1,2
+                    int type = rand.nextInt(4);
                     PowerUp pu = null  ;
                     if (type == 0) {
                         pu = new ExpandPaddlePowerUp(brick.getX() + brick.getWidth()/2f - 12,
                                 brick.getY() + brick.getHeight()/2f,
-                                (int)(24 * GamePanel.scaleY), (int)(24 * GamePanel.scaleY), 8_000);
+                                (int)(24 * GamePanel.scaleY), (int)(24 * GamePanel.scaleY), 5000);
                     } else if (type == 1) {
                         pu = new FastBallPowerUp(brick.getX() + brick.getWidth()/2f - 12,
                                 brick.getY() + brick.getHeight()/2f,
-                                (int)(24 * GamePanel.scaleY), (int)(24 * GamePanel.scaleY), 6_000);
-                    } else if ( type == 2) {
+                                (int)(24 * GamePanel.scaleY), (int)(24 * GamePanel.scaleY), 5000);
+                    } else if (type == 2) {
                         pu = new BigBallPowerUp(brick.getX() + brick.getWidth()/2f - 12,
                                 brick.getY() + brick.getHeight()/2f,
-                                (int)(24 * GamePanel.scaleY), (int)(24 * GamePanel.scaleY), 7_000);
+                                (int)(24 * GamePanel.scaleY), (int)(24 * GamePanel.scaleY), 5000);
                     } else if (type == 3) {
                         pu = new ExplosiveBallPowerUp(brick.getX() + brick.getWidth()/2f - 12,
                                 brick.getY() + brick.getHeight()/2f,
-                                24, 24, 6_000);
+                                (int)(24 * GamePanel.scaleY), (int)(24 * GamePanel.scaleY), 2000);
                     }
                     if (pu != null) {
 
@@ -590,6 +631,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
      * Fix bug: tốc độ bóng tăng/giảm sau nhiều lần va chạm
      */
     private void normalizeVelocity() {
+        if (ball.isFast()) return; // ko reset tốc độ khi tăng tốc
         float currentMagnitude = (float) Math.hypot(ball.getDx(), ball.getDy());
         if (currentMagnitude > EPSILON && Math.abs(currentMagnitude - ball.getSpeed()) > EPSILON) {
             ball.setDx((ball.getDx() / currentMagnitude) * ball.getSpeed());
@@ -629,11 +671,8 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         // overlays
         if (gameState.equals("MENU")) {
             drawCenteredString(g2, "PRESS SPACE TO START", WIDTH, HEIGHT);
-        } else if (gameState.equals("GAMEOVER")) {
-            drawCenteredString(g2, "GAME OVER - PRESS R TO RESTART", WIDTH, HEIGHT);
-        } else if (gameState.equals("WIN")) {
-            drawCenteredString(g2, "YOU WIN! PRESS R TO RESTART", WIDTH, HEIGHT);
-        } else if (gameState.equals("PAUSED")) {
+        } else if (gameState.equals("PAUSED") || gameState.equals("LOSED")
+                || gameState.equals("WIN")) {
             showMenu(g2);
         } else if (gameState.equals("RUNNING")) {
             buttonMenu(g2);

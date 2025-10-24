@@ -1,6 +1,7 @@
 package Objects;
 
 import Game.GameManager;
+import Game.GamePanel;
 import Game.Renderer;
 import java.awt.*;
 

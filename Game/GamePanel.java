@@ -20,6 +20,8 @@ public class GamePanel extends JPanel {
     public static float scaleX = 1f;
     public static float scaleY = 1f;
 
+
+
     /**
      * Khởi tạo GamePanel với kích thước xác định và các màn hình con.
      * @param width chiều rộng khung game.
@@ -43,6 +45,8 @@ public class GamePanel extends JPanel {
         game = new GameManager(this, WIDTH, HEIGHT);
         levelPanel = new LevelPanel(this);
 
+        SoundEffect.loadAllSounds();
+
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
@@ -51,7 +55,6 @@ public class GamePanel extends JPanel {
                 setPanelSize(WIDTH, HEIGHT);
                 scaleX = (float) WIDTH / 800f;
                 scaleY = (float) HEIGHT / 600f;
-                System.out.println(scaleX + " " + scaleY);
             }
         });
 
@@ -80,6 +83,7 @@ public class GamePanel extends JPanel {
      * Hiển thị màn hình menu chính.
      */
     public void showMenu() {
+        SoundEffect.stop("bgm");
         cardLayout.show(this, "Menu");
     }
 
@@ -87,6 +91,7 @@ public class GamePanel extends JPanel {
      * Hiển thị màn hình chọn level.
      */
     public void showLevelPanel() {
+        SoundEffect.stop("bgm");
         cardLayout.show(this, "LevelPanel");
     }
 
@@ -94,6 +99,7 @@ public class GamePanel extends JPanel {
      * Bắt đầu trò chơi từ level 1 (mặc định).
      */
     public void startGame() {
+        SoundEffect.loop("bgm");
         cardLayout.show(this, "Game");
         game.setCurrentLevel(1);
         game.setLevel(1);

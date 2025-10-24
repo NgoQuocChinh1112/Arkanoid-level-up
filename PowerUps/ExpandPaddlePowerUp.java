@@ -1,5 +1,6 @@
 package PowerUps;
 
+import Game.SoundEffect;
 import Objects.Ball;
 import Objects.Paddle;
 import java.awt.*;
@@ -30,6 +31,9 @@ public class ExpandPaddlePowerUp extends PowerUp {
         }
 
         int expandedWidth = Math.min(300, originalWidth + 80);
+
+        SoundEffect.play("expandpad");
+
         paddle.setWidth(expandedWidth);
 
         if (currentTask != null) {

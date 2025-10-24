@@ -9,3 +9,5 @@ out/
 
 # Các file khác không cần thiết
 *.iml
+
+.gitinore/

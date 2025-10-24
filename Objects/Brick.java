@@ -3,6 +3,8 @@ package Objects;
 import java.awt.*;
 import javax.imageio.ImageIO;
 import Game.Renderer;
+import Game.SoundEffect;
+
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
@@ -23,8 +25,7 @@ public class Brick extends GameObject {
     }
 
     @Override
-    public void update() {
-    }
+    public void update() {}
 
     @Override
     public void render(Graphics2D g2) {
@@ -34,13 +35,17 @@ public class Brick extends GameObject {
     }
 
     public void takeHit() {
-        if (hitPoints > 0 && hitPoints != 6) {
-            hitPoints--;
-            if (hitPoints > 0) {
-                texture = textures[hitPoints - 1];
-            } else {
-                texture = null;
+        if (hitPoints > 0) {
+            SoundEffect.play("collision");
+            if (hitPoints != 6) {
+                hitPoints--;
             }
+        }
+        if (hitPoints > 0) {
+            texture = textures[hitPoints - 1];
+        } else {
+            SoundEffect.play("break");
+            texture = null;
         }
     }
 

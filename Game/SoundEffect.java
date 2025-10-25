@@ -10,7 +10,7 @@ import javax.sound.sampled.*;
 public class SoundEffect {
     public Clip clip;
     private static Map<String, SoundEffect> sounds = new HashMap<>();
-
+    private FloatControl volumeControl;
 
     /**
      * Load âm thanh.
@@ -28,6 +28,7 @@ public class SoundEffect {
             clip = AudioSystem.getClip();
             clip.open(audioIn);
             System.out.println(" Đã load " + fileName);
+            volumeControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
         } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
             System.err.println(" Lỗi load âm thanh: " + e.getMessage());
         }
@@ -84,4 +85,10 @@ public class SoundEffect {
         }
     }
 
+    //chỉnh âm lượng toàn bộ
+    public static void setVolume(float volume) {
+        for (SoundEffect s : sounds.values()) {
+            s.volumeControl.setValue(volume);
+        }
+    }
 }

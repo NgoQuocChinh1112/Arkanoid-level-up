@@ -74,7 +74,7 @@ public class ExplosiveBallPowerUp extends PowerUp {
     }
 
     //
-    public static void explodeAt(List<Brick> bricks, float centerX, float centerY, float radius) {
+    public static void explodeAt(List<Brick> bricks, float centerX, float centerY, float radius, List<Brick> toRemove) {
         SoundEffect.play("explosive");
         for (Brick brick : bricks) {
             if (!brick.isDestroyed()) {
@@ -82,14 +82,19 @@ public class ExplosiveBallPowerUp extends PowerUp {
                 float by = brick.getY() + brick.getHeight() / 2f;
                 float dist = (float) Math.hypot(centerX - bx, centerY - by);
                 if (dist < radius) {
-
-                    for (int i = 0; i < 5; i++) {
+                    if (brick.getHitPoints() == 6) {
+                        continue;
+                    }
+                    while (!brick.isDestroyed()) {
                         brick.takeHit();
                     }
+                    if (brick.isDestroyed()) {
+                        toRemove.add(brick);
+                    }
+
                 }
             }
         }
-
 
         explosionX.add(centerX);
         explosionY.add(centerY);

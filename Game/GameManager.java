@@ -30,6 +30,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
     private Ball ball;
     private List<Brick> bricks;
     private List<PowerUp> powerUps;
+    List<Brick> toRemove = new ArrayList<>();
 
     private int score = 0;
     private int lives = 3;
@@ -376,7 +377,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         paddle1 = new Paddle((WIDTH / 2f - (int)(60 * GamePanel.scaleY)), HEIGHT - (int)(60 * GamePanel.scaleY), (int)(120 * GamePanel.scaleY), (int)(16 * GamePanel.scaleY));
         if(twoPlayerMode) {
             paddle2 = new Paddle((WIDTH / 2f - (int)(60 * GamePanel.scaleY)), HEIGHT - (int)(140 * GamePanel.scaleY), (int)(120 * GamePanel.scaleY), (int)(16 * GamePanel.scaleY));
-        }    
+        }
 
         if (twoPlayerMode) {
             // Bóng gắn với paddle2
@@ -420,12 +421,12 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         // Ball sticks to paddle until launched
         if (!ball.isLaunched()) {
             if (twoPlayerMode) {
-            ball.setX(paddle2.getX() + paddle2.getWidth() / 2f - ball.getWidth() / 2f);
-            ball.setY(paddle2.getY() - ball.getHeight() - 1);
-        } else {
-            ball.setX(paddle1.getX() + paddle1.getWidth() / 2f - ball.getWidth() / 2f);
-            ball.setY(paddle1.getY() - ball.getHeight() - 1);
-        }
+                ball.setX(paddle2.getX() + paddle2.getWidth() / 2f - ball.getWidth() / 2f);
+                ball.setY(paddle2.getY() - ball.getHeight() - 1);
+            } else {
+                ball.setX(paddle1.getX() + paddle1.getWidth() / 2f - ball.getWidth() / 2f);
+                ball.setY(paddle1.getY() - ball.getHeight() - 1);
+            }
         } else {
             ball.update();
         }
@@ -467,9 +468,9 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         else paddle1.setDx(0);
 
         if (twoPlayerMode) {
-        if (aPressed && !dPressed) paddle2.setDx(-sp);
-        else if (dPressed && !aPressed) paddle2.setDx(sp);
-        else paddle2.setDx(0);
+            if (aPressed && !dPressed) paddle2.setDx(-sp);
+            else if (dPressed && !aPressed) paddle2.setDx(sp);
+            else paddle2.setDx(0);
         }
     }
 
@@ -692,15 +693,15 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
                 ExplosiveBallPowerUp.explodeAt(bricks,
                         ball.getX() + ball.getWidth()/2f,
                         ball.getY() + ball.getHeight()/2f,
-                        explosionRadius);
+                        explosionRadius,toRemove);
             }
 
             if (brick.isDestroyed()) {
                 it.remove();
                 score += 100;
 
-                if (rand.nextDouble() < 0.2) {
-                    int type = rand.nextInt(4);
+                if (rand.nextDouble() < 0.99) {
+                    int type = 3;//rand.nextInt(4);
                     PowerUp pu = null  ;
                     if (type == 0) {
                         pu = new ExpandPaddlePowerUp(brick.getX() + brick.getWidth()/2f - 12,
@@ -727,6 +728,10 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
                 }
             }
         }
+        if (!toRemove.isEmpty()) {
+            bricks.removeAll(toRemove);
+        }
+
         Iterator<PowerUp> pit = powerUps.iterator();
         while (pit.hasNext()) {
             PowerUp pu = pit.next();

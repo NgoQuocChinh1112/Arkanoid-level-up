@@ -34,7 +34,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
 
     private int score = 0;
     private int lives = 3;
-    private String gameState = "MENU"; // MENU, RUNNING, GAMEOVER, WIN, PAUSED, LOSED, SETTING
+    private String gameState = "MENU"; // MENU, RUNNING, GAMEOVER, WIN, PAUSED, LOST, SETTING
 
     private boolean twoPlayerMode = false;
     private boolean prevTwoPlayerMode = false;
@@ -129,7 +129,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
                         gameState = "PAUSED";
                     }
                 }
-                if (gameState.equals("PAUSED") || gameState.equals("LOSED")) {
+                if (gameState.equals("PAUSED") || gameState.equals("LOST")) {
                     int boxX = (WIDTH - (int) (300 * GamePanel.scaleY)) / 2;
                     int boxY = (HEIGHT - (int) (330 * GamePanel.scaleY)) / 2;
                     int btnW = (int) (180 * GamePanel.scaleY);
@@ -147,7 +147,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
                     if (resumeRect.contains(p)) {
                         if (gameState.equals("PAUSED")) {
                             gameState = "RUNNING";
-                        } else if (gameState.equals("LOSED")) {
+                        } else if (gameState.equals("LOST")) {
                             parent.showLevelPanel();
                         }
                     } else if (menuRect.contains(p)) {
@@ -701,8 +701,8 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
                 it.remove();
                 score += 100;
 
-                if (rand.nextDouble() < 0.99) {
-                    int type = 5;
+                if (rand.nextDouble() < 0.2) {
+                    int type = rand.nextInt(6);
                     PowerUp pu = null;
                     if (type == 0) {
                         pu = new ExpandPaddlePowerUp(brick.getX() + brick.getWidth()/2f - 12,
@@ -821,7 +821,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         // overlays
         if (gameState.equals("MENU")) {
             drawCenteredString(g2, "PRESS SPACE TO START", WIDTH, HEIGHT);
-        } else if (gameState.equals("PAUSED") || gameState.equals("LOSED")
+        } else if (gameState.equals("PAUSED") || gameState.equals("LOST")
                 || gameState.equals("WIN")) {
             showMenu(g2);
         } else if (gameState.equals("RUNNING")) {

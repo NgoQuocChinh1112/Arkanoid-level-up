@@ -44,6 +44,7 @@ public class SoundEffect {
         addSound("explosiveball", "sound/ExplosiveBall.wav");
         addSound("explosive",  "sound/ExplosiveBall.wav");
         addSound("fastball",  "sound/FastBall.wav");
+        addSound("shrinkpad",  "sound/ShrinkPaddle.wav");
     }
 
     private static void addSound(String name, String filePath) {

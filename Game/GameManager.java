@@ -701,7 +701,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
                 score += 100;
 
                 if (rand.nextDouble() < 0.99) {
-                    int type = 3;//rand.nextInt(4);
+                    int type = 4;//rand.nextInt(4);
                     PowerUp pu = null  ;
                     if (type == 0) {
                         pu = new ExpandPaddlePowerUp(brick.getX() + brick.getWidth()/2f - 12,
@@ -719,9 +719,13 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
                         pu = new ExplosiveBallPowerUp(brick.getX() + brick.getWidth()/2f - 12,
                                 brick.getY() + brick.getHeight()/2f,
                                 (int)(24 * GamePanel.scaleY), (int)(24 * GamePanel.scaleY), 2000);
+                    } else if (type == 4) {
+                        pu = new ShrinkPaddlePowerUp(brick.getX() + brick.getWidth()/2f - 12,
+                                brick.getY() + brick.getHeight()/2f,
+                                (int)(24 * GamePanel.scaleY), (int)(24 * GamePanel.scaleY), 5000);
+
                     }
                     if (pu != null) {
-
                         powerUps.add(pu);
                     }
 

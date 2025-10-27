@@ -1,14 +1,20 @@
 package PowerUps;
 
 import Game.GameManager;
-import Game.SoundEffect;
 import Objects.Ball;
 import Objects.Paddle;
 
-import javax.swing.Timer;
+import javax.swing.*;
 import java.awt.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class DoubleBallPowerUp extends PowerUp {
+
+    private static final int BALL_SIZE = 16;
+    private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm:ss.SSS");
+
+    private Timer timer; // Lưu timer để quản lý
 
     public DoubleBallPowerUp(float x, float y, int width, int height, long durationMs) {
         super(x, y, width, height, durationMs, "DOUBLE_BALL");
@@ -18,72 +24,62 @@ public class DoubleBallPowerUp extends PowerUp {
     public void applyEffect(Paddle paddle, Ball originalBall, Object gameManagerObj) {
         GameManager gameManager = (GameManager) gameManagerObj;
 
-        // Nếu đã có bóng phụ → không tạo thêm
-        if (originalBall.isFast() || originalBall.isEnlarged() || originalBall.isExplosive()) {
-            // Có thể bỏ qua hoặc không, tùy ý
+        // CHỈ TẠO BÓNG PHỤ NẾU CHƯA CÓ
+        if (gameManager.extraBall != null) {
+            return; // Đã có bóng phụ → bỏ qua
         }
 
-        SoundEffect.play("powerup");
+        float scaleY = (float) width / 24f;
 
-        // Tạo bóng mới (phụ)
-        Ball extraBall = new Ball(
-                originalBall.getX(),
-                originalBall.getY(),
-                originalBall.getWidth(),
-                originalBall.getHeight()
+        // Tạo bóng phụ
+        Ball extra = new Ball(
+                x + width / 2f - (BALL_SIZE * scaleY) / 2f,
+                y,
+                (int)(BALL_SIZE * scaleY),
+                (int)(BALL_SIZE * scaleY)
         );
+        extra.launch(0, 6f); // Phóng thẳng xuống
 
-        // Copy trạng thái vận tốc từ bóng gốc
-        extraBall.setDx(originalBall.getDx());
-        extraBall.setDy(originalBall.getDy());
-        extraBall.setSpeed(originalBall.getSpeed());
-        extraBall.launched = true;
+        // GHI NHẬN THỜI GIAN BẮT ĐẦU
+        LocalDateTime startTime = LocalDateTime.now();
+        String startStr = startTime.format(TIME_FORMAT);
+        System.out.println("[DoubleBall] KHỞI ĐỘNG lúc: " + startStr);
 
-        // Đẩy nhẹ bóng phụ ra xa để tránh chồng lấn ngay lập tức
-        float offset = 20f;
-        if (extraBall.getDx() >= 0) {
-            extraBall.setX(originalBall.getX() - offset);
-        } else {
-            extraBall.setX(originalBall.getX() + offset);
+        // Thêm bóng vào game
+        gameManager.addExtraBall(extra);
+
+        // HỦY TIMER CŨ NẾU CÓ (tránh chồng chéo)
+        if (timer != null && timer.isRunning()) {
+            timer.stop();
         }
 
-        // Thêm bóng mới vào danh sách bóng (giả sử GameManager có List<Ball> balls)
-        // Vì hiện tại chỉ có 1 ball, ta cần mở rộng GameManager để hỗ trợ nhiều bóng
-        // Tạm thời: dùng cách lưu vào GameManager qua reflection hoặc thêm method
+        // TẠO TIMER MỚI
+        timer = new Timer((int) durationMs, e -> {
+            LocalDateTime endTime = LocalDateTime.now();
+            String endStr = endTime.format(TIME_FORMAT);
+            long actualDurationMs = java.time.Duration.between(startTime, endTime).toMillis();
 
-        // Gợi ý: Thêm List<Ball> vào GameManager, nhưng vì không thể sửa → dùng cách tạm
-        // Dưới đây là cách **thêm method vào GameManager** (xem phần cuối)
+            System.out.println("[DoubleBall] KẾT THÚC lúc: " + endStr);
+            System.out.println("[DoubleBall] HOẠT ĐỘNG: " + actualDurationMs + " ms");
 
-        // Gọi method giả định: gameManager.addExtraBall(extraBall);
-        try {
-            java.lang.reflect.Method method = gameManager.getClass().getMethod("addExtraBall", Ball.class);
-            method.invoke(gameManager, extraBall);
-        } catch (Exception e) {
-            // Nếu chưa có method → không làm gì
-        }
-
-        // Tự động xóa bóng phụ sau durationMs
-        Timer timer = new Timer((int) durationMs, e -> {
-            try {
-                java.lang.reflect.Method removeMethod = gameManager.getClass().getMethod("removeExtraBall", Ball.class);
-                removeMethod.invoke(gameManager, extraBall);
-            } catch (Exception ex) {
-                // ignore
-            }
+            gameManager.removeExtraBall(extra);
         });
-        timer.setRepeats(false);
-        timer.start();
+
+        timer.setRepeats(false); // Chỉ chạy 1 lần
+        timer.start();           // Bắt đầu đếm ngược
     }
 
     @Override
     public void render(Graphics2D g2) {
-        g2.setColor(new Color(220, 120, 40));
+        g2.setColor(new Color(220, 120, 40)); // Cam
         g2.fillOval(Math.round(x), Math.round(y), width, height);
         g2.setColor(Color.BLACK);
         g2.drawOval(Math.round(x), Math.round(y), width, height);
+
         g2.setFont(new Font("Arial", Font.BOLD, 12));
         String s = "D";
-        int tw = g2.getFontMetrics().stringWidth(s);
+        FontMetrics fm = g2.getFontMetrics();
+        int tw = fm.stringWidth(s);
         g2.drawString(s, Math.round(x) + (width - tw) / 2, Math.round(y) + height / 2 + 4);
     }
 }

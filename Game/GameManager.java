@@ -4,7 +4,6 @@ import Objects.*;
 import PowerUps.*;
 
 import javax.swing.*;
-
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
@@ -12,8 +11,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
-
-
 
 public class GameManager extends JPanel implements KeyListener, ActionListener {
     private final GamePanel parent;
@@ -27,14 +24,17 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
 
     private Paddle paddle1;
     private Paddle paddle2;
-    private Ball ball;
+    private Ball mainBall;                          // Bóng chính
+    private List<Ball> balls = new ArrayList<>();   // Danh sách tất cả bóng (chính + phụ)
+    public Ball extraBall = null;
+
     private List<Brick> bricks;
     private List<PowerUp> powerUps;
-    List<Brick> toRemove = new ArrayList<>();
+    private List<Brick> toRemove = new ArrayList<>();
 
     private int score = 0;
     private int lives = 3;
-    private String gameState = "MENU"; // MENU, RUNNING, GAMEOVER, WIN, PAUSED
+    private String gameState = "MENU"; // MENU, RUNNING, GAMEOVER, WIN, PAUSED, LOSED, SETTING
 
     private boolean twoPlayerMode = false;
     private boolean prevTwoPlayerMode = false;
@@ -43,7 +43,6 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
     private boolean rightPressed = false;
     private boolean aPressed = false;
     private boolean dPressed = false;
-
 
     private BufferedImage backgroundImage;
     private final BufferedImage[] button = Renderer.loadbuttonTexture();
@@ -112,10 +111,10 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         }
         initGame();
 
-        int FPS = 60;
         int delay = 1000 / FPS;
         gameTimer = new Timer(delay, this);
         gameTimer.start();
+
 
         addMouseListener(new MouseAdapter() {
             @Override
@@ -174,7 +173,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
 
                     Rectangle okRect = new Rectangle(okX, btnY, btnW, btnH);
                     Rectangle cancelRect = new Rectangle(cancelX, btnY, btnW, btnH);
-                    Rectangle switchVol = new Rectangle( buttonX, soundtextY - 23, btW, btH);
+                    Rectangle switchVol = new Rectangle(buttonX, soundtextY - 23, btW, btH);
                     Rectangle switchPlay = new Rectangle(buttonX, mutiplayY - 23, btW, btH);
 
                     if (okRect.contains(p)) {
@@ -284,8 +283,6 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
             g.fillRoundRect(boxX, boxY, boxW, boxH, 30, 30);
         }
 
-
-
         if (button[13] != null && hoverOk) {
             g.drawImage(button[13], okX, btnY, btnW, btnH, null);
         } else if (button[12] != null) {
@@ -342,14 +339,12 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         if (gameState.equals("PAUSED")) {
             if (button[4] != null && hoverResume) {
                 g.drawImage(button[4], btnX, resumeY, btnW, btnH, null);
-
             } else if (button[5] != null) {
                 g.drawImage(button[5], btnX, resumeY, btnW, btnH, null);
             }
         } else if (gameState.equals("LOSED")) {
             if (button[10] != null && hoverResume) {
                 g.drawImage(button[10], btnX, resumeY, btnW, btnH, null);
-
             } else if (button[11] != null) {
                 g.drawImage(button[11], btnX, resumeY, btnW, btnH, null);
             }
@@ -371,29 +366,32 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         }
     }
 
-    //todo
     private void initGame() {
-        System.out.println(WIDTH + " "  + HEIGHT);
         paddle1 = new Paddle((WIDTH / 2f - (int)(60 * GamePanel.scaleY)), HEIGHT - (int)(60 * GamePanel.scaleY), (int)(120 * GamePanel.scaleY), (int)(16 * GamePanel.scaleY));
         if(twoPlayerMode) {
             paddle2 = new Paddle((WIDTH / 2f - (int)(60 * GamePanel.scaleY)), HEIGHT - (int)(140 * GamePanel.scaleY), (int)(120 * GamePanel.scaleY), (int)(16 * GamePanel.scaleY));
         }
 
+        float bx, by;
         if (twoPlayerMode) {
             // Bóng gắn với paddle2
-            float bx = paddle2.getX() + paddle2.getWidth() / 2f - (int)(8 * GamePanel.scaleY);
-            float by = paddle2.getY() - (int)(16 * GamePanel.scaleY) - 1;
-            ball = new Ball(bx, by, (int)(16 * GamePanel.scaleY), (int)(16 * GamePanel.scaleY));
+            bx = paddle2.getX() + paddle2.getWidth() / 2f - (int)(8 * GamePanel.scaleY);
+            by = paddle2.getY() - (int)(16 * GamePanel.scaleY) - 1;
         } else {
             // Bóng gắn với paddle1
-            float bx = paddle1.getX() + paddle1.getWidth() / 2f - (int)(8 * GamePanel.scaleY);
-            float by = paddle1.getY() - (int)(16 * GamePanel.scaleY) - 1;
-            ball = new Ball(bx, by, (int)(16 * GamePanel.scaleY), (int)(16 * GamePanel.scaleY));
+            bx = paddle1.getX() + paddle1.getWidth() / 2f - (int)(8 * GamePanel.scaleY);
+            by = paddle1.getY() - (int)(16 * GamePanel.scaleY) - 1;
         }
+        mainBall = new Ball(bx, by, (int)(16 * GamePanel.scaleY), (int)(16 * GamePanel.scaleY));
+        mainBall.resetToPaddle(twoPlayerMode ? paddle2 : paddle1);
 
-        bricks = new  ArrayList<>();
+        balls.clear();
+        balls.add(mainBall);
+        extraBall = null;
+
         bricks = Level.buildLevel(currentLevel, WIDTH, HEIGHT, GamePanel.scaleX, GamePanel.scaleY);
         powerUps = new ArrayList<>();
+        toRemove.clear();
     }
 
     @Override
@@ -402,7 +400,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         repaint();
     }
 
-    //todo
+
     private void updateGame() {
         if (!gameState.equals("RUNNING")) return;
 
@@ -410,6 +408,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         handleInput();
         paddle1.update();
         if(twoPlayerMode) paddle2.update();
+
         // clamp paddle inside screen
         if (paddle1.getX() < 0) paddle1.setX(0);
         if (paddle1.getX() + paddle1.getWidth() > WIDTH) paddle1.setX(WIDTH - paddle1.getWidth());
@@ -419,24 +418,19 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         }
 
         // Ball sticks to paddle until launched
-        if (!ball.isLaunched()) {
-            if (twoPlayerMode) {
-                ball.setX(paddle2.getX() + paddle2.getWidth() / 2f - ball.getWidth() / 2f);
-                ball.setY(paddle2.getY() - ball.getHeight() - 1);
+        for (Ball b : new ArrayList<>(balls)) {
+            if (!b.isLaunched()) {
+                Paddle p = twoPlayerMode ? paddle2 : paddle1;
+                b.setX(p.getX() + p.getWidth() / 2f - b.getWidth() / 2f);
+                b.setY(p.getY() - b.getHeight() - 1);
             } else {
-                ball.setX(paddle1.getX() + paddle1.getWidth() / 2f - ball.getWidth() / 2f);
-                ball.setY(paddle1.getY() - ball.getHeight() - 1);
+                b.update();
             }
-        } else {
-            ball.update();
+            checkCollisionsWithBall(b);
         }
 
-        // update powerups (falling)if (twoPlayerMode) {
+        // update powerups (falling)if (twoPlayerMode)
         for (PowerUp p : powerUps) p.update();
-
-        checkCollisions(paddle1, bricks, powerUps);
-        if (twoPlayerMode) checkCollisions(paddle2, bricks, powerUps);
-
 
         // remove expired/collected powerups from list
         powerUps.removeIf(PowerUp::isCollectedOrOffscreen);
@@ -447,17 +441,21 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
             if (currentLevel > 3) {
                 gameState = "WIN";
             } else {
-                if(!twoPlayerMode) ball.resetToPaddle(paddle1); // reset sets launched=false already
-                else ball.resetToPaddle(paddle2);
-                // optional: ensure ball not moving
-                ball.setDx(0); ball.setDy(0);
+                resetBallsToPaddles();
             }
         }
         if (lives <= 0) {
-            gameState = "LOSED";
+            gameState = "LOST";
         }
 
         ExplosiveBallPowerUp.updateExplosions();
+    }
+
+    private void resetBallsToPaddles() {
+        for (Ball b : balls) {
+            b.resetToPaddle(twoPlayerMode ? paddle2 : paddle1);
+            b.setDx(0); b.setDy(0);
+        }
     }
 
 
@@ -474,61 +472,68 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         }
     }
 
-    public void checkCollisions(Paddle paddle, List<Brick> bricks, List<PowerUp> powerUps) {
-        if (!ball.launched) return;
+
+    private void checkCollisionsWithBall(Ball ball) {
+        if (!ball.isLaunched()) return;
 
         // Kiểm tra va chạm với tường
-        checkWallCollisions();
+        checkWallCollisions(ball);
 
         // Kiểm tra va chạm với paddle
-        checkPaddleCollision(paddle);
+        checkPaddleCollision(ball, paddle1);
+        if (twoPlayerMode) checkPaddleCollision(ball, paddle2);
 
         // Kiểm tra va chạm với bricks, powerup
-        checkBrickCollisions(bricks, powerUps);
+        checkBrickCollisions(ball, bricks, powerUps);
     }
 
-    private void checkWallCollisions() {
+    private void checkWallCollisions(Ball ball) {
         boolean collided = false;
 
-        // Tường trái
+        //Tường trái
         if (ball.getX() <= 0) {
             ball.setX(0);
             ball.setDx(Math.abs(ball.getDx()));
             collided = true;
         }
-        // Tường phải
+        //Tường phải
         else if (ball.getX() + ball.getWidth() >= WIDTH) {
             ball.setX(WIDTH - ball.getWidth());
             ball.setDx(-Math.abs(ball.getDx()));
             collided = true;
         }
-
-        // Tường trên
+        //Tường trên
         if (ball.getY() <= 0) {
             ball.setY(0);
             ball.setDy(Math.abs(ball.getDy()));
             collided = true;
         }
-
-        // Tường dưới
+        //Tường dưới
         else if (ball.getY() + ball.getHeight() >= HEIGHT) {
-            ball.setY(HEIGHT - ball.getHeight());
-            ball.setDy(-Math.abs(ball.getDy()));
-            Ball.launched = false;
-            ball.setDx(0);
-            ball.setDy(0);
-            lives--;
-            return;
+            if (ball == mainBall) {
+                ball.setY(HEIGHT - ball.getHeight());
+                ball.setDy(-Math.abs(ball.getDy()));
+                Ball.launched = false;
+                ball.setDx(0);
+                ball.setDy(0);
+                lives--;
 
+                if (extraBall != null) {
+                    removeExtraBall(extraBall);
+                }
+            } else {
+                removeExtraBall(ball);
+            }
+            return;
         }
 
         if (collided) {
-            normalizeVelocity();
+            normalizeVelocity(ball);
             SoundEffect.play("collision");
         }
     }
 
-    private void checkPaddleCollision(Paddle paddle) {
+    private void checkPaddleCollision(Ball ball, Paddle paddle) {
         Rectangle paddleRect = paddle.getBounds();
 
         float ballCenterX = ball.getCenterX();
@@ -540,7 +545,6 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         float paddleLeft = paddleRect.x;
         float paddleRight = paddleRect.x + paddleRect.width;
 
-        // Kiểm tra overlap
         boolean overlapX = ballCenterX >= paddleLeft && ballCenterX <= paddleRight;
         boolean overlapY = ballBottom >= paddleTop && ball.getY() <= paddleBottom;
 
@@ -557,17 +561,16 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
 
         // Va chạm từ trên xuống
         if (ball.getDy() > 0 && prevBottom <= paddleTop) {
-            handlePaddleTopCollision(paddle, paddleRect, ballCenterX);
+            handlePaddleTopCollision(ball, paddle, paddleRect, ballCenterX);
             SoundEffect.play("collision");
-        }
-        // Va chạm từ bên
-        else {
-            handlePaddleSideCollision(paddleRect, ballCenterX, ballCenterY);
+            // Va chạm từ bên
+        } else {
+            handlePaddleSideCollision(ball, paddleRect);
             SoundEffect.play("collision");
         }
     }
 
-    private void handlePaddleTopCollision(Paddle paddle, Rectangle paddleRect, float ballCenterX) {
+    private void handlePaddleTopCollision(Ball ball, Paddle paddle, Rectangle paddleRect, float ballCenterX) {
         // Đặt bóng lên trên paddle
         ball.setY(paddleRect.y - ball.getHeight() - 0.5f);
 
@@ -587,7 +590,6 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         // Convert sang radians và set velocity mới
         double angleInRadians = Math.toRadians(angleInDegrees);
         float speedMagnitude = ball.getSpeed();
-
         ball.setDx((float) (speedMagnitude * Math.cos(angleInRadians)));
         ball.setDy(-(float) (speedMagnitude * Math.sin(angleInRadians)));// Âm vì đi lên
 
@@ -597,25 +599,26 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         }
     }
 
-    private void handlePaddleSideCollision(Rectangle paddleRect, float ballCenterX, float ballCenterY) {
+    private void handlePaddleSideCollision(Ball ball, Rectangle paddleRect) {
+        float ballCenterX = ball.getCenterX();
+        float prevCenterX = ball.getX() - ball.getDx() + ball.getRadius();
+
         float paddleLeft = paddleRect.x;
         float paddleRight = paddleRect.x + paddleRect.width;
 
-        float prevX = ball.getX() - ball.getDx();
-        float prevCenterX = prevX + ball.getRadius();
-
-        // Xác định va chạm bên trái hay phải
-        boolean hitFromLeft = prevCenterX < paddleLeft && ballCenterX >= paddleLeft;
-        boolean hitFromRight = prevCenterX > paddleRight && ballCenterX <= paddleRight;
-
-        if (hitFromLeft) {
-            ball.setX(paddleLeft - ball.getWidth() - 0.5f);
-            ball.setDx(-Math.abs(ball.getDx()));
-            normalizeVelocity();
-        } else if (hitFromRight) {
-            ball.setX(paddleRight + 0.5f);
-            ball.setDx(Math.abs(ball.getDx()));
-            normalizeVelocity();
+        // Xác định va chạm từ bên trái
+        if (prevCenterX < paddleLeft && ballCenterX >= paddleLeft) {
+            ball.setX(paddleLeft - ball.getWidth());
+            ball.setDx(-Math.abs(ball.getDx())); // Đảo chiều sang trái
+            normalizeVelocity(ball);
+            SoundEffect.play("collision");
+        }
+        // Xác định va chạm từ bên phải
+        else if (prevCenterX > paddleRight && ballCenterX <= paddleRight) {
+            ball.setX(paddleRight);
+            ball.setDx(Math.abs(ball.getDx())); // Đảo chiều sang phải
+            normalizeVelocity(ball);
+            SoundEffect.play("collision");
         }
     }
 
@@ -623,18 +626,16 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         return Math.max(min, Math.min(value, max));
     }
 
-    public boolean circleCheckCollision(Rectangle rect) {
-        float closestX = clamp(ball.getCenterX(), rect.x,rect.x + rect.width );
-        float closestY = clamp(ball.getCenterY(), rect.y,rect.y + rect.height);
-
+    public boolean circleCheckCollision(Ball ball, Rectangle rect) {
+        float closestX = clamp(ball.getCenterX(), rect.x, rect.x + rect.width);
+        float closestY = clamp(ball.getCenterY(), rect.y, rect.y + rect.height);
         float dX = ball.getCenterX() - closestX;
         float dY = ball.getCenterY() - closestY;
-
         return (dX * dX + dY * dY) < (ball.getRadius() * ball.getRadius());
     }
 
-    private void checkBrickCollisions(List<Brick> bricks, List<PowerUp> powerUps) {
-        Rectangle ballRect = getBounds();
+    private void checkBrickCollisions(Ball ball, List<Brick> bricks, List<PowerUp> powerUps) {
+        Rectangle ballRect = ball.getBounds();
         float ballCenterX = ball.getCenterX();
         float ballCenterY = ball.getCenterY();
 
@@ -643,7 +644,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
             Brick brick = it.next();
             Rectangle brickRect = brick.getBounds();
 
-            if (!circleCheckCollision(brickRect)) continue;
+            if (!circleCheckCollision(ball, brickRect)) continue;
 
             // Tính vị trí tương đối của ball với brick
             float brickCenterX = brickRect.x + brickRect.width / 2f;
@@ -680,7 +681,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
             }
 
             // Normalize lại velocity để giữ tốc độ ổn định
-            normalizeVelocity();
+            normalizeVelocity(ball);
 
             // Xử lý brick
             brick.takeHit();
@@ -701,8 +702,8 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
                 score += 100;
 
                 if (rand.nextDouble() < 0.99) {
-                    int type = 4;//rand.nextInt(4);
-                    PowerUp pu = null  ;
+                    int type = 5;
+                    PowerUp pu = null;
                     if (type == 0) {
                         pu = new ExpandPaddlePowerUp(brick.getX() + brick.getWidth()/2f - 12,
                                 brick.getY() + brick.getHeight()/2f,
@@ -723,17 +724,20 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
                         pu = new ShrinkPaddlePowerUp(brick.getX() + brick.getWidth()/2f - 12,
                                 brick.getY() + brick.getHeight()/2f,
                                 (int)(24 * GamePanel.scaleY), (int)(24 * GamePanel.scaleY), 5000);
-
+                    } else if (type == 5) {
+                        pu = new DoubleBallPowerUp(brick.getX() + brick.getWidth()/2f - 12,
+                                brick.getY() + brick.getHeight()/2f,
+                                (int)(24 * GamePanel.scaleY), (int)(24 * GamePanel.scaleY), 5000);
                     }
                     if (pu != null) {
                         powerUps.add(pu);
                     }
-
                 }
             }
         }
         if (!toRemove.isEmpty()) {
             bricks.removeAll(toRemove);
+            toRemove.clear();
         }
 
         Iterator<PowerUp> pit = powerUps.iterator();
@@ -745,13 +749,13 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
                 continue;
             }
             if (pu.intersects(paddle1)) {
-                pu.applyEffect(paddle1, ball, this);
+                pu.applyEffect(paddle1, mainBall, this);
                 pu.markCollectedOrOffscreen();
                 pit.remove();
             }
             if (twoPlayerMode) {
                 if (pu.intersects(paddle2)) {
-                    pu.applyEffect(paddle2, ball, this);
+                    pu.applyEffect(paddle2, mainBall, this);
                     pu.markCollectedOrOffscreen();
                     pit.remove();
                 }
@@ -763,12 +767,25 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
      * Normalize velocity để duy trì tốc độ ổn định
      * Fix bug: tốc độ bóng tăng/giảm sau nhiều lần va chạm
      */
-    private void normalizeVelocity() {
-        if (ball.isFast()) return; // ko reset tốc độ khi tăng tốc
+    private void normalizeVelocity(Ball ball) {
+        if (ball.isFast()) return;
         float currentMagnitude = (float) Math.hypot(ball.getDx(), ball.getDy());
         if (currentMagnitude > EPSILON && Math.abs(currentMagnitude - ball.getSpeed()) > EPSILON) {
             ball.setDx((ball.getDx() / currentMagnitude) * ball.getSpeed());
             ball.setDy((ball.getDy() / currentMagnitude) * ball.getSpeed());
+        }
+    }
+
+    public void addExtraBall(Ball ball) {
+        if (extraBall != null || balls.contains(ball)) return;
+        balls.add(ball);
+        extraBall = ball;
+    }
+
+    public void removeExtraBall(Ball ball) {
+        if (extraBall == ball) {
+            balls.remove(ball);
+            extraBall = null;
         }
     }
 
@@ -777,6 +794,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         super.paintComponent(g);
         // background
         Graphics2D g2 = (Graphics2D) g.create();
+
         if (backgroundImage != null) {
             g2.drawImage(backgroundImage, 0, 0, null);
         } else {
@@ -794,12 +812,11 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         paddle1.render(g2);
         if (twoPlayerMode) paddle2.render(g2);
 
-        ball.render(g2);
+        for (Ball b : balls) b.render(g2);
 
         for (Brick b : bricks) b.render(g2);
         for (PowerUp p : powerUps) p.render(g2);
         ExplosiveBallPowerUp.drawExplosions(g2);
-
 
         // overlays
         if (gameState.equals("MENU")) {
@@ -812,14 +829,14 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         } else if (gameState.equals("SETTING")) {
             showSetting(g2);
         }
+
+        g2.dispose();
     }
 
-
-
-    private void buttonMenu (Graphics g) {
+    private void buttonMenu(Graphics g) {
         int butW = (int)(30 * GamePanel.scaleY), butH = (int)(30 * GamePanel.scaleY);
         int butX = WIDTH - (int)(50 * GamePanel.scaleY);
-        int butY = (int)(20 *  GamePanel.scaleY);
+        int butY = (int)(20 * GamePanel.scaleY);
         if (button[1] != null) {
             g.drawImage(button[1], butX, butY, butW, butH, null);
         }
@@ -838,7 +855,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
     // KeyListener
     @Override
     public void keyTyped(KeyEvent e) { }
-    @Override // todo
+    @Override
     public void keyPressed(KeyEvent e) {
         int kc = e.getKeyCode();
         if (kc == KeyEvent.VK_LEFT) leftPressed = true;
@@ -848,11 +865,10 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         if (kc == KeyEvent.VK_SPACE) {
             if (gameState.equals("MENU")) {
                 gameState = "RUNNING";
-                if (twoPlayerMode) ball.resetToPaddle(paddle2);
-                else if (!twoPlayerMode) ball.resetToPaddle(paddle1);
-                ball.launch(4f, -4f);
-            } else if (gameState.equals("RUNNING")) {
-                if (!ball.isLaunched()) ball.launch(4f, -4f);
+                mainBall.resetToPaddle(twoPlayerMode ? paddle2 : paddle1);
+                mainBall.launch(4f, -4f);
+            } else if (gameState.equals("RUNNING") && !mainBall.isLaunched()) {
+                mainBall.launch(4f, -4f);
             }
         }
         if (kc == KeyEvent.VK_P) {
@@ -868,7 +884,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
             }
         }
     }
-    @Override // todo
+    @Override
     public void keyReleased(KeyEvent e) {
         int kc = e.getKeyCode();
         if (kc == KeyEvent.VK_LEFT) leftPressed = false;
@@ -891,14 +907,13 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         if (backgroundImage != null) {
             backgroundImage = resizeImage(backgroundImage, WIDTH, HEIGHT);
         }
-        restart(); // khởi động lại game với level mới
+        restart();// khởi động lại game với level mới
     }
 
 
     private BufferedImage resizeImage(BufferedImage originalImage, int targetWidth, int targetHeight) {
         Image tmp = originalImage.getScaledInstance(targetWidth, targetHeight, Image.SCALE_SMOOTH);
         BufferedImage resized = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_ARGB);
-
         Graphics2D g2d = resized.createGraphics();
         g2d.drawImage(tmp, 0, 0, null);
         g2d.dispose();

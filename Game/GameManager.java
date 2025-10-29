@@ -74,6 +74,10 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         return currentLevel;
     }
 
+    public void addLife() {
+        lives++;
+    }
+
     public void setCurrentLevel(int level) {
         this.currentLevel = level;
     }
@@ -701,8 +705,8 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
                 it.remove();
                 score += 100;
 
-                if (rand.nextDouble() < 0.2) {
-                    int type = rand.nextInt(6);
+                if (rand.nextDouble() < 0.99) {
+                    int type = 7;//rand.nextInt(7);
                     PowerUp pu;
                     if (type == 0) {
                         pu = new ExpandPaddlePowerUp(brick.getX() + brick.getWidth()/2f - 12,
@@ -724,8 +728,12 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
                         pu = new ShrinkPaddlePowerUp(brick.getX() + brick.getWidth()/2f - 12,
                                 brick.getY() + brick.getHeight()/2f,
                                 (int)(24 * GamePanel.scaleY), (int)(24 * GamePanel.scaleY), 5000);
-                    } else {
+                    } else if (type == 5) {
                         pu = new DoubleBallPowerUp(brick.getX() + brick.getWidth()/2f - 12,
+                                brick.getY() + brick.getHeight()/2f,
+                                (int)(24 * GamePanel.scaleY), (int)(24 * GamePanel.scaleY), 5000);
+                    } else  {
+                        pu = new ExtraLifePowerUp(brick.getX() + brick.getWidth()/2f - 12,
                                 brick.getY() + brick.getHeight()/2f,
                                 (int)(24 * GamePanel.scaleY), (int)(24 * GamePanel.scaleY), 5000);
                     }

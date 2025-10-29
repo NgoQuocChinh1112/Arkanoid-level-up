@@ -3,27 +3,36 @@ package PowerUps;
 import Game.GameManager;
 import Objects.Ball;
 import Objects.Paddle;
-
 import javax.swing.*;
 import java.awt.*;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 public class DoubleBallPowerUp extends PowerUp {
 
     private static final int BALL_SIZE = 16;
-    private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm:ss.SSS");
+    private Timer timer;
 
-    private Timer timer; // Lưu timer để quản lý
-
+    /**
+     * Constructor.
+     * @param x
+     * @param y
+     * @param width
+     * @param height
+     * @param durationMs
+     */
     public DoubleBallPowerUp(float x, float y, int width, int height,long durationMs) {
         super(x, y, width, height, durationMs, "DOUBLE_BALL");
         this.durationMs = 0;
     }
 
+    /**
+     * Áp dụng hiệu ứng.
+     * @param paddle
+     * @param originalBall
+     * @param gameManagerobj
+     */
     @Override
-    public void applyEffect(Paddle paddle, Ball originalBall, Object gameManagerObj) {
-        GameManager gameManager = (GameManager) gameManagerObj;
+    public void applyEffect(Paddle paddle, Ball originalBall, Object gameManagerobj) {
+        GameManager gameManager = (GameManager) gameManagerobj;
 
         // CHỈ TẠO BÓNG PHỤ NẾU CHƯA CÓ
         if (gameManager.extraBall != null) {

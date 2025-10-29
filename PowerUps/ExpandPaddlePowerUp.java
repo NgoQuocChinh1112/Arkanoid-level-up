@@ -30,7 +30,7 @@ public class ExpandPaddlePowerUp extends PowerUp {
      * @param ball
      * @param gameManager
      */
-    public void applyEffect(Paddle paddle, Ball ball, Object gameManager) {
+    public void applyEffect(Paddle paddle, Ball ball,Object gameManager) {
         if (originalWidth == -1) {
             originalWidth = paddle.getWidth();
         }

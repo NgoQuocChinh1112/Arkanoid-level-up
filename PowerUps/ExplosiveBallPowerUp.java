@@ -23,10 +23,17 @@ public class ExplosiveBallPowerUp extends PowerUp {
     private static final List<Integer> explosionFrame = new ArrayList<>();
     private static final List<Integer> explosionCounter = new ArrayList<>();
 
-
     private static final int TOTAL_FRAMES = 6;   //  6 frame
     private static final int FRAME_DELAY = 3;    // tốc độ chuyển frame
 
+    /**
+     * Constructor.
+     * @param x
+     * @param y
+     * @param width
+     * @param height
+     * @param durationMs
+     */
     public ExplosiveBallPowerUp(float x, float y, int width, int height, long durationMs) {
         super(x, y, width, height, durationMs, "EXPLOSIVE_BALL");
         loadImage();
@@ -42,6 +49,12 @@ public class ExplosiveBallPowerUp extends PowerUp {
         }
     }
 
+    /**
+     * Áp dụng hiệu ứng
+     * @param paddle
+     * @param ball
+     * @param gameManager
+     */
     @Override
     public void applyEffect(Paddle paddle, Ball ball, Object gameManager) {
         if (active) return;
@@ -61,6 +74,10 @@ public class ExplosiveBallPowerUp extends PowerUp {
         timer.start();
     }
 
+    /**
+     * Vẽ.
+     * @param g2
+     */
     @Override
     public void render(Graphics2D g2) {
         g2.setColor(new Color(220, 120, 40));
@@ -73,7 +90,14 @@ public class ExplosiveBallPowerUp extends PowerUp {
         g2.drawString(s, Math.round(x) + (width - tw) / 2, Math.round(y) + height / 2 + 4);
     }
 
-    //
+    /**
+     * Đánh dấu các gạch bị nổ và phát âm thanh.
+     * @param bricks
+     * @param centerX
+     * @param centerY
+     * @param radius
+     * @param toRemove
+     */
     public static void explodeAt(List<Brick> bricks, float centerX, float centerY, float radius, List<Brick> toRemove) {
         SoundEffect.play("explosive");
         for (Brick brick : bricks) {
@@ -102,6 +126,9 @@ public class ExplosiveBallPowerUp extends PowerUp {
         explosionCounter.add(0);
     }
 
+    /**
+     * Chuyển Frame nổ.
+     */
     public static void updateExplosions() {
         for (int i = 0; i < explosionFrame.size(); i++) {
             int counter = explosionCounter.get(i) + 1;
@@ -128,6 +155,13 @@ public class ExplosiveBallPowerUp extends PowerUp {
         }
     }
 
+    /**
+     * Vẽ vụ nổ.
+     * @param g2
+     * @param x
+     * @param y
+     * @param frame
+     */
     private static void renderExplosion(Graphics2D g2, float x, float y, int frame) {
         if (explosionImg == null) return;
 

@@ -8,10 +8,24 @@ import java.awt.*;
 import javax.swing.Timer;
 
 public class BigBallPowerUp extends PowerUp {
+    /**
+     * Constructor.
+     * @param x
+     * @param y
+     * @param width
+     * @param height
+     * @param durationMs
+     */
     public BigBallPowerUp(float x, float y, int width, int height, long durationMs) {
         super(x, y, width, height, durationMs, "BIG_BALL");
     }
 
+    /**
+     * Áp dụng hiệu ứng.
+     * @param paddle
+     * @param ball
+     * @param gameManager
+     */
     public void applyEffect(Paddle paddle, Ball ball, Object gameManager) {
         if (ball.isEnlarged()) return;
 
@@ -33,7 +47,7 @@ public class BigBallPowerUp extends PowerUp {
         ball.setX(oldCenterX - ball.getWidth() / 2f);
         ball.setY(oldCenterY - ball.getHeight() / 2f);
 
-        Timer timer = new javax.swing.Timer((int) durationMs, e -> {
+        Timer timer = new Timer((int) durationMs, e -> {
             // Tính tâm hiện tại trước khi thu nhỏ
             float currentCenterX = ball.getX() + ball.getWidth() / 2f;
             float currentCenterY = ball.getY() + ball.getHeight() / 2f;
@@ -53,9 +67,12 @@ public class BigBallPowerUp extends PowerUp {
         timer.start();
     }
 
-
+    /**
+     * Vẽ.
+     * @param g2
+     */
     @Override
-    public void render(java.awt.Graphics2D g2) {
+    public void render(Graphics2D g2) {
         g2.setColor(new Color(220, 120, 40));
         g2.fillOval(Math.round(x), Math.round(y), width, height);
         g2.setColor(Color.BLACK);

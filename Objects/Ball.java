@@ -26,6 +26,7 @@ public class Ball extends MovableObject {
     public float getSpeed() {
         return speed;
     }
+
     public Ball(float x, float y, int width, int height) {
         super(x, y, width, height);
         dx = 0;
@@ -35,10 +36,18 @@ public class Ball extends MovableObject {
         texture = Renderer.loadBallTexture();
     }
 
+    /**
+     * Trả về bán kính.
+     * @return bán kính.
+     */
     public float getRadius() {
         return radius;
     }
 
+    /**
+     * Thiết lập bán kính.
+     * @param radius
+     */
     public void setRadius(float radius) {
         this.radius = radius;
     }
@@ -126,34 +135,56 @@ public class Ball extends MovableObject {
         return y + radius;
     }
 
-
-
     private boolean fast = false;
 
+    /**
+     * Trả về trạng thái nhanh hay chậm của bóng.
+     * @return
+     */
     public boolean isFast() {
         return fast;
     }
 
+    /**
+     * Thiết lập trạng thái tốc độ của bóng.
+     * @param isFast
+     */
     public void setFast(boolean isFast) {
         this.fast = isFast;
     }
 
     private boolean enlarged = false;
 
+    /**
+     * Trả về trạng thái kích thước bóng.
+     * @return
+     */
     public boolean isEnlarged() {
         return enlarged;
     }
 
+    /**
+     * Thiết lập trạng thái kích cỡ bóng
+     * @param enlarged
+     */
     public void setEnlarged(boolean enlarged) {
         this.enlarged = enlarged;
     }
 
     private boolean explosive = false;
 
+    /**
+     * Trả về bóng có đang nổ không.
+     * @return
+     */
     public boolean isExplosive() {
         return explosive;
     }
 
+    /**
+     * Thiết lập trạng thái nổ của bóng.
+     * @param explosive
+     */
     public void setExplosive(boolean explosive) {
         this.explosive = explosive;
     }

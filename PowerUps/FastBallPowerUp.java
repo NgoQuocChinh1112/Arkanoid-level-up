@@ -11,10 +11,24 @@ public class FastBallPowerUp extends PowerUp {
 
     private Timer timer;
 
+    /**
+     * Constructor.
+     * @param x
+     * @param y
+     * @param width
+     * @param height
+     * @param durationMs
+     */
     public FastBallPowerUp(float x, float y, int width, int height, long durationMs) {
         super(x, y, width, height, durationMs, "FAST_BALL");
     }
 
+    /**
+     * Áp dụng hiệu ứng.
+     * @param paddle
+     * @param ball
+     * @param gameManager
+     */
     @Override
     public void applyEffect(Paddle paddle, Ball ball, Object gameManager) {
         if (ball.isFast()) return;
@@ -37,6 +51,10 @@ public class FastBallPowerUp extends PowerUp {
         timer.start();
     }
 
+    /**
+     * Vẽ.
+     * @param g2
+     */
     @Override
     public void render(Graphics2D g2) {
         g2.setColor(new Color(220, 120, 40));

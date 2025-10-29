@@ -24,8 +24,6 @@ public class GamePanel extends JPanel {
 
     /**
      * Khởi tạo GamePanel với kích thước xác định và các màn hình con.
-     * @param width chiều rộng khung game.
-     * @param height chiều cao khung game.
      */
 
      public GameManager getGameManager() {

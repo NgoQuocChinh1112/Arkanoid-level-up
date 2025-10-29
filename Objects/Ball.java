@@ -1,7 +1,6 @@
 package Objects;
 
 import Game.GameManager;
-import Game.GamePanel;
 import Game.Renderer;
 import java.awt.*;
 
@@ -9,7 +8,7 @@ public class Ball extends MovableObject {
     public float speed = 8f;
     public static boolean launched = false;
     private float radius;
-    private Rectangle boundsCache;
+    private final Rectangle boundsCache;
 
     public void setSpeed(float s) {
         if (s > 0) {
@@ -43,47 +42,14 @@ public class Ball extends MovableObject {
         this.radius = radius;
     }
 
-    public float getX(){
-        return this.x;
-    }
-    public float getY(){
-        return this.y;
-    }
-    public void setX(float x){
-        this.x = x;
-    }
-    public void setY(float y){
-        this.y = y;
-    }
-    public int getWidth(){
-        return this.width;
-    }
     public void setWidth(int width){
         this.width = width;
         this.radius = width / 2f;
     }
-    public int getHeight(){
-        return this.height;
-    }
+
     public void setHeight(int height){
         this.height = height;
         this.radius = height / 2f;
-    }
-    public float getDx() {
-        return dx;
-    }
-    public float getDy() {
-        return dy;
-    }
-    public void setDx(float dx) {
-        this.dx = dx;
-    }
-    public void setDy(float dy) {
-        this.dy = dy;
-    }
-    @Override
-    public void update() {
-        move();
     }
 
     @Override

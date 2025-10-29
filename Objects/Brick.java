@@ -1,31 +1,32 @@
 package Objects;
 
 import java.awt.*;
-import javax.imageio.ImageIO;
 import Game.Renderer;
 import Game.SoundEffect;
+import java.util.List;
 
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 
 public class Brick extends GameObject {
-    protected static final int MAX_LEVEL = 5;
-    protected int hitPoints;
-    private BufferedImage[] textures;
-    protected int level;
+    private final int hitPoints;
+    private int heart;
+    private final List<List<BufferedImage>> textures = Renderer.loadBrickTexture();
 
-    public Brick(float x, float y, int width, int height, int hitPoints, int level) {
+    public Brick(float x, float y, int width, int height, int level) {
         super(x, y, width, height);
-        this.hitPoints = hitPoints;
-        this.level = level;
-        if (textures == null) {
-            textures = Renderer.loadBrickTexture();
+        this.hitPoints = level;
+        this.heart = level;
+        if (level == 6) {
+            texture = textures.get(this.hitPoints - 1).getFirst();
+        } else {
+            texture = textures.get(this.hitPoints - 1).get(this.heart - 1);
         }
-        texture = textures[this.level - 1];
     }
 
     @Override
-    public void update() {}
+    public void update() {
+
+    }
 
     @Override
     public void render(Graphics2D g2) {
@@ -37,12 +38,20 @@ public class Brick extends GameObject {
     public void takeHit() {
         if (hitPoints > 0) {
             SoundEffect.play("collision");
-            if (hitPoints != 6) {
-                hitPoints--;
+            if (hitPoints != 6 && heart > 0) {
+                heart--;
             }
         }
         if (hitPoints > 0) {
-            texture = textures[hitPoints - 1];
+            if (heart <= 0) {
+                texture = textures.get(hitPoints - 1).getFirst();
+            }  else {
+                if (hitPoints == 6) {
+                    texture = textures.get(hitPoints - 1).getFirst();
+                } else {
+                    texture = textures.get(hitPoints - 1).get(heart - 1);
+                }
+            }
         } else {
             SoundEffect.play("break");
             texture = null;
@@ -50,14 +59,10 @@ public class Brick extends GameObject {
     }
 
     public boolean isDestroyed() {
-        return hitPoints <= 0;
+        return heart <= 0;
     }
 
     public int getHitPoints() {
         return hitPoints;
-    }
-
-    public int level() {
-        return level;
     }
 }

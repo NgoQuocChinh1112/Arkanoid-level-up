@@ -13,28 +13,25 @@ import java.util.List;
 import java.util.Random;
 
 public class GameManager extends JPanel implements KeyListener, ActionListener {
-    private final GamePanel parent;
 
     private int WIDTH;
     private int HEIGHT;
 
-    private Timer gameTimer;
-    private final int FPS = 60;
     private int currentLevel = 1;
 
     private Paddle paddle1;
     private Paddle paddle2;
     private Ball mainBall;                          // Bóng chính
-    private List<Ball> balls = new ArrayList<>();   // Danh sách tất cả bóng (chính + phụ)
+    private final List<Ball> balls = new ArrayList<>();   // Danh sách tất cả bóng (chính + phụ)
     public Ball extraBall = null;
 
     private List<Brick> bricks;
     private List<PowerUp> powerUps;
-    private List<Brick> toRemove = new ArrayList<>();
+    private final List<Brick> toRemove = new ArrayList<>();
 
     private int score = 0;
     private int lives = 3;
-    private String gameState = "MENU"; // MENU, RUNNING, GAMEOVER, WIN, PAUSED, LOST, SETTING
+    private String gameState = "MENU"; // MENU, RUNNING, GAMEOVER, WIN, PAUSED, LOSE, SETTING
 
     private boolean twoPlayerMode = false;
     private boolean prevTwoPlayerMode = false;
@@ -81,8 +78,6 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         this.currentLevel = level;
     }
 
-    private SoundEffect bgm;
-
     public void setGameSize(int width, int height) {
         this.WIDTH = width;
         this.HEIGHT = height;
@@ -94,7 +89,6 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
     }
 
     public GameManager(GamePanel parent, int width, int height) {
-        this.parent = parent;
         this.WIDTH = width;
         this.HEIGHT = height;
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
@@ -111,8 +105,9 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         }
         initGame();
 
+        int FPS = 60;
         int delay = 1000 / FPS;
-        gameTimer = new Timer(delay, this);
+        Timer gameTimer = new Timer(delay, this);
         gameTimer.start();
 
 
@@ -129,7 +124,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
                         gameState = "PAUSED";
                     }
                 }
-                if (gameState.equals("PAUSED") || gameState.equals("LOST")) {
+                if (gameState.equals("PAUSED") || gameState.equals("LOSE")) {
                     int boxX = (WIDTH - (int) (300 * GamePanel.scaleY)) / 2;
                     int boxY = (HEIGHT - (int) (330 * GamePanel.scaleY)) / 2;
                     int btnW = (int) (180 * GamePanel.scaleY);
@@ -147,7 +142,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
                     if (resumeRect.contains(p)) {
                         if (gameState.equals("PAUSED")) {
                             gameState = "RUNNING";
-                        } else if (gameState.equals("LOST")) {
+                        } else if (gameState.equals("LOSE")) {
                             parent.showLevelPanel();
                         }
                     } else if (menuRect.contains(p)) {
@@ -342,7 +337,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
             } else if (button[5] != null) {
                 g.drawImage(button[5], btnX, resumeY, btnW, btnH, null);
             }
-        } else if (gameState.equals("LOSED")) {
+        } else if (gameState.equals("LOSE")) {
             if (button[10] != null && hoverResume) {
                 g.drawImage(button[10], btnX, resumeY, btnW, btnH, null);
             } else if (button[11] != null) {
@@ -445,7 +440,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
             }
         }
         if (lives <= 0) {
-            gameState = "LOST";
+            gameState = "LOSE";
         }
 
         ExplosiveBallPowerUp.updateExplosions();
@@ -575,6 +570,18 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         ball.setY(paddleRect.y - ball.getHeight() - 0.5f);
 
         // Tính góc phản xạ dựa trên vị trí va chạm
+        double angleInRadians = getAngleInRadians(paddleRect, ballCenterX);
+        float speedMagnitude = ball.getSpeed();
+        ball.setDx((float) (speedMagnitude * Math.cos(angleInRadians)));
+        ball.setDy(-(float) (speedMagnitude * Math.sin(angleInRadians)));// Âm vì đi lên
+
+        // Đảm bảo dy luôn âm (đi lên)
+        if (ball.getDy() > 0) {
+            ball.setDy(-ball.getDy());
+        }
+    }
+
+    private static double getAngleInRadians(Rectangle paddleRect, float ballCenterX) {
         float paddleCenter = paddleRect.x + paddleRect.width / 2f;
         float hitPosition = (ballCenterX - paddleCenter) / (paddleRect.width / 2f);
 
@@ -589,14 +596,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
 
         // Convert sang radians và set velocity mới
         double angleInRadians = Math.toRadians(angleInDegrees);
-        float speedMagnitude = ball.getSpeed();
-        ball.setDx((float) (speedMagnitude * Math.cos(angleInRadians)));
-        ball.setDy(-(float) (speedMagnitude * Math.sin(angleInRadians)));// Âm vì đi lên
-
-        // Đảm bảo dy luôn âm (đi lên)
-        if (ball.getDy() > 0) {
-            ball.setDy(-ball.getDy());
-        }
+        return angleInRadians;
     }
 
     private void handlePaddleSideCollision(Ball ball, Rectangle paddleRect) {
@@ -703,7 +703,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
 
                 if (rand.nextDouble() < 0.2) {
                     int type = rand.nextInt(6);
-                    PowerUp pu = null;
+                    PowerUp pu;
                     if (type == 0) {
                         pu = new ExpandPaddlePowerUp(brick.getX() + brick.getWidth()/2f - 12,
                                 brick.getY() + brick.getHeight()/2f,
@@ -724,14 +724,12 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
                         pu = new ShrinkPaddlePowerUp(brick.getX() + brick.getWidth()/2f - 12,
                                 brick.getY() + brick.getHeight()/2f,
                                 (int)(24 * GamePanel.scaleY), (int)(24 * GamePanel.scaleY), 5000);
-                    } else if (type == 5) {
+                    } else {
                         pu = new DoubleBallPowerUp(brick.getX() + brick.getWidth()/2f - 12,
                                 brick.getY() + brick.getHeight()/2f,
                                 (int)(24 * GamePanel.scaleY), (int)(24 * GamePanel.scaleY), 5000);
                     }
-                    if (pu != null) {
-                        powerUps.add(pu);
-                    }
+                    powerUps.add(pu);
                 }
             }
         }
@@ -819,15 +817,11 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         ExplosiveBallPowerUp.drawExplosions(g2);
 
         // overlays
-        if (gameState.equals("MENU")) {
-            drawCenteredString(g2, "PRESS SPACE TO START", WIDTH, HEIGHT);
-        } else if (gameState.equals("PAUSED") || gameState.equals("LOST")
-                || gameState.equals("WIN")) {
-            showMenu(g2);
-        } else if (gameState.equals("RUNNING")) {
-            buttonMenu(g2);
-        } else if (gameState.equals("SETTING")) {
-            showSetting(g2);
+        switch (gameState) {
+            case "MENU" -> drawCenteredString(g2, WIDTH, HEIGHT);
+            case "PAUSED", "LOSE", "WIN" -> showMenu(g2);
+            case "RUNNING" -> buttonMenu(g2);
+            case "SETTING" -> showSetting(g2);
         }
 
         g2.dispose();
@@ -842,14 +836,14 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         }
     }
 
-    private void drawCenteredString(Graphics2D g2, String text, int w, int h) {
+    private void drawCenteredString(Graphics2D g2, int w, int h) {
         g2.setColor(new Color(0,0,0,160));
         g2.fillRect(0,h/2 - 40, w, 80);
         g2.setColor(Color.WHITE);
         g2.setFont(new Font("Arial", Font.BOLD, 26));
         FontMetrics fm = g2.getFontMetrics();
-        int tw = fm.stringWidth(text);
-        g2.drawString(text, (w - tw)/2, h/2 + fm.getAscent()/2 - 6);
+        int tw = fm.stringWidth("PRESS SPACE TO START");
+        g2.drawString("PRESS SPACE TO START", (w - tw)/2, h/2 + fm.getAscent()/2 - 6);
     }
 
     // KeyListener
@@ -893,7 +887,6 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         if (kc == KeyEvent.VK_D) dPressed = false;
     }
 
-    public void increaseScore(int v) { score += v; }
     public void restart() {
         score = 0;
         lives = 3;

@@ -133,10 +133,9 @@ public class ExplosiveBallPowerUp extends PowerUp {
 
         int totalWidth = explosionImg.getWidth();   // ảnh sprite tổng
         int totalHeight = explosionImg.getHeight(); // chiều cao ảnh
-        int totalFrames = TOTAL_FRAMES;
 
         // Tính vùng cắt đều chính xác cho 6 frame
-        int frameWidth = Math.round(totalWidth / (float) totalFrames);
+        int frameWidth = Math.round(totalWidth / (float) TOTAL_FRAMES);
         int sx1 = frame * frameWidth;
         int sx2 = sx1 + frameWidth;
 

@@ -1,24 +1,15 @@
 package Game;
 
-import Objects.GameObject;
-
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 
 public class Renderer {
-
-    private static BufferedImage[] background_level;
-
-    public static void drawRect(Graphics2D g2, GameObject obj, Color fill, Color border) {
-        g2.setColor(fill);
-        g2.fillRect(Math.round(obj.getX()), Math.round(obj.getY()), obj.getWidth(), obj.getHeight());
-        g2.setColor(border);
-        g2.drawRect(Math.round(obj.getX()), Math.round(obj.getY()), obj.getWidth(), obj.getHeight());
-    }
 
     public static final Map<String, BufferedImage> textureCache = new HashMap<>();
     public static BufferedImage loadTexture(String path) {
@@ -35,22 +26,42 @@ public class Renderer {
         }
     }
 
-    public static BufferedImage loadPauseImage() {
-        return loadTexture("/assets/start_top.png");
-    }
+    public static List <List<BufferedImage>> loadBrickTexture() {
+        List<List<BufferedImage>> textures = new ArrayList<>();
+        List<BufferedImage> white = new ArrayList<>();
+        white.add(loadTexture("/other_assets/brick_white_0.png"));
 
-    public static BufferedImage loadMenuPauseImage() {
-        return loadTexture("/assets/menu_paused_top.png");
-    }
+        List<BufferedImage> blue = new ArrayList<>();
+        blue.add(loadTexture("/other_assets/brick_blue_1.png"));
+        blue.add(loadTexture("/other_assets/brick_blue_0.png"));
 
-    public static BufferedImage[] loadBrickTexture() {
-        BufferedImage[] textures = new  BufferedImage[6];
-        textures[0] = loadTexture("/assets/brick_white.png");           // level 1
-        textures[1] = loadTexture("/assets/brick_blue.png");            // level 2
-        textures[2] = loadTexture("/assets/brick_green.png");           // level 3
-        textures[3] = loadTexture("/assets/brick_yellow.png");          // level 4
-        textures[4] = loadTexture("/assets/brick_red.png");             // level 5
-        textures[5] = loadTexture("/assets/unbreakable_brick.png");     // level 6
+        List<BufferedImage> green = new ArrayList<>();
+        green.add(loadTexture("/other_assets/brick_green_2.png"));
+        green.add(loadTexture("/other_assets/brick_green_1.png"));
+        green.add(loadTexture("/other_assets/brick_green_0.png"));
+
+        List<BufferedImage> yellow = new ArrayList<>();
+        yellow.add(loadTexture("/other_assets/brick_yellow_3.png"));
+        yellow.add(loadTexture("/other_assets/brick_yellow_2.png"));
+        yellow.add(loadTexture("/other_assets/brick_yellow_1.png"));
+        yellow.add(loadTexture("/other_assets/brick_yellow_0.png"));
+
+        List<BufferedImage> red = new ArrayList<>();
+        red.add(loadTexture("/other_assets/brick_red_4.png"));
+        red.add(loadTexture("/other_assets/brick_red_3.png"));
+        red.add(loadTexture("/other_assets/brick_red_2.png"));
+        red.add(loadTexture("/other_assets/brick_red_1.png"));
+        red.add(loadTexture("/other_assets/brick_red_0.png"));
+
+        List<BufferedImage> unbreaker = new ArrayList<>();
+        unbreaker.add(loadTexture("/other_assets/brick_unbreaker_0.png"));
+
+        textures.add(white);
+        textures.add(blue);
+        textures.add(green);
+        textures.add(yellow);
+        textures.add(red);
+        textures.add(unbreaker);
         return textures;
     }
 
@@ -59,7 +70,7 @@ public class Renderer {
     }
 
     public static BufferedImage loadBgroundTexture(int currentLevel) {
-        background_level = new BufferedImage[10];
+        BufferedImage[] background_level = new BufferedImage[10];
 
         background_level[0] = loadTexture("/assets/BG_Level_1.png");
         background_level[1] = loadTexture("/assets/BG_Level_2.jpg");

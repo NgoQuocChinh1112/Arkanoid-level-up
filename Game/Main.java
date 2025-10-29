@@ -5,8 +5,8 @@ import java.awt.*;
 
 public class Main {
     private static JFrame frame;
-    private static int width = 800;
-    private static int height = 600;
+    private final static int width = 800;
+    private final static int height = 600;
     private static GamePanel gamePanel;
 
     public static void main(String[] args) {

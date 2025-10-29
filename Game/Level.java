@@ -28,7 +28,7 @@ public class Level {
         int offsetY = (int)(60 * scaleY);
 
         int row = lines.size();
-        int cols = lines.get(0).split("\\s+").length;
+        int cols = lines.getFirst().split("\\s+").length;
         int offsetX = (WIDTH - (cols * brickW)) / 2;
 
         for(int r = 0; r < row; r++) {
@@ -38,7 +38,7 @@ public class Level {
                 if(type != 0) {
                     int x = offsetX + c * brickW;
                     int y = offsetY + r * brickH;
-                    bricks.add(new Brick(x, y, brickW, brickH, type, type));
+                    bricks.add(new Brick(x, y, brickW, brickH, type));
                 }
             }
         }

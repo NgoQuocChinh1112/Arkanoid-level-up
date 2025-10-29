@@ -705,8 +705,8 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
                 it.remove();
                 score += 100;
 
-                if (rand.nextDouble() < 0.99) {
-                    int type = 7;//rand.nextInt(7);
+                if (rand.nextDouble() < 0.2) {
+                    int type = rand.nextInt(7);
                     PowerUp pu;
                     if (type == 0) {
                         pu = new ExpandPaddlePowerUp(brick.getX() + brick.getWidth()/2f - 12,

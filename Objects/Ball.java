@@ -75,7 +75,6 @@ public class Ball extends MovableObject {
         }
     }
 
-
     public boolean isLaunched() {
         return launched;
     }

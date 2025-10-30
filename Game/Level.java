@@ -38,7 +38,8 @@ public class Level {
                 if(type != 0) {
                     int x = offsetX + c * brickW;
                     int y = offsetY + r * brickH;
-                    bricks.add(new Brick(x, y, brickW, brickH, type));
+                    Brick brick = new Brick(x, y, brickW, brickH, type);
+                    bricks.add(brick);
                 }
             }
         }

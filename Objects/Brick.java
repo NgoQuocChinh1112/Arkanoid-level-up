@@ -7,25 +7,27 @@ import java.util.List;
 
 import java.awt.image.BufferedImage;
 
-public class Brick extends GameObject {
+public class Brick extends MovableObject {
     private final int hitPoints;
     private int heart;
+    private float speed = 6f;
+    private boolean movable;
+    private int type;
+    private float maxX, minX, maxY, minY;
     private final List<List<BufferedImage>> textures = Renderer.loadBrickTexture();
 
-    public Brick(float x, float y, int width, int height, int level) {
+    public Brick(float x, float y, int width, int height, int temp) {
         super(x, y, width, height);
-        this.hitPoints = level;
-        this.heart = level;
-        if (level == 6) {
+        this.hitPoints = temp % 10;
+        this.heart = temp % 10;
+        this.movable = temp > 10;
+        this.type = temp / 10;
+        setVector();
+        if (this.hitPoints == 6) {
             texture = textures.get(this.hitPoints - 1).getFirst();
         } else {
             texture = textures.get(this.hitPoints - 1).get(this.heart - 1);
         }
-    }
-
-    @Override
-    public void update() {
-
     }
 
     @Override
@@ -64,5 +66,57 @@ public class Brick extends GameObject {
 
     public int getHitPoints() {
         return hitPoints;
+    }
+
+    public float getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(float speed) {
+        this.speed = speed;
+    }
+
+    public void changeVector() {
+        if (x > maxX || x < minX) {
+            dx = -dx;
+        }
+        if (y < minY || y > maxY) {
+            dy = -dy;
+        }
+    }
+    public void setVector() {
+        switch (type) {
+            case 0:
+                dx = 0;
+                dy = 0;
+                break;
+            case 1:
+                this.minX = x;
+                this.maxX = x + 200;
+                dx = speed;
+                dy = 0;
+                break;
+            case 2:
+                this.minX = x - 200;
+                this.maxX = x;
+                dx = -speed;
+                dy = 0;
+                break;
+            case 3:
+                this.minY = y;
+                this.maxY = y + 200;
+                dx = 0;
+                dy = speed;
+                break;
+            case 4:
+                this.minY = y - 200;
+                this.maxY = y;
+                dx = 0;
+                dy = -speed;
+                break;
+            default:
+                System.out.println("Sai rồi má!");
+                break;
+        }
     }
 }

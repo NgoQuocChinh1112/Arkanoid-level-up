@@ -6,17 +6,22 @@ import PowerUps.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
 public class GameManager extends JPanel implements KeyListener, ActionListener {
+    private final GamePanel parent;
 
     private int WIDTH;
     private int HEIGHT;
 
+    private Timer gameTimer;
+    private final int FPS = 60;
     private int currentLevel = 1;
 
     private Paddle paddle1;
@@ -31,7 +36,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
 
     private int score = 0;
     private int lives = 3;
-    private String gameState = "MENU"; // MENU, RUNNING, GAMEOVER, WIN, PAUSED, LOSE, SETTING
+    private String gameState = "MENU"; // MENU, RUNNING, LOSE, WIN, PAUSED, SETTING
 
     private boolean twoPlayerMode = false;
     private boolean prevTwoPlayerMode = false;
@@ -40,6 +45,13 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
     private boolean rightPressed = false;
     private boolean aPressed = false;
     private boolean dPressed = false;
+
+    private float launchAngle = 90f;
+    private float angleSpeed = 90f;
+    private boolean angleSweepingRight = true;
+
+    private static final float MIN_LAUNCH_ANGLE = 0f;
+    private static final float MAX_LAUNCH_ANGLE = 180F;
 
     private BufferedImage backgroundImage;
     private final BufferedImage[] button = Renderer.loadbuttonTexture();
@@ -93,6 +105,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
     }
 
     public GameManager(GamePanel parent, int width, int height) {
+        this.parent = parent;
         this.WIDTH = width;
         this.HEIGHT = height;
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
@@ -109,9 +122,8 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         }
         initGame();
 
-        int FPS = 60;
         int delay = 1000 / FPS;
-        Timer gameTimer = new Timer(delay, this);
+        gameTimer = new Timer(delay, this);
         gameTimer.start();
 
 
@@ -129,15 +141,15 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
                     }
                 }
                 if (gameState.equals("PAUSED") || gameState.equals("LOSE")) {
-                    int boxX = (WIDTH - (int) (300 * GamePanel.scaleY)) / 2;
+                    int boxX = (WIDTH - (int) (300 * GamePanel.scaleX)) / 2;
                     int boxY = (HEIGHT - (int) (330 * GamePanel.scaleY)) / 2;
-                    int btnW = (int) (180 * GamePanel.scaleY);
+                    int btnW = (int) (180 * GamePanel.scaleX);
                     int btnH = (int) (50 * GamePanel.scaleY);
                     int resY = boxY + (int) (45 * GamePanel.scaleY);
                     int resumeY = resY + (int) (60 * GamePanel.scaleY);
                     int setY = resumeY + (int) (60 * GamePanel.scaleY);
                     int menuY = setY + (int) (60 * GamePanel.scaleY);
-                    int btnX = boxX + ((int) (300 * GamePanel.scaleY) - btnW) / 2;
+                    int btnX = boxX + ((int) (300 * GamePanel.scaleX) - btnW) / 2;
 
                     Rectangle resumeRect = new Rectangle(btnX, resumeY, btnW, btnH);
                     Rectangle menuRect = new Rectangle(btnX, menuY, btnW, btnH);
@@ -205,12 +217,12 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         addMouseMotionListener(new MouseMotionAdapter() {
             public void mouseMoved(MouseEvent e) {
                 Point p = e.getPoint();
-                if (gameState.equals("PAUSED")) {
-                    int boxW = (int) (300 * GamePanel.scaleY);
+                if (gameState.equals("PAUSED") || gameState.equals("LOSE")) {
+                    int boxW = (int) (300 * GamePanel.scaleX);
                     int boxH = (int) (330 * GamePanel.scaleY);
                     int boxX = (WIDTH - boxW) / 2;
                     int boxY = (HEIGHT - boxH) / 2;
-                    int btnW = (int) (180 * GamePanel.scaleY);
+                    int btnW = (int) (180 * GamePanel.scaleX);
                     int btnH = (int) (50 * GamePanel.scaleY);
                     int resY = boxY + (int) (45 * GamePanel.scaleY);
                     int resumeY = resY + (int) (60 * GamePanel.scaleY);
@@ -314,6 +326,15 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         // lớp phủ mờ
         g.setColor(new Color(0, 0, 0, 150));
         g.fillRect(0, 0, WIDTH, HEIGHT);
+        if (gameState.equals("LOSE")) {
+            int wGameOver = (int)(400 * GamePanel.scaleX);
+            int hGameOver = (int)(100 * GamePanel.scaleY);
+            int x = (int)((WIDTH - wGameOver) / 2f);
+            int y = (int)(0 * GamePanel.scaleY);
+            if ((System.currentTimeMillis() / 400) % 2 == 0) {
+                g.drawImage(Renderer.loadGameOverTexture(), x, y, wGameOver, hGameOver, null);
+            }
+        }
 
         // khung menu pause
         int boxW = (int)(300 * GamePanel.scaleY);
@@ -366,22 +387,22 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
     }
 
     private void initGame() {
-        paddle1 = new Paddle((WIDTH / 2f - (int)(60 * GamePanel.scaleY)), HEIGHT - (int)(60 * GamePanel.scaleY), (int)(120 * GamePanel.scaleY), (int)(16 * GamePanel.scaleY));
+        paddle1 = new Paddle((WIDTH / 2f - (int)(60 * GamePanel.scaleX)), HEIGHT - (int)(60 * GamePanel.scaleY), (int)(120 * GamePanel.scaleX), (int)(16 * GamePanel.scaleY));
         if(twoPlayerMode) {
-            paddle2 = new Paddle((WIDTH / 2f - (int)(60 * GamePanel.scaleY)), HEIGHT - (int)(140 * GamePanel.scaleY), (int)(120 * GamePanel.scaleY), (int)(16 * GamePanel.scaleY));
+            paddle2 = new Paddle((WIDTH / 2f - (int)(60 * GamePanel.scaleX)), HEIGHT - (int)(140 * GamePanel.scaleY), (int)(120 * GamePanel.scaleX), (int)(16 * GamePanel.scaleY));
         }
 
         float bx, by;
         if (twoPlayerMode) {
             // Bóng gắn với paddle2
-            bx = paddle2.getX() + paddle2.getWidth() / 2f - (int)(8 * GamePanel.scaleY);
+            bx = paddle2.getX() + paddle2.getWidth() / 2f - (int)(8 * GamePanel.scaleX);
             by = paddle2.getY() - (int)(16 * GamePanel.scaleY) - 1;
         } else {
             // Bóng gắn với paddle1
-            bx = paddle1.getX() + paddle1.getWidth() / 2f - (int)(8 * GamePanel.scaleY);
+            bx = paddle1.getX() + paddle1.getWidth() / 2f - (int)(8 * GamePanel.scaleX);
             by = paddle1.getY() - (int)(16 * GamePanel.scaleY) - 1;
         }
-        mainBall = new Ball(bx, by, (int)(16 * GamePanel.scaleY), (int)(16 * GamePanel.scaleY));
+        mainBall = new Ball(bx, by, (int)(16 * GamePanel.scaleX), (int)(16 * GamePanel.scaleY));
         mainBall.resetToPaddle(twoPlayerMode ? paddle2 : paddle1);
 
         balls.clear();
@@ -401,30 +422,40 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
 
 
     private void updateGame() {
-        if (!gameState.equals("RUNNING")) return;
+        if (gameState.equals("MENU") || gameState.equals("RUNNING")) {
+             if (!mainBall.isLaunched()) {
+                updateLaunchAngle();
+            }
+            // xử lý input & di chuyển paddle
+            handleInput();
+            paddle1.update();
+            if(twoPlayerMode) paddle2.update();
 
-        // xử lý input & di chuyển paddle
-        handleInput();
-        paddle1.update();
-        if(twoPlayerMode) paddle2.update();
-
-        // clamp paddle inside screen
-        if (paddle1.getX() < 0) paddle1.setX(0);
-        if (paddle1.getX() + paddle1.getWidth() > WIDTH) paddle1.setX(WIDTH - paddle1.getWidth());
-        if (twoPlayerMode) {
-            if (paddle2.getX() < 0) paddle2.setX(0);
-            if (paddle2.getX() + paddle2.getWidth() > WIDTH) paddle2.setX(WIDTH - paddle2.getWidth());
+            // clamp paddle inside screen
+            if (paddle1.getX() < 0) paddle1.setX(0);
+            if (paddle1.getX() + paddle1.getWidth() > WIDTH) {
+                paddle1.setX(WIDTH - paddle1.getWidth());
+            }
+            if (twoPlayerMode) {
+                if (paddle2.getX() < 0) paddle2.setX(0);
+                if (paddle2.getX() + paddle2.getWidth() > WIDTH) {
+                    paddle2.setX(WIDTH - paddle2.getWidth());
+                }
+            }
+            // Ball sticks to paddle until launched
+            for (Ball b : new ArrayList<>(balls)) {
+                if (!b.isLaunched()) {
+                    Paddle p = twoPlayerMode ? paddle2 : paddle1;
+                    b.setX(p.getX() + p.getWidth() / 2f - b.getWidth() / 2f);
+                    b.setY(p.getY() - b.getHeight() - 1);
+                }
+            }
         }
 
-        // Ball sticks to paddle until launched
+        if (!gameState.equals("RUNNING")) return;
+
         for (Ball b : new ArrayList<>(balls)) {
-            if (!b.isLaunched()) {
-                Paddle p = twoPlayerMode ? paddle2 : paddle1;
-                b.setX(p.getX() + p.getWidth() / 2f - b.getWidth() / 2f);
-                b.setY(p.getY() - b.getHeight() - 1);
-            } else {
-                b.update();
-            }
+            if (b.isLaunched()) b.update();
             checkCollisionsWithBall(b);
         }
 
@@ -810,13 +841,49 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
 
         // draw HUD
         g2.setColor(Color.WHITE);
-        g2.setFont(new Font("Arial", Font.PLAIN, (int) (18 * GamePanel.scaleY)));
-        g2.drawString("Score: " + score, (int)(12 * GamePanel.scaleY), (int) (22 * GamePanel.scaleY));
-        g2.drawString("Lives: " + lives, (int)(12* GamePanel.scaleY), (int) (44* GamePanel.scaleY));
+        try {
+            Font customFont = Font.createFont(
+                Font.TRUETYPE_FONT,
+                new File("assets/font.ttf")
+                                             ).deriveFont(Font.BOLD, 30f);
+            g2.setFont(customFont);
+        } catch (Exception e) {
+            e.printStackTrace();
+            g2.setFont(new Font("SansSerif", Font.BOLD, 18));
+        }
+        String scoreText = String.format("%06d", score);
+        g2.drawString(scoreText, (int)(12 * GamePanel.scaleY), (int)(590 * GamePanel.scaleY));
 
-        // draw paddles, ball, bricks, powerups
+        int wLives = 30, hLives = 30;
+        if (lives >= 1) {
+            g2.drawImage(Renderer.loadHeartTexture(), (int)(750* GamePanel.scaleX),
+                        (int)(570* GamePanel.scaleY),(int)(wLives*GamePanel.scaleX), (int)(hLives*GamePanel.scaleY), null);
+        } else {
+            g2.drawImage(Renderer.loadDamageTexture(), (int)(750* GamePanel.scaleX),
+                        (int)(570* GamePanel.scaleY),(int)(wLives*GamePanel.scaleX), (int)(hLives*GamePanel.scaleY), null);
+        }
+        if (lives >= 2) {
+            g2.drawImage(Renderer.loadHeartTexture(), (int)(720* GamePanel.scaleX),
+                        (int)(570* GamePanel.scaleY),(int)(wLives*GamePanel.scaleX), (int)(hLives*GamePanel.scaleY), null);
+        } else {
+            g2.drawImage(Renderer.loadDamageTexture(), (int)(720* GamePanel.scaleX),
+                        (int)(570* GamePanel.scaleY),(int)(wLives*GamePanel.scaleX), (int)(hLives*GamePanel.scaleY), null);
+        }
+        if (lives >= 3) {
+            g2.drawImage(Renderer.loadHeartTexture(), (int)(690* GamePanel.scaleX),
+                        (int)(570* GamePanel.scaleY),(int)(wLives*GamePanel.scaleX), (int)(hLives*GamePanel.scaleY), null);
+        } else {
+            g2.drawImage(Renderer.loadDamageTexture(), (int)(690* GamePanel.scaleX),
+                        (int)(570* GamePanel.scaleY),(int)(wLives*GamePanel.scaleX), (int)(hLives*GamePanel.scaleY), null);
+        }
+
+        // draw paddles, ball, bricks, powerups, arrow
         paddle1.render(g2);
         if (twoPlayerMode) paddle2.render(g2);
+
+        if (!mainBall.isLaunched()) {
+            drawLaunchArrow(g2, mainBall, launchAngle);
+        }
 
         for (Ball b : balls) b.render(g2);
 
@@ -825,11 +892,22 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         ExplosiveBallPowerUp.drawExplosions(g2);
 
         // overlays
-        switch (gameState) {
-            case "MENU" -> drawCenteredString(g2, WIDTH, HEIGHT);
-            case "PAUSED", "LOSE", "WIN" -> showMenu(g2);
-            case "RUNNING" -> buttonMenu(g2);
-            case "SETTING" -> showSetting(g2);
+        if (gameState.equals("MENU")) {
+            int wPressStart = (int)(400 * GamePanel.scaleX);
+            int hPressStart = (int)(100 * GamePanel.scaleY);
+
+            int x = (int)((WIDTH - wPressStart) / 2f);
+            int y = (int)((HEIGHT - hPressStart) / 2f);
+            if ((System.currentTimeMillis() / 300) % 2 == 0) {
+                g2.drawImage(Renderer.loadPressStartTexture(), x, y, wPressStart, hPressStart, null);
+            }
+        } else if (gameState.equals("PAUSED") || gameState.equals("LOSE")
+                || gameState.equals("WIN")) {
+            showMenu(g2);
+        } else if (gameState.equals("RUNNING")) {
+            buttonMenu(g2);
+        } else if (gameState.equals("SETTING")) {
+            showSetting(g2);
         }
 
         g2.dispose();
@@ -842,16 +920,6 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         if (button[1] != null) {
             g.drawImage(button[1], butX, butY, butW, butH, null);
         }
-    }
-
-    private void drawCenteredString(Graphics2D g2, int w, int h) {
-        g2.setColor(new Color(0,0,0,160));
-        g2.fillRect(0,h/2 - 40, w, 80);
-        g2.setColor(Color.WHITE);
-        g2.setFont(new Font("Arial", Font.BOLD, 26));
-        FontMetrics fm = g2.getFontMetrics();
-        int tw = fm.stringWidth("PRESS SPACE TO START");
-        g2.drawString("PRESS SPACE TO START", (w - tw)/2, h/2 + fm.getAscent()/2 - 6);
     }
 
     // KeyListener
@@ -868,9 +936,9 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
             if (gameState.equals("MENU")) {
                 gameState = "RUNNING";
                 mainBall.resetToPaddle(twoPlayerMode ? paddle2 : paddle1);
-                mainBall.launch(4f, -4f);
+                launchBallAtAngle(mainBall, launchAngle);
             } else if (gameState.equals("RUNNING") && !mainBall.isLaunched()) {
-                mainBall.launch(4f, -4f);
+                launchBallAtAngle(mainBall, launchAngle);
             }
         }
         if (kc == KeyEvent.VK_P) {
@@ -881,7 +949,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
             }
         }
         if (kc == KeyEvent.VK_R) {
-            if (gameState.equals("GAMEOVER") || gameState.equals("WIN")) {
+            if (gameState.equals("LOSE") || gameState.equals("WIN")) {
                 restart();
             }
         }
@@ -919,5 +987,56 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         g2d.drawImage(tmp, 0, 0, null);
         g2d.dispose();
         return resized;
+    }
+
+    /**
+     * Quet goc ban lien tuc.
+     */
+    private void updateLaunchAngle() {
+        float deltaAngle = angleSpeed / FPS;
+
+        if (angleSweepingRight) {
+            launchAngle += deltaAngle;
+            if (launchAngle >= MAX_LAUNCH_ANGLE) {
+                launchAngle = MAX_LAUNCH_ANGLE;
+                angleSweepingRight = false;
+            }
+        } else {
+            launchAngle -= deltaAngle;
+            if (launchAngle <= MIN_LAUNCH_ANGLE) {
+                launchAngle = MIN_LAUNCH_ANGLE;
+                angleSweepingRight = true;
+            }
+        }
+    }
+
+    /**
+     * Phong bong theo goc.
+     * @param ball bong
+     * @param angleDegrees goc(do)
+     */
+    private void launchBallAtAngle(Ball ball, float angleDegrees) {
+        double angleRadians = Math.toRadians(angleDegrees);
+
+        float dx = (float) (Math.cos(angleRadians));
+        float dy = -(float) (Math.sin(angleRadians));
+
+        ball.launch(dx, dy);
+    }
+
+    private void drawLaunchArrow(Graphics2D g2, Ball ball, float angleDegrees) {
+        float ballCenterX = ball.getX() + ball.getWidth() / 2f;
+        float ballCenterY = ball.getY() + ball.getHeight() / 2f;
+
+        int arrowW = (int) (40 * GamePanel.scaleX);
+        int arrowH = (int) (40 * GamePanel.scaleY);
+
+        AffineTransform oldTransform = g2.getTransform();
+
+        g2.translate(ballCenterX, ballCenterY);
+        g2.rotate(Math.toRadians(-angleDegrees + 90));
+        g2.drawImage(Renderer.loadArrowTexture(), -arrowW/2, -(int)(50*GamePanel.scaleY), arrowW, arrowH, null);
+
+        g2.setTransform(oldTransform);
     }
 }

@@ -30,8 +30,8 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
     private final List<Brick> toRemove = new ArrayList<>();
 
     private int score = 0;
-    private int lives = 3;
-    private String gameState = "MENU"; // MENU, RUNNING, GAMEOVER, WIN, PAUSED, LOSE, SETTING
+    private int lives = 100;
+    private String gameState = "MENU"; // MENU, RUNNING, WIN, PAUSED, LOSE, SETTING
 
     private boolean twoPlayerMode = false;
     private boolean prevTwoPlayerMode = false;
@@ -402,6 +402,20 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         // xử lý input & di chuyển paddle
         handleInput();
         paddle1.update();
+        for (Brick brick : bricks) {
+
+            if (!brick.isDestroyed()) {
+                brick.update();
+                brick.changeVector();
+                for (Brick other : bricks) {
+                    checkBrickHeadOn(brick, other);
+                }
+                if (brick.getX() < 0 || brick.getX() + brick.getWidth() > WIDTH) {
+                    brick.setDx(-brick.getDx());
+                }
+            }
+
+        }
         if(twoPlayerMode) paddle2.update();
 
         // clamp paddle inside screen
@@ -467,6 +481,37 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         }
     }
 
+    private void checkBrickHeadOn(Brick brick, Brick other) {
+        if (checkCollisionsWithBrick(brick, other)) {
+            if (brick.getDx() == 0 && other.getDx() == 0
+            && brick.getDy() ==  - other.getDy()) {
+                brick.setDy(-brick.getDy());
+                other.setDy(-brick.getDy());
+            } else if (brick.getDy() == 0 && other.getDy() == 0
+            && brick.getDx() == -other.getDx()) {
+                brick.setDx(-brick.getDx());
+                other.setDx(-brick.getDx());
+            }
+        }
+    }
+
+    private void checkBrickCross(Brick brick, Brick other) {
+        if (checkCollisionsWithBrick(brick, other)) {
+            if (brick.getDx() == 0 && other.getDy() == 0) {
+
+            }
+        }
+    }
+
+    private boolean checkCollisionsWithBrick(Brick brick, Brick other) {
+        if (brick == null || other == null) {
+            return false;
+        }
+        return brick.getX() < other.getX() + other.getWidth() &&
+                brick.getX() + brick.getWidth() > other.getX() &&
+                brick.getY() < other.getY() + other.getHeight() &&
+                brick.getY() + brick.getHeight() > other.getY();
+    }
 
     private void checkCollisionsWithBall(Ball ball) {
         if (!ball.isLaunched()) return;
@@ -532,7 +577,6 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         Rectangle paddleRect = paddle.getBounds();
 
         float ballCenterX = ball.getCenterX();
-        float ballCenterY = ball.getCenterY();
         float ballBottom = ball.getY() + ball.getHeight();
 
         float paddleTop = paddleRect.y;
@@ -556,7 +600,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
 
         // Va chạm từ trên xuống
         if (ball.getDy() > 0 && prevBottom <= paddleTop) {
-            handlePaddleTopCollision(ball, paddle, paddleRect, ballCenterX);
+            handlePaddleTopCollision(ball, paddleRect, ballCenterX);
             SoundEffect.play("collision");
             // Va chạm từ bên
         } else {
@@ -565,7 +609,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         }
     }
 
-    private void handlePaddleTopCollision(Ball ball, Paddle paddle, Rectangle paddleRect, float ballCenterX) {
+    private void handlePaddleTopCollision(Ball ball, Rectangle paddleRect, float ballCenterX) {
         // Đặt bóng lên trên paddle
         ball.setY(paddleRect.y - ball.getHeight() - 0.5f);
 
@@ -595,8 +639,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         angleInDegrees = Math.max(MIN_ANGLE, Math.min(MAX_ANGLE, angleInDegrees));
 
         // Convert sang radians và set velocity mới
-        double angleInRadians = Math.toRadians(angleInDegrees);
-        return angleInRadians;
+        return Math.toRadians(angleInDegrees);
     }
 
     private void handlePaddleSideCollision(Ball ball, Rectangle paddleRect) {
@@ -635,7 +678,6 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
     }
 
     private void checkBrickCollisions(Ball ball, List<Brick> bricks, List<PowerUp> powerUps) {
-        Rectangle ballRect = ball.getBounds();
         float ballCenterX = ball.getCenterX();
         float ballCenterY = ball.getCenterY();
 
@@ -873,7 +915,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
             }
         }
         if (kc == KeyEvent.VK_R) {
-            if (gameState.equals("GAMEOVER") || gameState.equals("WIN")) {
+            if (gameState.equals("LOSE") || gameState.equals("WIN")) {
                 restart();
             }
         }
@@ -889,7 +931,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
 
     public void restart() {
         score = 0;
-        lives = 3;
+        lives = 100;
         initGame();
         gameState = "MENU";
     }

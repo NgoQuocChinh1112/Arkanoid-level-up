@@ -25,6 +25,7 @@ public class Ball extends MovableObject {
     public float getSpeed() {
         return speed;
     }
+
     public Ball(float x, float y, int width, int height) {
         super(x, y, width, height);
         dx = 0;
@@ -65,7 +66,6 @@ public class Ball extends MovableObject {
             launched = true;
         }
     }
-
 
     public boolean isLaunched() {
         return launched;

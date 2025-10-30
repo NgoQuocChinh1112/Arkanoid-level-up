@@ -101,5 +101,22 @@ public class Renderer {
         return loadTexture("/assets/paddle_1.png");
     }
 
+    public static BufferedImage loadHeartTexture() {
+        return loadTexture("/assets/heart.png");
+    }
+
+    public static BufferedImage loadDamageTexture() {
+        return loadTexture("/assets/damage.png");
+    }
+
+    public static BufferedImage loadGameOverTexture() {
+        return loadTexture("/assets/gameover.png");
+    }
     
+    public static BufferedImage loadPressStartTexture() {
+        return loadTexture("/assets/press_start.png");
+    }
+    public static BufferedImage loadArrowTexture() {
+        return loadTexture("/assets/arrow.png");
+    }
 }

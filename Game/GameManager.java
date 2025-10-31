@@ -20,7 +20,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
     private int WIDTH;
     private int HEIGHT;
 
-    private Timer gameTimer;
+    private final Timer gameTimer;
     private final int FPS = 60;
     private int currentLevel = 1;
 
@@ -46,7 +46,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
     private boolean dPressed = false;
 
     private float launchAngle = 90f;
-    private float angleSpeed = 90f;
+    private final float angleSpeed = 90f;
     private boolean angleSweepingRight = true;
 
     private static final float MIN_LAUNCH_ANGLE = 0f;
@@ -333,21 +333,16 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
             // xử lý input & di chuyển paddle
             handleInput();
             paddle1.update();
-            for (Brick brick : bricks) {
-
-                if (!brick.isDestroyed()) {
-                    brick.update();
-                    brick.changeVector();
-                    for (Brick other : bricks) {
-                        checkBrickHeadOn(brick, other);
-                        checkBrickCross(brick, other);
-                        checkBrickWithWall(brick);
-                    }
-                    if (brick.getX() < 0 || brick.getX() + brick.getWidth() > WIDTH) {
-                        brick.setDx(-brick.getDx());
+            for (int i = 0; i < bricks.size(); i++) {
+                if (!bricks.get(i).isDestroyed()) {
+                    bricks.get(i).update();
+                    bricks.get(i).changeVector();
+                    checkBrickWithWall(bricks.get(i));
+                    for (int j = i + 1; j < bricks.size(); j++ ) {
+                        checkBrickHeadOn(bricks.get(i), bricks.get(j));
+                        checkBrickCross(bricks.get(i), bricks.get(j));
                     }
                 }
-
             }
             if(twoPlayerMode) paddle2.update();
 
@@ -397,14 +392,6 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         ExplosiveBallPowerUp.updateExplosions();
     }
 
-    private void resetBallsToPaddles() {
-        for (Ball b : balls) {
-            b.resetToPaddle(twoPlayerMode ? paddle2 : paddle1);
-            b.setDx(0); b.setDy(0);
-        }
-    }
-
-
     private void handleInput() {
         float sp = paddle1.getSpeed();
         if (leftPressed && !rightPressed) paddle1.setDx(-sp);
@@ -421,13 +408,17 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
     private void checkBrickWithWall(Brick brick) {
         if (brick.getX() < 0) {
             brick.setX(brick.getX() + brick.getSpeed());
+            brick.setDx(-brick.getDx());
         } else if (brick.getX() + brick.getWidth() > WIDTH) {
             brick.setX(brick.getX() - brick.getSpeed());
+            brick.setDx(-brick.getDx());
         }
         if (brick.getY() < 0) {
-            brick.setX(brick.getY() + brick.getSpeed());
+            brick.setY(brick.getY() + brick.getSpeed());
+            brick.setDy(-brick.getDy());
         } else if (brick.getY() + brick.getHeight() > HEIGHT) {
-            brick.setX(brick.getY() - brick.getSpeed());
+            brick.setY(brick.getY() - brick.getSpeed());
+            brick.setDy(-brick.getDy());
         }
     }
     private void checkBrickHeadOn(Brick brick, Brick other) {
@@ -435,11 +426,11 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
             if (brick.getDx() == 0 && other.getDx() == 0
                     && brick.getDy() ==  - other.getDy()) {
                 brick.setDy(-brick.getDy());
-                other.setDy(-brick.getDy());
+                other.setDy(-other.getDy());
             } else if (brick.getDy() == 0 && other.getDy() == 0
                     && brick.getDx() == -other.getDx()) {
                 brick.setDx(-brick.getDx());
-                other.setDx(-brick.getDx());
+                other.setDx(-other.getDx());
             }
         }
     }
@@ -451,11 +442,19 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
 
         // Đẩy nhau
         if (brick.getX() < other.getX()) {
-            brick.setX(brick.getX() - brick.getSpeed()/2);
-            other.setX(other.getX() + other.getSpeed()/2);
+            if (brick.getType() != 0) {
+                brick.setX(brick.getX() - brick.getSpeed()/2);
+            }
+            if (other.getType() != 0) {
+                other.setX(other.getX() + other.getSpeed()/2);
+            }
         } else {
-            brick.setX(brick.getX() + brick.getSpeed()/2);
-            other.setX(other.getX() - other.getSpeed()/2);
+            if (brick.getType() != 0) {
+                brick.setX(brick.getX() + brick.getSpeed()/2);
+            }
+            if (other.getType() != 0) {
+                other.setX(other.getX() - other.getSpeed()/2);
+            }
         }
     }
 
@@ -465,36 +464,44 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         other.setDy(-other.getDy());
         // Đây nhau
         if (brick.getY() < other.getY()) {
-            brick.setY(brick.getY() - brick.getSpeed()/2);
-            other.setY(other.getY() + brick.getSpeed()/2);
+            if (brick.getType() != 0) {
+                brick.setY(brick.getY() - brick.getSpeed()/2);
+            }
+            if (other.getType() != 0) {
+                other.setY(other.getY() + brick.getSpeed()/2);
+            }
         } else {
-            brick.setY(brick.getY() + brick.getSpeed()/2);
-            other.setY(other.getY() - brick.getSpeed()/2);
+            if (brick.getType() != 0) {
+                brick.setY(brick.getY() + brick.getSpeed()/2);
+            }
+            if (other.getType() != 0) {
+                other.setY(other.getY() - brick.getSpeed()/2);
+            }
         }
     }
 
     private void checkBrickCross(Brick brick, Brick other) {
         if (checkCollisionsWithBrick(brick, other)) {
-            float disX = Math.min(this.getX() + this.getWidth(), other.getX() + other.getWidth())
-                    - Math.max(this.getX(), other.getX());
-            float disY = Math.min(this.getY() + this.getHeight(), other.getY() + other.getHeight())
-                    - Math.max(this.getY(), other.getY());
-            if ((other.getDx() == 0 && brick.getDy() == 0)
-                    || (other.getDy() == 0 && brick.getDx() == 0)) {
-                if (Math.abs(disX - disY) > EPSILON) {
-                    if (disX - disY < 0){
-                        setColX(brick, other);
+                float disX = Math.min(brick.getX() + brick.getWidth(), other.getX() + other.getWidth())
+                        - Math.max(brick.getX(), other.getX());
+                float disY = Math.min(brick.getY() + brick.getHeight(), other.getY() + other.getHeight())
+                        - Math.max(brick.getY(), other.getY());
+                if ((other.getDx() == 0 && brick.getDy() == 0)
+                        || (other.getDy() == 0 && brick.getDx() == 0)) {
+                    if (Math.abs(disX - disY) > EPSILON) {
+                        if (disX - disY < 0){
+                            setColX(brick, other);
+                        } else {
+                            setColY(brick, other);
+                        }
                     } else {
+                        // Va chạm góc
+                        setColX(brick, other);
                         setColY(brick, other);
                     }
-                } else {
-                    // Va chạm góc
-                    setColX(brick, other);
-                    setColY(brick, other);
                 }
             }
         }
-    }
 
     private boolean checkCollisionsWithBrick(Brick brick, Brick other) {
         if (brick == null || other == null) {

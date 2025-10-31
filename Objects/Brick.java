@@ -18,14 +18,10 @@ public class Brick extends MovableObject {
 
     public Brick(float x, float y, int width, int height, int temp) {
         super(x, y, width, height);
-        this.hitPoints = temp % 10;
-        this.heart = temp % 10;
+        this.hitPoints = temp / 100;
+        this.heart = temp / 100;
         this.type = (temp / 10) % 10;
-        if (temp > 100){
-            this.dis = temp - type * 10 - hitPoints;
-        } else {
-            dis = 0;
-        }
+        this.dis = temp % 10;
         setVector();
         if (this.hitPoints == 6) {
             texture = textures.get(this.hitPoints - 1).getFirst();
@@ -80,6 +76,22 @@ public class Brick extends MovableObject {
         this.speed = speed;
     }
 
+    public float getMinX() {
+        return this.minX;
+    }
+    public float getMaxX() {
+        return this.maxX;
+    }
+    public float getMinY() {
+        return this.minY;
+    }
+    public float getMaxY() {
+        return this.maxY;
+    }
+    public int getType() {
+        return type;
+    }
+
     public void changeVector() {
         if (x > maxX || x < minX) {
             dx = -dx;
@@ -96,24 +108,24 @@ public class Brick extends MovableObject {
                 break;
             case 1:
                 this.minX = x;
-                this.maxX = x + dis;
+                this.maxX = x + dis *  64;
                 dx = speed;
                 dy = 0;
                 break;
             case 2:
-                this.minX = x - dis;
+                this.minX = x - dis * 64;
                 this.maxX = x;
                 dx = -speed;
                 dy = 0;
                 break;
             case 3:
                 this.minY = y;
-                this.maxY = y + dis;
+                this.maxY = y + dis * 24;
                 dx = 0;
                 dy = speed;
                 break;
             case 4:
-                this.minY = y - dis;
+                this.minY = y - dis * 24;
                 this.maxY = y;
                 dx = 0;
                 dy = -speed;

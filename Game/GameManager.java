@@ -36,10 +36,9 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
 
     private int score = 0;
     private int lives = 3;
-    private String gameState = "MENU"; // MENU, RUNNING, LOSE, WIN, PAUSED, SETTING
+    private String gameState = "MENU"; // MENU, RUNNING, LOSE, WIN, PAUSED
 
     private boolean twoPlayerMode = false;
-    private boolean prevTwoPlayerMode = false;
 
     private boolean leftPressed = false;
     private boolean rightPressed = false;
@@ -58,11 +57,8 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
     private boolean hoverResume = false;
     private boolean hoverMenu = false;
     private boolean hoverLs = false;
-    private boolean hoverSt = false;
-    private boolean hoverOk = false;
-    private boolean hoverCan = false;
 
-    private boolean switchvol = true;
+    private static boolean switchVol = true;
 
     private final Random rand = new Random();
 
@@ -125,7 +121,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         int delay = 1000 / FPS;
         gameTimer = new Timer(delay, this);
         gameTimer.start();
-
+        SoundEffect.setVolume(6);
 
         addMouseListener(new MouseAdapter() {
             @Override
@@ -133,82 +129,52 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
                 Point p = e.getPoint();
                 if (gameState.equals("RUNNING")) {
                     int butW = (int)(30 * GamePanel.scaleY), butH = (int)(30 * GamePanel.scaleY);
-                    int butX = WIDTH - (int)(50 * GamePanel.scaleY);
+                    int pauX = WIDTH - (int)(50 * GamePanel.scaleY);
+                    int volX = pauX - (int)(40 * GamePanel.scaleX);
                     int butY = (int)(20 * GamePanel.scaleY);
-                    Rectangle buttonRect = new Rectangle(butX, butY, butW, butH);
-                    if (buttonRect.contains(p)) {
+                    Rectangle pauRect = new Rectangle(pauX, butY, butW, butH);
+                    Rectangle volRect = new Rectangle(volX, butY, butW, butH);
+                    if (pauRect.contains(p)) {
                         gameState = "PAUSED";
                     }
+                    if (volRect.contains(p)) {
+                        switchVol = !switchVol;
+                        repaint();
+                        if (switchVol) {
+                            SoundEffect.setVolume(6);
+                        } else {
+                            SoundEffect.setVolume(-80);
+                        }
+                        repaint();
+                    }
                 }
-                if (gameState.equals("PAUSED") || gameState.equals("LOSE")) {
+                if (gameState.equals("PAUSED") || gameState.equals("LOSE") || gameState.equals("WIN")) {
                     int boxX = (WIDTH - (int) (300 * GamePanel.scaleX)) / 2;
-                    int boxY = (HEIGHT - (int) (330 * GamePanel.scaleY)) / 2;
+                    int boxY = (HEIGHT - (int) (245 * GamePanel.scaleY)) / 2;
                     int btnW = (int) (180 * GamePanel.scaleX);
                     int btnH = (int) (50 * GamePanel.scaleY);
-                    int resY = boxY + (int) (45 * GamePanel.scaleY);
+                    int resY = boxY + (int) (35 * GamePanel.scaleY);
                     int resumeY = resY + (int) (60 * GamePanel.scaleY);
-                    int setY = resumeY + (int) (60 * GamePanel.scaleY);
-                    int menuY = setY + (int) (60 * GamePanel.scaleY);
+                    int menuY = resumeY + (int) (60 * GamePanel.scaleY);
                     int btnX = boxX + ((int) (300 * GamePanel.scaleX) - btnW) / 2;
 
                     Rectangle resumeRect = new Rectangle(btnX, resumeY, btnW, btnH);
-                    Rectangle menuRect = new Rectangle(btnX, menuY, btnW, btnH);
-                    Rectangle setRect = new Rectangle(btnX, setY, btnW, btnH);
                     Rectangle LsRect = new Rectangle(btnX, resY, btnW, btnH);
+                    Rectangle menuRect = new Rectangle(btnX, menuY, btnW, btnH);
+
                     if (resumeRect.contains(p)) {
-                        if (gameState.equals("PAUSED")) {
-                            gameState = "RUNNING";
-                        } else if (gameState.equals("LOSE")) {
-                            parent.showLevelPanel();
+                        switch (gameState) {
+                            case "PAUSED" -> gameState = "RUNNING";
+                            case "LOSE" -> parent.showLevelPanel();
+                            case "WIN" -> {
+                                currentLevel++;
+                                setLevel(currentLevel);
+                            }
                         }
                     } else if (menuRect.contains(p)) {
                         parent.showMenu();
                     } else if (LsRect.contains(p)) {
                         restart();
-                    } else if (setRect.contains(p)) {
-                        gameState = "SETTING";
-                    }
-                } else if (gameState.equals("SETTING")) {
-                    int boxW = (int)(450 * GamePanel.scaleY);
-                    int boxH = (int)(380 * GamePanel.scaleY);
-                    int boxX = (WIDTH - boxW) / 2;
-                    int boxY = (HEIGHT - boxH) / 2;
-                    int btnW =(int)(135 * GamePanel.scaleY), btnH = (int)(50 * GamePanel.scaleY);
-                    int btnY = boxY + (int)(270 * GamePanel.scaleY);
-                    int okX = boxX + (int)(85 * GamePanel.scaleY);
-                    int cancelX = okX + (int)(145 * GamePanel.scaleY);
-                    int soundtextY = boxY + 75;
-                    int mutiplayY = soundtextY + 50;
-                    int buttonX = boxX + 250;
-                    int btW = 90, btH = 25;
-
-                    Rectangle okRect = new Rectangle(okX, btnY, btnW, btnH);
-                    Rectangle cancelRect = new Rectangle(cancelX, btnY, btnW, btnH);
-                    Rectangle switchVol = new Rectangle(buttonX, soundtextY - 23, btW, btH);
-                    Rectangle switchPlay = new Rectangle(buttonX, mutiplayY - 23, btW, btH);
-
-                    if (okRect.contains(p)) {
-                        gameState = "PAUSED";
-                        if (switchvol) {
-                            SoundEffect.setVolume(6);
-                        } else {
-                            SoundEffect.setVolume(-80);
-                        }
-                        if (prevTwoPlayerMode == twoPlayerMode) {
-                            gameState = "PAUSED";
-                        } else {
-                            twoPlayerMode = prevTwoPlayerMode;
-                            restart();
-                        }
-                    } else if (cancelRect.contains(p)) {
-                        prevTwoPlayerMode = twoPlayerMode;
-                        gameState = "PAUSED";
-                    }
-                    if (switchVol.contains(p)) {
-                        switchvol = !switchvol;
-                        repaint();
-                    } else if (switchPlay.contains(p)) {
-                        prevTwoPlayerMode = !prevTwoPlayerMode;
                     }
                 }
             }
@@ -217,23 +183,21 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         addMouseMotionListener(new MouseMotionAdapter() {
             public void mouseMoved(MouseEvent e) {
                 Point p = e.getPoint();
-                if (gameState.equals("PAUSED") || gameState.equals("LOSE")) {
+                if (gameState.equals("PAUSED") || gameState.equals("LOSE") || gameState.equals("WIN")) {
                     int boxW = (int) (300 * GamePanel.scaleX);
-                    int boxH = (int) (330 * GamePanel.scaleY);
+                    int boxH = (int) (245 * GamePanel.scaleY);
                     int boxX = (WIDTH - boxW) / 2;
                     int boxY = (HEIGHT - boxH) / 2;
                     int btnW = (int) (180 * GamePanel.scaleX);
                     int btnH = (int) (50 * GamePanel.scaleY);
-                    int resY = boxY + (int) (45 * GamePanel.scaleY);
+                    int resY = boxY + (int) (35 * GamePanel.scaleY);
                     int resumeY = resY + (int) (60 * GamePanel.scaleY);
-                    int setY = resumeY + (int) (60 * GamePanel.scaleY);
-                    int menuY = setY + (int) (60 * GamePanel.scaleY);
+                    int menuY = resumeY + (int) (60 * GamePanel.scaleY);
                     int btnX = boxX + (boxW - btnW) / 2;
 
                     Rectangle resumeRect = new Rectangle(btnX, resumeY, btnW, btnH);
-                    Rectangle menuRect = new Rectangle(btnX, menuY, btnW, btnH);
-                    Rectangle StRect = new Rectangle(btnX, setY, btnW, btnH);
                     Rectangle LsRect = new Rectangle(btnX, resY, btnW, btnH);
+                    Rectangle menuRect = new Rectangle(btnX, menuY, btnW, btnH);
 
                     boolean oldHoverResume = hoverResume;
                     hoverResume = resumeRect.contains(p);
@@ -241,85 +205,13 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
                     hoverMenu = menuRect.contains(p);
                     boolean oldHoverLs = hoverLs;
                     hoverLs = LsRect.contains(p);
-                    boolean oldHoverSt = hoverSt;
-                    hoverSt = StRect.contains(p);
                     if (oldHoverResume != hoverResume || oldHoverMenu != hoverMenu
-                            || oldHoverLs != hoverLs || oldHoverSt != hoverSt) {
-                        repaint();
-                    }
-                } else if (gameState.equals("SETTING")) {
-                    int boxW = (int)(450 * GamePanel.scaleY);
-                    int boxH = (int)(380 * GamePanel.scaleY);
-                    int boxX = (WIDTH - boxW) / 2;
-                    int boxY = (HEIGHT - boxH) / 2;
-                    int btnW =(int)(135 * GamePanel.scaleY), btnH = (int)(50 * GamePanel.scaleY);
-                    int btnY = boxY + (int)(270 * GamePanel.scaleY);
-                    int okX = boxX + (int)(85 * GamePanel.scaleY);
-                    int cancelX = okX + (int)(145 * GamePanel.scaleY);
-
-                    Rectangle okRect = new Rectangle(okX, btnY, btnW, btnH);
-                    Rectangle cancelRect = new Rectangle(cancelX, btnY, btnW, btnH);
-
-                    boolean oldHoverOk = hoverOk;
-                    hoverOk = okRect.contains(p);
-                    boolean oldHoverCan = hoverCan;
-                    hoverCan = cancelRect.contains(p);
-
-                    if (oldHoverOk != hoverOk || oldHoverCan != hoverCan) {
+                            || oldHoverLs != hoverLs) {
                         repaint();
                     }
                 }
             }
         });
-    }
-
-    private void showSetting(Graphics g) {
-        // khung menu pause
-        int boxW = (int)(450 * GamePanel.scaleY);
-        int boxH = (int)(380 * GamePanel.scaleY);
-        int boxX = (WIDTH - boxW) / 2;
-        int boxY = (HEIGHT - boxH) / 2;
-        int btnW =(int)(135 * GamePanel.scaleY), btnH = (int)(50 * GamePanel.scaleY);
-        int btnY = boxY + (int)(270 * GamePanel.scaleY);
-        int okX = boxX + (int)(85 * GamePanel.scaleY);
-        int cancelX = okX + (int)(145 * GamePanel.scaleY);
-        int soundtextY = boxY + 75;
-        int mutiplayY = soundtextY + 50;
-        int buttonX = boxX + 250;
-        int btW = 90, btH = 25;
-        if (button[0] != null) {
-            g.drawImage(button[0], boxX, boxY, boxW, boxH, null);
-        } else {
-            g.setColor(new Color(255, 255, 255, 180));
-            g.fillRoundRect(boxX, boxY, boxW, boxH, 30, 30);
-        }
-
-        if (button[13] != null && hoverOk) {
-            g.drawImage(button[13], okX, btnY, btnW, btnH, null);
-        } else if (button[12] != null) {
-            g.drawImage(button[12], okX, btnY, btnW, btnH, null);
-        }
-        if (button[15] != null && hoverCan) {
-            g.drawImage(button[15], cancelX, btnY, btnW, btnH, null);
-        } else if (button[14] != null) {
-            g.drawImage(button[14], cancelX, btnY, btnW, btnH, null);
-        }
-        Graphics2D g2 = (Graphics2D) g;
-        g2.setFont(new Font("Arial", Font.BOLD, 25));
-        g2.setColor(Color.WHITE);
-        g2.drawString("Sound:", okX, soundtextY );
-        g2.drawString("Two player:", okX, mutiplayY);
-
-        if (button[17] !=null && switchvol) {
-            g.drawImage(button[17], buttonX, soundtextY - 23, btW, btH, null);
-        } else if (button[16] != null ) {
-            g.drawImage(button[16], buttonX, soundtextY - 23, btW, btH, null);
-        }
-        if (button[17] !=null && prevTwoPlayerMode) {
-            g.drawImage(button[17], buttonX, mutiplayY - 23, btW, btH, null);
-        } else if (button[16] != null) {
-            g.drawImage(button[16], buttonX, mutiplayY - 23, btW, btH, null);
-        }
     }
 
     private void showMenu(Graphics g) {
@@ -338,7 +230,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
 
         // khung menu pause
         int boxW = (int)(300 * GamePanel.scaleY);
-        int boxH = (int)(330 * GamePanel.scaleY);
+        int boxH = (int)(245 * GamePanel.scaleY);
         int boxX = (WIDTH - boxW) / 2;
         int boxY = (HEIGHT - boxH) / 2;
         if (button[0] != null) {
@@ -349,10 +241,9 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         }
 
         int btnW =(int)(180 * GamePanel.scaleY), btnH = (int)(50 * GamePanel.scaleY);
-        int resY = boxY + (int) (45 * GamePanel.scaleY);
+        int resY = boxY + (int) (35 * GamePanel.scaleY);
         int resumeY = resY + (int) (60 * GamePanel.scaleY);
-        int setY = resumeY + (int) (60 * GamePanel.scaleY);
-        int menuY = setY + (int) (60 * GamePanel.scaleY);
+        int menuY = resumeY + (int) (60 * GamePanel.scaleY);
         int btnX = boxX + (boxW - btnW) / 2;
 
         // Vẽ 2 nút (ảnh hoặc chữ)
@@ -368,6 +259,12 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
             } else if (button[11] != null) {
                 g.drawImage(button[11], btnX, resumeY, btnW, btnH, null);
             }
+        } else if (gameState.equals("WIN")) {
+            if (button[12] != null && hoverResume) {
+                g.drawImage(button[12], btnX, resumeY, btnW, btnH, null);
+            } else if (button[13] != null) {
+                g.drawImage(button[13], btnX, resumeY, btnW, btnH, null);
+            }
         }
         if (button[2] != null && hoverMenu) {
             g.drawImage(button[2], btnX, menuY, btnW, btnH, null);
@@ -378,11 +275,6 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
             g.drawImage(button[6], btnX, resY, btnW, btnH, null);
         } else if (button[7] != null) {
             g.drawImage(button[7], btnX, resY, btnW, btnH, null);
-        }
-        if (button[8] != null && hoverSt) {
-            g.drawImage(button[8], btnX, setY, btnW, btnH, null);
-        } else if (button[9] != null) {
-            g.drawImage(button[9], btnX, setY, btnW, btnH, null);
         }
     }
 
@@ -420,10 +312,22 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         repaint();
     }
 
+    private boolean checkWin(List<Brick> bricks) {
+        for (Brick brick : bricks) {
+            if (brick.getHitPoints() < 6 && brick.getHitPoints() > 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean checkLose(int live) {
+        return live <= 0;
+    }
 
     private void updateGame() {
         if (gameState.equals("MENU") || gameState.equals("RUNNING")) {
-             if (!mainBall.isLaunched()) {
+            if (!mainBall.isLaunched()) {
                 updateLaunchAngle();
             }
             // xử lý input & di chuyển paddle
@@ -482,15 +386,11 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         powerUps.removeIf(PowerUp::isCollectedOrOffscreen);
 
         // check win/lose
-        if (bricks.isEmpty()) {
-            currentLevel++;
-            if (currentLevel > 3) {
-                gameState = "WIN";
-            } else {
-                resetBallsToPaddles();
-            }
+        if(checkWin(bricks)) {
+            gameState = "WIN";
         }
-        if (lives <= 0) {
+
+        if (checkLose(lives)) {
             gameState = "LOSE";
         }
 
@@ -533,11 +433,11 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
     private void checkBrickHeadOn(Brick brick, Brick other) {
         if (checkCollisionsWithBrick(brick, other)) {
             if (brick.getDx() == 0 && other.getDx() == 0
-            && brick.getDy() ==  - other.getDy()) {
+                    && brick.getDy() ==  - other.getDy()) {
                 brick.setDy(-brick.getDy());
                 other.setDy(-brick.getDy());
             } else if (brick.getDy() == 0 && other.getDy() == 0
-            && brick.getDx() == -other.getDx()) {
+                    && brick.getDx() == -other.getDx()) {
                 brick.setDx(-brick.getDx());
                 other.setDx(-brick.getDx());
             }
@@ -580,7 +480,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
             float disY = Math.min(this.getY() + this.getHeight(), other.getY() + other.getHeight())
                     - Math.max(this.getY(), other.getY());
             if ((other.getDx() == 0 && brick.getDy() == 0)
-            || (other.getDy() == 0 && brick.getDx() == 0)) {
+                    || (other.getDy() == 0 && brick.getDx() == 0)) {
                 if (Math.abs(disX - disY) > EPSILON) {
                     if (disX - disY < 0){
                         setColX(brick, other);
@@ -945,9 +845,9 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         g2.setColor(Color.WHITE);
         try {
             Font customFont = Font.createFont(
-                Font.TRUETYPE_FONT,
-                new File("assets/font.ttf")
-                                             ).deriveFont(Font.BOLD, 30f);
+                    Font.TRUETYPE_FONT,
+                    new File("assets/font.ttf")
+            ).deriveFont(Font.BOLD, 30f);
             g2.setFont(customFont);
         } catch (Exception e) {
             e.printStackTrace();
@@ -959,24 +859,24 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         int wLives = 30, hLives = 30;
         if (lives >= 1) {
             g2.drawImage(Renderer.loadHeartTexture(), (int)(750* GamePanel.scaleX),
-                        (int)(570* GamePanel.scaleY),(int)(wLives*GamePanel.scaleX), (int)(hLives*GamePanel.scaleY), null);
+                    (int)(570* GamePanel.scaleY),(int)(wLives*GamePanel.scaleX), (int)(hLives*GamePanel.scaleY), null);
         } else {
             g2.drawImage(Renderer.loadDamageTexture(), (int)(750* GamePanel.scaleX),
-                        (int)(570* GamePanel.scaleY),(int)(wLives*GamePanel.scaleX), (int)(hLives*GamePanel.scaleY), null);
+                    (int)(570* GamePanel.scaleY),(int)(wLives*GamePanel.scaleX), (int)(hLives*GamePanel.scaleY), null);
         }
         if (lives >= 2) {
             g2.drawImage(Renderer.loadHeartTexture(), (int)(720* GamePanel.scaleX),
-                        (int)(570* GamePanel.scaleY),(int)(wLives*GamePanel.scaleX), (int)(hLives*GamePanel.scaleY), null);
+                    (int)(570* GamePanel.scaleY),(int)(wLives*GamePanel.scaleX), (int)(hLives*GamePanel.scaleY), null);
         } else {
             g2.drawImage(Renderer.loadDamageTexture(), (int)(720* GamePanel.scaleX),
-                        (int)(570* GamePanel.scaleY),(int)(wLives*GamePanel.scaleX), (int)(hLives*GamePanel.scaleY), null);
+                    (int)(570* GamePanel.scaleY),(int)(wLives*GamePanel.scaleX), (int)(hLives*GamePanel.scaleY), null);
         }
         if (lives >= 3) {
             g2.drawImage(Renderer.loadHeartTexture(), (int)(690* GamePanel.scaleX),
-                        (int)(570* GamePanel.scaleY),(int)(wLives*GamePanel.scaleX), (int)(hLives*GamePanel.scaleY), null);
+                    (int)(570* GamePanel.scaleY),(int)(wLives*GamePanel.scaleX), (int)(hLives*GamePanel.scaleY), null);
         } else {
             g2.drawImage(Renderer.loadDamageTexture(), (int)(690* GamePanel.scaleX),
-                        (int)(570* GamePanel.scaleY),(int)(wLives*GamePanel.scaleX), (int)(hLives*GamePanel.scaleY), null);
+                    (int)(570* GamePanel.scaleY),(int)(wLives*GamePanel.scaleX), (int)(hLives*GamePanel.scaleY), null);
         }
 
         // draw paddles, ball, bricks, powerups, arrow
@@ -1007,20 +907,23 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
                 || gameState.equals("WIN")) {
             showMenu(g2);
         } else if (gameState.equals("RUNNING")) {
-            buttonMenu(g2);
-        } else if (gameState.equals("SETTING")) {
-            showSetting(g2);
+            buttonInGame(g2);
         }
-
         g2.dispose();
     }
 
-    private void buttonMenu(Graphics g) {
+    private void buttonInGame(Graphics g) {
         int butW = (int)(30 * GamePanel.scaleY), butH = (int)(30 * GamePanel.scaleY);
-        int butX = WIDTH - (int)(50 * GamePanel.scaleY);
+        int pauX = WIDTH - (int)(50 * GamePanel.scaleY);
+        int volX = pauX - (int)(40 * GamePanel.scaleX);
         int butY = (int)(20 * GamePanel.scaleY);
         if (button[1] != null) {
-            g.drawImage(button[1], butX, butY, butW, butH, null);
+            g.drawImage(button[1], pauX, butY, butW, butH, null);
+        }
+        if (button[14] != null && switchVol) {
+            g.drawImage(button[14], volX, butY, butW, butH, null);
+        } else if (button[15] != null) {
+            g.drawImage(button[15], volX, butY, butW, butH, null);
         }
     }
 

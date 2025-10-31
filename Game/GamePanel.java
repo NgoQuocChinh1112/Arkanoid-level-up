@@ -26,9 +26,9 @@ public class GamePanel extends JPanel {
      * Khởi tạo GamePanel với kích thước xác định và các màn hình con.
      */
 
-     public GameManager getGameManager() {
+    public GameManager getGameManager() {
         return game;
-     }
+    }
 
     public GamePanel(int width, int height) {
         this.WIDTH = width;

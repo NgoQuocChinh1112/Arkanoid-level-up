@@ -1,5 +1,7 @@
 package Objects;
 
+import Game.GamePanel;
+
 public abstract class MovableObject extends GameObject {
     protected float dx = 0;
     protected float dy = 0;
@@ -16,6 +18,7 @@ public abstract class MovableObject extends GameObject {
     @Override
     public void update() {
         move();
+
     }
 
     // getters/setters

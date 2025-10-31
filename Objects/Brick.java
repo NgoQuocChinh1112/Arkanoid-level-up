@@ -10,9 +10,9 @@ import java.awt.image.BufferedImage;
 public class Brick extends MovableObject {
     private final int hitPoints;
     private int heart;
-    private float speed = 6f;
-    private boolean movable;
-    private int type;
+    private float speed = 4f;
+    private final int type;
+    private final int dis;
     private float maxX, minX, maxY, minY;
     private final List<List<BufferedImage>> textures = Renderer.loadBrickTexture();
 
@@ -20,8 +20,12 @@ public class Brick extends MovableObject {
         super(x, y, width, height);
         this.hitPoints = temp % 10;
         this.heart = temp % 10;
-        this.movable = temp > 10;
-        this.type = temp / 10;
+        this.type = (temp / 10) % 10;
+        if (temp > 100){
+            this.dis = temp - type * 10 - hitPoints;
+        } else {
+            dis = 0;
+        }
         setVector();
         if (this.hitPoints == 6) {
             texture = textures.get(this.hitPoints - 1).getFirst();
@@ -92,24 +96,24 @@ public class Brick extends MovableObject {
                 break;
             case 1:
                 this.minX = x;
-                this.maxX = x + 200;
+                this.maxX = x + dis;
                 dx = speed;
                 dy = 0;
                 break;
             case 2:
-                this.minX = x - 200;
+                this.minX = x - dis;
                 this.maxX = x;
                 dx = -speed;
                 dy = 0;
                 break;
             case 3:
                 this.minY = y;
-                this.maxY = y + 200;
+                this.maxY = y + dis;
                 dx = 0;
                 dy = speed;
                 break;
             case 4:
-                this.minY = y - 200;
+                this.minY = y - dis;
                 this.maxY = y;
                 dx = 0;
                 dy = -speed;

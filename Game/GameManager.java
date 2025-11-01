@@ -791,7 +791,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
                     } else if (type == 2) {
                         pu = new BigBallPowerUp(brick.getX() + brick.getWidth()/2f - 12,
                                 brick.getY() + brick.getHeight()/2f,
-                                (int)(24 scale), (int)(24 * scale), 5000);
+                                (int)(24 * scale), (int)(24 * scale), 5000);
                     } else if (type == 3) {
                         pu = new ExplosiveBallPowerUp(brick.getX() + brick.getWidth()/2f - 12,
                                 brick.getY() + brick.getHeight()/2f,

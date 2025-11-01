@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import static Game.GamePanel.scale;
+
 /**
  * Chế độ thi đấu 2 người - chia màn hình theo chiều dọc
  * Player 1: Bên trái (điều khiển: ←→ + Space)
@@ -68,14 +70,14 @@ public class CompetitiveGameManager extends GameManager {
             public void mouseClicked(MouseEvent e) {
                 Point p = e.getPoint();
                 if (gameState.equals("PAUSED") || gameState.equals("END")) {
-                    int boxX = (WIDTH - (int) (300 * GamePanel.scaleX)) / 2;
-                    int boxY = (HEIGHT - (int) (330 * GamePanel.scaleY)) / 2;
-                    int btnW = (int) (180 * GamePanel.scaleX);
-                    int btnH = (int) (50 * GamePanel.scaleY);
-                    int resumeY = boxY + (int) (45 * GamePanel.scaleY);
-                    int restartY = resumeY + (int) (60 * GamePanel.scaleY);
-                    int menuY = restartY + (int) (60 * GamePanel.scaleY);
-                    int btnX = boxX + ((int) (300 * GamePanel.scaleX) - btnW) / 2;
+                    int boxX = (WIDTH - (int) (300 * scale)) / 2;
+                    int boxY = (HEIGHT - (int) (330 * scale)) / 2;
+                    int btnW = (int) (180 * scale);
+                    int btnH = (int) (50 * scale);
+                    int resumeY = boxY + (int) (45 * scale);
+                    int restartY = resumeY + (int) (60 * scale);
+                    int menuY = restartY + (int) (60 * scale);
+                    int btnX = boxX + ((int) (300 * scale) - btnW) / 2;
 
                     Rectangle resumeRect = new Rectangle(btnX, resumeY, btnW, btnH);
                     Rectangle restartRect = new Rectangle(btnX, restartY, btnW, btnH);
@@ -97,15 +99,15 @@ public class CompetitiveGameManager extends GameManager {
             public void mouseMoved(MouseEvent e) {
                 Point p = e.getPoint();
                 if (gameState.equals("PAUSED") || gameState.equals("END")) {
-                    int boxW = (int) (300 * GamePanel.scaleX);
-                    int boxH = (int) (330 * GamePanel.scaleY);
+                    int boxW = (int) (300 * scale);
+                    int boxH = (int) (330 * scale);
                     int boxX = (WIDTH - boxW) / 2;
                     int boxY = (HEIGHT - boxH) / 2;
-                    int btnW = (int) (180 * GamePanel.scaleX);
-                    int btnH = (int) (50 * GamePanel.scaleY);
-                    int resumeY = boxY + (int) (45 * GamePanel.scaleY);
-                    int restartY = resumeY + (int) (60 * GamePanel.scaleY);
-                    int menuY = restartY + (int) (60 * GamePanel.scaleY);
+                    int btnW = (int) (180 * scale);
+                    int btnH = (int) (50 * scale);
+                    int resumeY = boxY + (int) (45 * scale);
+                    int restartY = resumeY + (int) (60 * scale);
+                    int menuY = restartY + (int) (60 * scale);
                     int btnX = boxX + (boxW - btnW) / 2;
 
                     Rectangle resumeRect = new Rectangle(btnX, resumeY, btnW, btnH);
@@ -133,8 +135,8 @@ public class CompetitiveGameManager extends GameManager {
         g.fillRect(0, 0, WIDTH, HEIGHT);
 
         // khung menu pause
-        int boxW = (int)(300 * GamePanel.scaleY);
-        int boxH = (int)(330 * GamePanel.scaleY);
+        int boxW = (int)(300 * scale);
+        int boxH = (int)(330 * scale);
         int boxX = (WIDTH - boxW) / 2;
         int boxY = (HEIGHT - boxH) / 2;
         if (button[0] != null) {
@@ -144,10 +146,10 @@ public class CompetitiveGameManager extends GameManager {
             g.fillRoundRect(boxX, boxY, boxW, boxH, 30, 30);
         }
 
-        int btnW =(int)(180 * GamePanel.scaleY), btnH = (int)(50 * GamePanel.scaleY);
-        int resumeY = boxY + (int) (45 * GamePanel.scaleY);
-        int restartY = resumeY + (int) (60 * GamePanel.scaleY);
-        int menuY = restartY + (int) (60 * GamePanel.scaleY);
+        int btnW =(int)(180 * scale), btnH = (int)(50 * scale);
+        int resumeY = boxY + (int) (45 * scale);
+        int restartY = resumeY + (int) (60 * scale);
+        int menuY = restartY + (int) (60 * scale);
         int btnX = boxX + (boxW - btnW) / 2;
 
         // Vẽ 2 nút (ảnh hoặc chữ)
@@ -172,26 +174,26 @@ public class CompetitiveGameManager extends GameManager {
     @Override
     protected void initGame() {
         int halfWidth = WIDTH / 2;
-        int paddleW = (int)(80 * GamePanel.scaleX);
-        int paddleH = (int)(16 * GamePanel.scaleY);
-        int paddleY = HEIGHT - (int)(60 * GamePanel.scaleY);
+        int paddleW = (int)(80 * scale);
+        int paddleH = (int)(16 * scale);
+        int paddleY = HEIGHT - (int)(60 * scale);
         
         // Player 1
         paddle1 = new Paddle(halfWidth / 2f - paddleW / 2f, paddleY, paddleW, paddleH);
-        ball1 = new Ball(paddle1.getX() + paddleW / 2f - (int)(8 * GamePanel.scaleX),
-                         paddle1.getY() - (int)(16 * GamePanel.scaleY) - 1,
-                         (int)(16 * GamePanel.scaleX), (int)(16 * GamePanel.scaleY));
+        ball1 = new Ball(paddle1.getX() + paddleW / 2f - (int)(8 * scale),
+                         paddle1.getY() - (int)(16 * scale) - 1,
+                         (int)(16 * scale), (int)(16 * scale));
         ball1.resetToPaddle(paddle1);
-        bricks1 = Level.buildLevelForPlayer(currentLevel, 0, halfWidth, HEIGHT, GamePanel.scaleX, GamePanel.scaleY);
+        bricks1 = Level.buildLevelForPlayer(currentLevel, 0, halfWidth, HEIGHT, scale);
         powerUps1 = new ArrayList<>();
         
         // Player 2
         paddle2 = new Paddle(dividerX + halfWidth / 2f - paddleW / 2f, paddleY, paddleW, paddleH);
-        ball2 = new Ball(paddle2.getX() + paddleW / 2f - (int)(8 * GamePanel.scaleX),
-                         paddle2.getY() - (int)(16 * GamePanel.scaleY) - 1,
-                         (int)(16 * GamePanel.scaleX), (int)(16 * GamePanel.scaleY));
+        ball2 = new Ball(paddle2.getX() + paddleW / 2f - (int)(8 * scale),
+                         paddle2.getY() - (int)(16 * scale) - 1,
+                         (int)(16 * scale), (int)(16 * scale));
         ball2.resetToPaddle(paddle2);
-        bricks2 = Level.buildLevelForPlayer(currentLevel, dividerX, halfWidth, HEIGHT, GamePanel.scaleX, GamePanel.scaleY);
+        bricks2 = Level.buildLevelForPlayer(currentLevel, dividerX, halfWidth, HEIGHT, scale);
         powerUps2 = new ArrayList<>();
         
         score1 = score2 = 0;
@@ -418,8 +420,8 @@ public class CompetitiveGameManager extends GameManager {
     private PowerUp createPowerUp(int type, Brick brick) {
         float x = brick.getX() + brick.getWidth()/2f - 12;
         float y = brick.getY() + brick.getHeight()/2f;
-        int w = (int)(24 * GamePanel.scaleY);
-        int h = (int)(24 * GamePanel.scaleY);
+        int w = (int)(24 * scale);
+        int h = (int)(24 * scale);
         
         switch(type) {
             case 0: return new ExpandPaddlePowerUp(x, y, w, h, 5000);
@@ -550,13 +552,13 @@ public class CompetitiveGameManager extends GameManager {
         float ballCenterX = ball.getX() + ball.getWidth() / 2f;
         float ballCenterY = ball.getY() + ball.getHeight() / 2f;
         
-        int arrowW = (int)(40 * GamePanel.scaleX);
-        int arrowH = (int)(40 * GamePanel.scaleY);
+        int arrowW = (int)(40 * scale);
+        int arrowH = (int)(40 * scale);
         
         var oldTransform = g2.getTransform();
         g2.translate(ballCenterX, ballCenterY);
         g2.rotate(Math.toRadians(-angleDegrees + 90));
-        g2.drawImage(Renderer.loadArrowTexture(), -arrowW / 2, -(int)(50 * GamePanel.scaleY), arrowW, arrowH, null);
+        g2.drawImage(Renderer.loadArrowTexture(), -arrowW / 2, -(int)(50 * scale), arrowW, arrowH, null);
         g2.setTransform(oldTransform);
     }
     

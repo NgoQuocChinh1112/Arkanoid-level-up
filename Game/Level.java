@@ -52,12 +52,11 @@ public class Level {
     * @param offsetX Vị trí bắt đầu theo trục X (0 cho P1, WIDTH/2 cho P2)
     * @param areaWidth Chiều rộng khu vực của player (WIDTH/2)
     * @param areaHeight Chiều cao màn hình
-    * @param scaleX Scale theo X
-    * @param scaleY Scale theo Y
+    * @param scale Scale theo X và Y
     * @return Danh sách các brick
     */
 public static List<Brick> buildLevelForPlayer(int level, int offsetX, int areaWidth,
-                                              int areaHeight, float scaleX, float scaleY) {
+                                              int areaHeight, float scale) {
     List<Brick> bricks = new ArrayList<>();
     String fileName = "/levels/level" + level + ".txt";
     List<String> lines = new ArrayList<>();
@@ -78,8 +77,8 @@ public static List<Brick> buildLevelForPlayer(int level, int offsetX, int areaWi
     // ---- Cấu hình ma trận ----
     int rows = 10;   // số hàng hiển thị
     int cols = 11;   // số cột hiển thị
-    float gapX = 2f * scaleX;
-    float gapY = 2f * scaleY;
+    float gapX = 2f * scale;
+    float gapY = 2f * scale;
 
     // ---- Tính kích thước gạch động ----
     float totalGapWidth = (cols - 1) * gapX;
@@ -87,7 +86,7 @@ public static List<Brick> buildLevelForPlayer(int level, int offsetX, int areaWi
 
     float brickW = (areaWidth - totalGapWidth) / cols;
     float brickH = (areaHeight * 0.25f - totalGapHeight) / rows;  // chiếm khoảng 1/4 chiều cao màn hình
-    float offsetY = 60f * scaleY;
+    float offsetY = 60f * scale;
 
     // ---- Căn giữa trong khu vực người chơi ----
     float totalBricksWidth = cols * brickW + totalGapWidth;

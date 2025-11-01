@@ -3,12 +3,12 @@ package Game;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.security.PublicKey;
 
 import javax.imageio.ImageIO;
-import javax.swing.JButton;
 import javax.swing.JPanel;
 import java.awt.event.*;
+
+import static Game.GamePanel.scale;
 
 
 public class LevelPanel extends JPanel {
@@ -18,19 +18,20 @@ public class LevelPanel extends JPanel {
     private BufferedImage title_choose_level;
     private BufferedImage back_bot;
     private BufferedImage back_top;
-    private static int WIDTH_BUTTON_LEVEL = (int)(100 * GamePanel.scaleY);
-    private static int HEIGHT_BUTTON_LEVEL = (int)(100 * GamePanel.scaleY);
-    private static int WIDTH_BUTTON_BACK = (int)(60 * GamePanel.scaleY);
-    private static int HEIGHT_BUTTON_BACK = (int)(60 * GamePanel.scaleY);
-    private static int WIDTH_TITLE = (int)(400 *  GamePanel.scaleY);
-    private static int HEIGHT_TITLE = (int)(100 *  GamePanel.scaleY);
 
-    private static int X_BUTTON_LEVEL_1 = (int)(50 * GamePanel.scaleX);
-    private static int Y_BUTTON_LEVEL_1 = (int)(200 * GamePanel.scaleY);
-    private static int X_BUTTON_BACK = (int)(700 * GamePanel.scaleX);
-    private static int Y_BUTTON_BACK = (int)(30 *  GamePanel.scaleY);
-    private static int X_TITLE = (int)(200 *  GamePanel.scaleX);
-    private static int Y_TITLE = (int)(8 *  GamePanel.scaleY);
+    private static int WIDTH_BUTTON_LEVEL = (int)(100 * scale);
+    private static int HEIGHT_BUTTON_LEVEL = (int)(100 * scale);
+    private static int WIDTH_BUTTON_BACK = (int)(60 * scale);
+    private static int HEIGHT_BUTTON_BACK = (int)(60 * scale);
+    private static int WIDTH_TITLE = (int)(400 *  scale);
+    private static int HEIGHT_TITLE = (int)(100 *  scale);
+
+    private static int X_BUTTON_LEVEL_1 = (int)(50 * scale);
+    private static int Y_BUTTON_LEVEL_1 = (int)(200 * scale);
+    private static int X_BUTTON_BACK = (int)(700 * scale);
+    private static int Y_BUTTON_BACK = (int)(30 *  scale);
+    private static int X_TITLE = (int)(200 *  scale);
+    private static int Y_TITLE = (int)(8 *  scale);
 
     private Rectangle[] levelsRect;
     private Rectangle back;
@@ -76,13 +77,13 @@ public class LevelPanel extends JPanel {
             @Override
             public void mouseClicked(MouseEvent e) {
                 Point p = e.getPoint();
-                int btnW = (int)(100 * GamePanel.scaleY);
-                int btnH = (int)(100 * GamePanel.scaleY);
-                int centerX = (int)(50 * GamePanel.scaleX);
-                int startY = (int)(200 * GamePanel.scaleY);
+                int btnW = (int)(100 * scale);
+                int btnH = (int)(100 * scale);
+                int centerX = (int)(50 * scale);
+                int startY = (int)(200 * scale);
 
-                Rectangle backLocal = new Rectangle((int)(700 * GamePanel.scaleX), (int)(30 *  GamePanel.scaleY),
-                        (int)(60 * GamePanel.scaleY), (int)(60 * GamePanel.scaleY));
+                Rectangle backLocal = new Rectangle((int)(700 * scale), (int)(30 *  scale),
+                        (int)(60 * scale), (int)(60 * scale));
 
                 Rectangle[] levelsRectLocal = new Rectangle[10];
 
@@ -119,13 +120,13 @@ public class LevelPanel extends JPanel {
             @Override
             public void mouseMoved(MouseEvent e) {
                 Point p = e.getPoint();
-                int btnW = (int)(100 * GamePanel.scaleY);
-                int btnH = (int)(100 * GamePanel.scaleY);
-                int centerX = (int)(50 * GamePanel.scaleX);
-                int startY = (int)(200 * GamePanel.scaleY);
+                int btnW = (int)(100 * scale);
+                int btnH = (int)(100 * scale);
+                int centerX = (int)(50 * scale);
+                int startY = (int)(200 * scale);
 
-                Rectangle backLocal = new Rectangle((int)(700 * GamePanel.scaleX), (int)(30 *  GamePanel.scaleY),
-                        (int)(60 * GamePanel.scaleY), (int)(60 * GamePanel.scaleY));
+                Rectangle backLocal = new Rectangle((int)(700 * scale), (int)(30 *  scale),
+                        (int)(60 * scale), (int)(60 * scale));
 
                 Rectangle[] levelsRectLocal = new Rectangle[10];
 
@@ -161,22 +162,22 @@ public class LevelPanel extends JPanel {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
 
-        int btnW = (int)(100 * GamePanel.scaleY);
-        int btnH = (int)(100 * GamePanel.scaleY);
-        int centerX = (int)(50 * GamePanel.scaleX);
-        int startY = (int)(200 * GamePanel.scaleY);
+        int btnW = (int)(100 * scale);
+        int btnH = (int)(100 * scale);
+        int centerX = (int)(50 * scale);
+        int startY = (int)(200 * scale);
 
         if (levelsBackGround != null) {
             g2.drawImage(levelsBackGround, 0, 0, getWidth(), getHeight(), null);
         }
 
         if (title_choose_level != null) {
-            g2.drawImage(title_choose_level, (int)(200 *  GamePanel.scaleY), (int)(8 *  GamePanel.scaleY),
-                    (int)(400 *  GamePanel.scaleY), (int)(100 *  GamePanel.scaleY), null);
+            g2.drawImage(title_choose_level, (int)(200 *  scale), (int)(8 *  scale),
+                    (int)(400 *  scale), (int)(100 *  scale), null);
         }
 
-        back.setBounds((int)(700 * GamePanel.scaleX), (int)(30 *  GamePanel.scaleY),
-                (int)(60 * GamePanel.scaleY), (int)(60 * GamePanel.scaleY));
+        back.setBounds((int)(700 * scale), (int)(30 *  scale),
+                (int)(60 * scale), (int)(60 * scale));
 
         for (int i = 0; i < 10; ++i) {
             levelsRect[i] = new Rectangle();
@@ -191,11 +192,11 @@ public class LevelPanel extends JPanel {
         }
 
         if (hoverBack && back_top != null) {
-            g2.drawImage(back_top, (int)(700 * GamePanel.scaleX), (int)(30 *  GamePanel.scaleY),
-                    (int)(60 * GamePanel.scaleY), (int)(60 * GamePanel.scaleY), null);
+            g2.drawImage(back_top, (int)(700 * scale), (int)(30 *  scale),
+                    (int)(60 * scale), (int)(60 * scale), null);
         } else if (back_bot != null) {
-            g2.drawImage(back_bot, (int)(700 * GamePanel.scaleX), (int)(30 *  GamePanel.scaleY),
-                    (int)(60 * GamePanel.scaleY), (int)(60 * GamePanel.scaleY), null);
+            g2.drawImage(back_bot, (int)(700 * scale), (int)(30 *  scale),
+                    (int)(60 * scale), (int)(60 * scale), null);
         }
 
         if (image_level != null) {

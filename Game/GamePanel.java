@@ -16,9 +16,12 @@ public class GamePanel extends JPanel {
 
     private int WIDTH;
     private int HEIGHT;
+    private int prevWid;
+    private int prevHei;
 
-    public static float scaleX = 1f;
-    public static float scaleY = 1f;
+    public float scaleX = 1f;
+    public float scaleY = 1f;
+    public static float scale = 1f;
 
 
 
@@ -33,6 +36,9 @@ public class GamePanel extends JPanel {
     public GamePanel(int width, int height) {
         this.WIDTH = width;
         this.HEIGHT = height;
+        this.prevHei = this.HEIGHT;
+        this.prevWid = this.WIDTH;
+
         cardLayout = new CardLayout();
         setLayout(cardLayout);
 
@@ -50,9 +56,10 @@ public class GamePanel extends JPanel {
             public void componentResized(ComponentEvent e) {
                 WIDTH = getWidth();
                 HEIGHT = getHeight();
-                setPanelSize(WIDTH, HEIGHT);
-                scaleX = (float) WIDTH / 800f;
-                scaleY = (float) HEIGHT / 600f;
+
+                scaleX = (float) WIDTH / 800;
+                scaleY = (float) HEIGHT / 600;
+                scale = Math.min(scaleX, scaleY);
             }
         });
 
@@ -60,6 +67,14 @@ public class GamePanel extends JPanel {
         add(game, "Game");
         add(levelPanel, "LevelPanel");
         showMenu();
+    }
+
+    public int getWIDTH() {
+        return this.WIDTH;
+    }
+
+    public int getHEIGHT() {
+        return this.HEIGHT;
     }
 
     /**

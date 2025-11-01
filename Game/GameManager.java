@@ -14,6 +14,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
+import static Game.GamePanel.scale;
+
 public class GameManager extends JPanel implements KeyListener, ActionListener {
     private final GamePanel parent;
 
@@ -128,10 +130,10 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
             public void mouseClicked(MouseEvent e) {
                 Point p = e.getPoint();
                 if (gameState.equals("RUNNING")) {
-                    int butW = (int)(30 * GamePanel.scaleY), butH = (int)(30 * GamePanel.scaleY);
-                    int pauX = WIDTH - (int)(50 * GamePanel.scaleY);
-                    int volX = pauX - (int)(40 * GamePanel.scaleX);
-                    int butY = (int)(20 * GamePanel.scaleY);
+                    int butW = (int)(30 * scale), butH = (int)(30 * scale);
+                    int pauX = WIDTH - (int)(50 * GamePanel.scale);
+                    int volX = pauX - (int)(40 * scale);
+                    int butY = (int)(20 * scale);
                     Rectangle pauRect = new Rectangle(pauX, butY, butW, butH);
                     Rectangle volRect = new Rectangle(volX, butY, butW, butH);
                     if (pauRect.contains(p)) {
@@ -149,14 +151,14 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
                     }
                 }
                 if (gameState.equals("PAUSED") || gameState.equals("LOSE") || gameState.equals("WIN")) {
-                    int boxX = (WIDTH - (int) (300 * GamePanel.scaleX)) / 2;
-                    int boxY = (HEIGHT - (int) (245 * GamePanel.scaleY)) / 2;
-                    int btnW = (int) (180 * GamePanel.scaleX);
-                    int btnH = (int) (50 * GamePanel.scaleY);
-                    int resY = boxY + (int) (35 * GamePanel.scaleY);
-                    int resumeY = resY + (int) (60 * GamePanel.scaleY);
-                    int menuY = resumeY + (int) (60 * GamePanel.scaleY);
-                    int btnX = boxX + ((int) (300 * GamePanel.scaleX) - btnW) / 2;
+                    int boxX = (WIDTH - (int) (300 * scale)) / 2;
+                    int boxY = (HEIGHT - (int) (245 * scale)) / 2;
+                    int btnW = (int) (180 * scale);
+                    int btnH = (int) (50 * scale);
+                    int resY = boxY + (int) (35 * scale);
+                    int resumeY = resY + (int) (60 * scale);
+                    int menuY = resumeY + (int) (60 * scale);
+                    int btnX = boxX + ((int) (300 * scale) - btnW) / 2;
 
                     Rectangle resumeRect = new Rectangle(btnX, resumeY, btnW, btnH);
                     Rectangle LsRect = new Rectangle(btnX, resY, btnW, btnH);
@@ -184,15 +186,15 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
             public void mouseMoved(MouseEvent e) {
                 Point p = e.getPoint();
                 if (gameState.equals("PAUSED") || gameState.equals("LOSE") || gameState.equals("WIN")) {
-                    int boxW = (int) (300 * GamePanel.scaleX);
-                    int boxH = (int) (245 * GamePanel.scaleY);
+                    int boxW = (int) (300 * scale);
+                    int boxH = (int) (245 * GamePanel.scale);
                     int boxX = (WIDTH - boxW) / 2;
                     int boxY = (HEIGHT - boxH) / 2;
-                    int btnW = (int) (180 * GamePanel.scaleX);
-                    int btnH = (int) (50 * GamePanel.scaleY);
-                    int resY = boxY + (int) (35 * GamePanel.scaleY);
-                    int resumeY = resY + (int) (60 * GamePanel.scaleY);
-                    int menuY = resumeY + (int) (60 * GamePanel.scaleY);
+                    int btnW = (int) (180 * scale);
+                    int btnH = (int) (50 * GamePanel.scale);
+                    int resY = boxY + (int) (35 * GamePanel.scale);
+                    int resumeY = resY + (int) (60 * GamePanel.scale);
+                    int menuY = resumeY + (int) (60 * GamePanel.scale);
                     int btnX = boxX + (boxW - btnW) / 2;
 
                     Rectangle resumeRect = new Rectangle(btnX, resumeY, btnW, btnH);
@@ -219,18 +221,18 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         g.setColor(new Color(0, 0, 0, 150));
         g.fillRect(0, 0, WIDTH, HEIGHT);
         if (gameState.equals("LOSE")) {
-            int wGameOver = (int)(400 * GamePanel.scaleX);
-            int hGameOver = (int)(100 * GamePanel.scaleY);
+            int wGameOver = (int)(400 * scale);
+            int hGameOver = (int)(100 * GamePanel.scale);
             int x = (int)((WIDTH - wGameOver) / 2f);
-            int y = (int)(0 * GamePanel.scaleY);
+            int y = (int)(0 * GamePanel.scale);
             if ((System.currentTimeMillis() / 400) % 2 == 0) {
                 g.drawImage(Renderer.loadGameOverTexture(), x, y, wGameOver, hGameOver, null);
             }
         }
 
         // khung menu pause
-        int boxW = (int)(300 * GamePanel.scaleY);
-        int boxH = (int)(245 * GamePanel.scaleY);
+        int boxW = (int)(300 * GamePanel.scale);
+        int boxH = (int)(245 * GamePanel.scale);
         int boxX = (WIDTH - boxW) / 2;
         int boxY = (HEIGHT - boxH) / 2;
         if (button[0] != null) {
@@ -240,10 +242,10 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
             g.fillRoundRect(boxX, boxY, boxW, boxH, 30, 30);
         }
 
-        int btnW =(int)(180 * GamePanel.scaleY), btnH = (int)(50 * GamePanel.scaleY);
-        int resY = boxY + (int) (35 * GamePanel.scaleY);
-        int resumeY = resY + (int) (60 * GamePanel.scaleY);
-        int menuY = resumeY + (int) (60 * GamePanel.scaleY);
+        int btnW =(int)(180 * GamePanel.scale), btnH = (int)(50 * GamePanel.scale);
+        int resY = boxY + (int) (35 * GamePanel.scale);
+        int resumeY = resY + (int) (60 * GamePanel.scale);
+        int menuY = resumeY + (int) (60 * GamePanel.scale);
         int btnX = boxX + (boxW - btnW) / 2;
 
         // Vẽ 2 nút (ảnh hoặc chữ)
@@ -279,29 +281,29 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
     }
 
     private void initGame() {
-        paddle1 = new Paddle((WIDTH / 2f - (int)(60 * GamePanel.scaleX)), HEIGHT - (int)(60 * GamePanel.scaleY), (int)(120 * GamePanel.scaleX), (int)(16 * GamePanel.scaleY));
+        paddle1 = new Paddle((WIDTH / 2f - (int)(60 * scale)), HEIGHT - (int)(60 * GamePanel.scale), (int)(120 * scale), (int)(16 * GamePanel.scale));
         if(twoPlayerMode) {
-            paddle2 = new Paddle((WIDTH / 2f - (int)(60 * GamePanel.scaleX)), HEIGHT - (int)(140 * GamePanel.scaleY), (int)(120 * GamePanel.scaleX), (int)(16 * GamePanel.scaleY));
+            paddle2 = new Paddle((WIDTH / 2f - (int)(60 * scale)), HEIGHT - (int)(140 * GamePanel.scale), (int)(120 * scale), (int)(16 * GamePanel.scale));
         }
 
         float bx, by;
         if (twoPlayerMode) {
             // Bóng gắn với paddle2
-            bx = paddle2.getX() + paddle2.getWidth() / 2f - (int)(8 * GamePanel.scaleX);
-            by = paddle2.getY() - (int)(16 * GamePanel.scaleY) - 1;
+            bx = paddle2.getX() + paddle2.getWidth() / 2f - (int)(8 * scale);
+            by = paddle2.getY() - (int)(16 * scale) - 1;
         } else {
             // Bóng gắn với paddle1
-            bx = paddle1.getX() + paddle1.getWidth() / 2f - (int)(8 * GamePanel.scaleX);
-            by = paddle1.getY() - (int)(16 * GamePanel.scaleY) - 1;
+            bx = paddle1.getX() + paddle1.getWidth() / 2f - (int)(8 * scale);
+            by = paddle1.getY() - (int)(16 * scale) - 1;
         }
-        mainBall = new Ball(bx, by, (int)(16 * GamePanel.scaleX), (int)(16 * GamePanel.scaleY));
+        mainBall = new Ball(bx, by, (int)(16 * scale), (int)(16 * scale));
         mainBall.resetToPaddle(twoPlayerMode ? paddle2 : paddle1);
 
         balls.clear();
         balls.add(mainBall);
         extraBall = null;
 
-        bricks = Level.buildLevel(currentLevel, WIDTH, HEIGHT, GamePanel.scaleX, GamePanel.scaleY);
+        bricks = Level.buildLevel(currentLevel, WIDTH, HEIGHT, scale, scale);
         powerUps = new ArrayList<>();
         toRemove.clear();
     }
@@ -336,12 +338,12 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
             for (int i = 0; i < bricks.size(); i++) {
                 if (!bricks.get(i).isDestroyed()) {
                     bricks.get(i).update();
-                    bricks.get(i).changeVector();
                     checkBrickWithWall(bricks.get(i));
                     for (int j = i + 1; j < bricks.size(); j++ ) {
                         checkBrickHeadOn(bricks.get(i), bricks.get(j));
                         checkBrickCross(bricks.get(i), bricks.get(j));
                     }
+                    bricks.get(i).changeVector();
                 }
             }
             if(twoPlayerMode) paddle2.update();
@@ -734,7 +736,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
             }
 
             if (ball.isExplosive()) {
-                float explosionRadius = 80f * GamePanel.scaleX;
+                float explosionRadius = 80f * scale;
                 ExplosiveBallPowerUp.explodeAt(bricks,
                         ball.getX() + ball.getWidth()/2f,
                         ball.getY() + ball.getHeight()/2f,
@@ -751,31 +753,31 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
                     if (type == 0) {
                         pu = new ExpandPaddlePowerUp(brick.getX() + brick.getWidth()/2f - 12,
                                 brick.getY() + brick.getHeight()/2f,
-                                (int)(24 * GamePanel.scaleY), (int)(24 * GamePanel.scaleY), 5000);
+                                (int)(24 * scale), (int)(24 * scale), 5000);
                     } else if (type == 1) {
                         pu = new FastBallPowerUp(brick.getX() + brick.getWidth()/2f - 12,
                                 brick.getY() + brick.getHeight()/2f,
-                                (int)(24 * GamePanel.scaleY), (int)(24 * GamePanel.scaleY), 5000);
+                                (int)(24 * scale), (int)(24 * scale), 5000);
                     } else if (type == 2) {
                         pu = new BigBallPowerUp(brick.getX() + brick.getWidth()/2f - 12,
                                 brick.getY() + brick.getHeight()/2f,
-                                (int)(24 * GamePanel.scaleY), (int)(24 * GamePanel.scaleY), 5000);
+                                (int)(24 * scale), (int)(24 * scale), 5000);
                     } else if (type == 3) {
                         pu = new ExplosiveBallPowerUp(brick.getX() + brick.getWidth()/2f - 12,
                                 brick.getY() + brick.getHeight()/2f,
-                                (int)(24 * GamePanel.scaleY), (int)(24 * GamePanel.scaleY), 2000);
+                                (int)(24 * scale), (int)(24 * scale), 2000);
                     } else if (type == 4) {
                         pu = new ShrinkPaddlePowerUp(brick.getX() + brick.getWidth()/2f - 12,
                                 brick.getY() + brick.getHeight()/2f,
-                                (int)(24 * GamePanel.scaleY), (int)(24 * GamePanel.scaleY), 5000);
+                                (int)(24 * scale), (int)(24 * scale), 5000);
                     } else if (type == 5) {
                         pu = new DoubleBallPowerUp(brick.getX() + brick.getWidth()/2f - 12,
                                 brick.getY() + brick.getHeight()/2f,
-                                (int)(24 * GamePanel.scaleY), (int)(24 * GamePanel.scaleY), 5000);
+                                (int)(24 * scale), (int)(24 * scale), 5000);
                     } else  {
                         pu = new ExtraLifePowerUp(brick.getX() + brick.getWidth()/2f - 12,
                                 brick.getY() + brick.getHeight()/2f,
-                                (int)(24 * GamePanel.scaleY), (int)(24 * GamePanel.scaleY), 5000);
+                                (int)(24 * scale), (int)(24 * scale), 5000);
                     }
                     powerUps.add(pu);
                 }
@@ -841,6 +843,13 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         // background
         Graphics2D g2 = (Graphics2D) g.create();
 
+        int offsetX = (int)((parent.getWIDTH() - 800 * scale) / 2);
+        int offsetY = (int)((parent.getHEIGHT() - 600 * scale) / 2);
+
+        // Áp dụng scale và dịch
+        g2.translate(offsetX, offsetY);
+        g2.scale(scale, scale);
+
         if (backgroundImage != null) {
             g2.drawImage(backgroundImage, 0, 0, null);
         } else {
@@ -861,29 +870,29 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
             g2.setFont(new Font("SansSerif", Font.BOLD, 18));
         }
         String scoreText = String.format("%06d", score);
-        g2.drawString(scoreText, (int)(12 * GamePanel.scaleY), (int)(590 * GamePanel.scaleY));
+        g2.drawString(scoreText, (int)(12 * scale), (int)(590 * scale));
 
         int wLives = 30, hLives = 30;
         if (lives >= 1) {
-            g2.drawImage(Renderer.loadHeartTexture(), (int)(750* GamePanel.scaleX),
-                    (int)(570* GamePanel.scaleY),(int)(wLives*GamePanel.scaleX), (int)(hLives*GamePanel.scaleY), null);
+            g2.drawImage(Renderer.loadHeartTexture(), (int)(750* scale),
+                    (int)(570* scale),(int)(wLives * scale), (int)(hLives * scale), null);
         } else {
-            g2.drawImage(Renderer.loadDamageTexture(), (int)(750* GamePanel.scaleX),
-                    (int)(570* GamePanel.scaleY),(int)(wLives*GamePanel.scaleX), (int)(hLives*GamePanel.scaleY), null);
+            g2.drawImage(Renderer.loadDamageTexture(), (int)(750* scale),
+                    (int)(570 * scale),(int)(wLives * scale), (int)(hLives * scale), null);
         }
         if (lives >= 2) {
-            g2.drawImage(Renderer.loadHeartTexture(), (int)(720* GamePanel.scaleX),
-                    (int)(570* GamePanel.scaleY),(int)(wLives*GamePanel.scaleX), (int)(hLives*GamePanel.scaleY), null);
+            g2.drawImage(Renderer.loadHeartTexture(), (int)(720 * scale),
+                    (int)(570* scale),(int)(wLives * scale), (int)(hLives * scale), null);
         } else {
-            g2.drawImage(Renderer.loadDamageTexture(), (int)(720* GamePanel.scaleX),
-                    (int)(570* GamePanel.scaleY),(int)(wLives*GamePanel.scaleX), (int)(hLives*GamePanel.scaleY), null);
+            g2.drawImage(Renderer.loadDamageTexture(), (int)(720* scale),
+                    (int)(570 * scale),(int)(wLives* scale), (int)(hLives * scale), null);
         }
         if (lives >= 3) {
-            g2.drawImage(Renderer.loadHeartTexture(), (int)(690* GamePanel.scaleX),
-                    (int)(570* GamePanel.scaleY),(int)(wLives*GamePanel.scaleX), (int)(hLives*GamePanel.scaleY), null);
+            g2.drawImage(Renderer.loadHeartTexture(), (int)(690* scale),
+                    (int)(570 * scale),(int)(wLives * scale), (int)(hLives * scale), null);
         } else {
-            g2.drawImage(Renderer.loadDamageTexture(), (int)(690* GamePanel.scaleX),
-                    (int)(570* GamePanel.scaleY),(int)(wLives*GamePanel.scaleX), (int)(hLives*GamePanel.scaleY), null);
+            g2.drawImage(Renderer.loadDamageTexture(), (int)(690* scale),
+                    (int)(570 * scale),(int)(wLives * scale), (int)(hLives * scale), null);
         }
 
         // draw paddles, ball, bricks, powerups, arrow
@@ -902,8 +911,8 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
 
         // overlays
         if (gameState.equals("MENU")) {
-            int wPressStart = (int)(400 * GamePanel.scaleX);
-            int hPressStart = (int)(100 * GamePanel.scaleY);
+            int wPressStart = (int)(400 * scale);
+            int hPressStart = (int)(100 * GamePanel.scale);
 
             int x = (int)((WIDTH - wPressStart) / 2f);
             int y = (int)((HEIGHT - hPressStart) / 2f);
@@ -920,10 +929,10 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
     }
 
     private void buttonInGame(Graphics g) {
-        int butW = (int)(30 * GamePanel.scaleY), butH = (int)(30 * GamePanel.scaleY);
-        int pauX = WIDTH - (int)(50 * GamePanel.scaleY);
-        int volX = pauX - (int)(40 * GamePanel.scaleX);
-        int butY = (int)(20 * GamePanel.scaleY);
+        int butW = (int)(30 * scale), butH = (int)(30 * scale);
+        int pauX = WIDTH - (int)(50 * scale);
+        int volX = pauX - (int)(40 * scale);
+        int butY = (int)(20 * scale);
         if (button[1] != null) {
             g.drawImage(button[1], pauX, butY, butW, butH, null);
         }
@@ -1040,14 +1049,14 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         float ballCenterX = ball.getX() + ball.getWidth() / 2f;
         float ballCenterY = ball.getY() + ball.getHeight() / 2f;
 
-        int arrowW = (int) (40 * GamePanel.scaleX);
-        int arrowH = (int) (40 * GamePanel.scaleY);
+        int arrowW = (int) (40 * scale);
+        int arrowH = (int) (40 * scale);
 
         AffineTransform oldTransform = g2.getTransform();
 
         g2.translate(ballCenterX, ballCenterY);
         g2.rotate(Math.toRadians(-angleDegrees + 90));
-        g2.drawImage(Renderer.loadArrowTexture(), -arrowW/2, -(int)(50*GamePanel.scaleY), arrowW, arrowH, null);
+        g2.drawImage(Renderer.loadArrowTexture(), -arrowW/2, -(int)(50 * scale), arrowW, arrowH, null);
 
         g2.setTransform(oldTransform);
     }

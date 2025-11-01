@@ -6,7 +6,7 @@ import java.awt.*;
 
 public class Ball extends MovableObject {
     public float speed = 8f;
-    public static boolean launched = false;
+    public boolean launched = false;
     private float radius;
     private final Rectangle boundsCache;
 
@@ -75,9 +75,12 @@ public class Ball extends MovableObject {
         }
     }
 
-
     public boolean isLaunched() {
         return launched;
+    }
+
+    public void setLaunched(boolean launched) {
+        this.launched = launched;
     }
 
     public void resetToPaddle(Paddle paddle) {

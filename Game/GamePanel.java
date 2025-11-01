@@ -4,6 +4,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 /**
  * Quản lý giao diện chính của trò chơi, điều hướng giữa menu, level và game.
@@ -12,6 +14,7 @@ public class GamePanel extends JPanel {
     private CardLayout cardLayout;
     private Menu menu;
     private GameManager game;
+    private CompetitiveGameManager competitiveManager;
     private LevelPanel levelPanel;
 
     private int WIDTH;
@@ -19,8 +22,6 @@ public class GamePanel extends JPanel {
 
     public static float scaleX = 1f;
     public static float scaleY = 1f;
-
-
 
     /**
      * Khởi tạo GamePanel với kích thước xác định và các màn hình con.
@@ -42,6 +43,7 @@ public class GamePanel extends JPanel {
         menu = new Menu(this);
         game = new GameManager(this, WIDTH, HEIGHT);
         levelPanel = new LevelPanel(this);
+        competitiveManager = new CompetitiveGameManager(this, WIDTH, HEIGHT);
 
         SoundEffect.loadAllSounds();
 
@@ -59,6 +61,7 @@ public class GamePanel extends JPanel {
         add(menu, "Menu");
         add(game, "Game");
         add(levelPanel, "LevelPanel");
+        add(competitiveManager, "Competitive");
         showMenu();
     }
 
@@ -113,12 +116,27 @@ public class GamePanel extends JPanel {
      * @param level cấp độ người chơi chọn để bắt đầu.
      */
     public void startGame(int level) {
+        SoundEffect.loop("bgm");
         cardLayout.show(this, "Game");
         game.setCurrentLevel(level);
         game.setLevel(level); // khi chọn level cụ thể
         SwingUtilities.invokeLater(() -> {
             game.setFocusable(true);
             game.requestFocusInWindow();
+        });
+    }
+
+    /**
+     * Bắt đầu chế độ đối kháng 2 người chơi.
+     */
+    public void showCompetitiveMode(int level) {
+        SoundEffect.loop("bgm");
+        cardLayout.show(this, "Competitive");
+        competitiveManager.setLevel(level); // khi chọn level cụ thể
+        SwingUtilities.invokeLater(() -> {
+            competitiveManager.setFocusable(true);
+            competitiveManager.requestFocusInWindow();
+            competitiveManager.grabFocus();
         });
     }
 }

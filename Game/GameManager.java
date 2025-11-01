@@ -15,14 +15,15 @@ import java.util.List;
 import java.util.Random;
 
 public class GameManager extends JPanel implements KeyListener, ActionListener {
-    private final GamePanel parent;
+    protected final GamePanel parent;
+    protected String gameState = "MENU"; // MENU, RUNNING, LOSE, WIN, PAUSED, SETTING
 
-    private int WIDTH;
-    private int HEIGHT;
+    protected int WIDTH;
+    protected int HEIGHT;
 
-    private Timer gameTimer;
-    private final int FPS = 60;
-    private int currentLevel = 1;
+    protected Timer gameTimer;
+    protected final int FPS = 60;
+    protected int currentLevel = 1;
 
     private Paddle paddle1;
     private Paddle paddle2;
@@ -36,25 +37,24 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
 
     private int score = 0;
     private int lives = 3;
-    private String gameState = "MENU"; // MENU, RUNNING, LOSE, WIN, PAUSED, SETTING
 
     private boolean twoPlayerMode = false;
     private boolean prevTwoPlayerMode = false;
 
-    private boolean leftPressed = false;
-    private boolean rightPressed = false;
-    private boolean aPressed = false;
-    private boolean dPressed = false;
+    protected boolean leftPressed = false;
+    protected boolean rightPressed = false;
+    protected boolean aPressed = false;
+    protected boolean dPressed = false;
 
     private float launchAngle = 90f;
-    private float angleSpeed = 90f;
     private boolean angleSweepingRight = true;
 
-    private static final float MIN_LAUNCH_ANGLE = 0f;
-    private static final float MAX_LAUNCH_ANGLE = 180F;
+    protected float angleSpeed = 90f;
+    protected static final float MIN_LAUNCH_ANGLE = 0f;
+    protected static final float MAX_LAUNCH_ANGLE = 180F;
 
     private BufferedImage backgroundImage;
-    private final BufferedImage[] button = Renderer.loadbuttonTexture();
+    protected final BufferedImage[] button = Renderer.loadbuttonTexture();
     private boolean hoverResume = false;
     private boolean hoverMenu = false;
     private boolean hoverLs = false;
@@ -64,7 +64,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
 
     private boolean switchvol = true;
 
-    private final Random rand = new Random();
+    protected final Random rand = new Random();
 
     // Constants để tránh magic numbers
     public static final float MAX_BOUNCE_ANGLE = 60f;
@@ -322,7 +322,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         }
     }
 
-    private void showMenu(Graphics g) {
+    protected void showMenu(Graphics g) {
         // lớp phủ mờ
         g.setColor(new Color(0, 0, 0, 150));
         g.fillRect(0, 0, WIDTH, HEIGHT);
@@ -386,7 +386,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         }
     }
 
-    private void initGame() {
+    protected void initGame() {
         paddle1 = new Paddle((WIDTH / 2f - (int)(60 * GamePanel.scaleX)), HEIGHT - (int)(60 * GamePanel.scaleY), (int)(120 * GamePanel.scaleX), (int)(16 * GamePanel.scaleY));
         if(twoPlayerMode) {
             paddle2 = new Paddle((WIDTH / 2f - (int)(60 * GamePanel.scaleX)), HEIGHT - (int)(140 * GamePanel.scaleY), (int)(120 * GamePanel.scaleX), (int)(16 * GamePanel.scaleY));
@@ -421,7 +421,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
     }
 
 
-    private void updateGame() {
+    protected void updateGame() {
         if (gameState.equals("MENU") || gameState.equals("RUNNING")) {
              if (!mainBall.isLaunched()) {
                 updateLaunchAngle();
@@ -456,7 +456,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
 
         for (Ball b : new ArrayList<>(balls)) {
             if (b.isLaunched()) b.update();
-            checkCollisionsWithBall(b);
+            checkCollisionsWithBall(b, bricks);
         }
 
         // update powerups (falling)if (twoPlayerMode)
@@ -503,7 +503,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
     }
 
 
-    private void checkCollisionsWithBall(Ball ball) {
+    protected void checkCollisionsWithBall(Ball ball, List<Brick> bricks) {
         if (!ball.isLaunched()) return;
 
         // Kiểm tra va chạm với tường
@@ -517,7 +517,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         checkBrickCollisions(ball, bricks, powerUps);
     }
 
-    private void checkWallCollisions(Ball ball) {
+    protected void checkWallCollisions(Ball ball) {
         boolean collided = false;
 
         //Tường trái
@@ -543,7 +543,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
             if (ball == mainBall) {
                 ball.setY(HEIGHT - ball.getHeight());
                 ball.setDy(-Math.abs(ball.getDy()));
-                Ball.launched = false;
+                ball.setLaunched(false);
                 ball.setDx(0);
                 ball.setDy(0);
                 lives--;
@@ -563,7 +563,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         }
     }
 
-    private void checkPaddleCollision(Ball ball, Paddle paddle) {
+    protected void checkPaddleCollision(Ball ball, Paddle paddle) {
         Rectangle paddleRect = paddle.getBounds();
 
         float ballCenterX = ball.getCenterX();
@@ -875,6 +875,14 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         } else {
             g2.drawImage(Renderer.loadDamageTexture(), (int)(690* GamePanel.scaleX),
                         (int)(570* GamePanel.scaleY),(int)(wLives*GamePanel.scaleX), (int)(hLives*GamePanel.scaleY), null);
+        }
+        if (lives > 3) {
+            int j = 1;
+            for (int i = 4; i <= lives; ++i) {
+                g2.drawImage(Renderer.loadDamageTexture(), (int)((690 - 30 * j)* GamePanel.scaleX),
+                            (int)(570* GamePanel.scaleY),(int)(wLives*GamePanel.scaleX), (int)(hLives*GamePanel.scaleY), null);
+                j++;
+            }
         }
 
         // draw paddles, ball, bricks, powerups, arrow

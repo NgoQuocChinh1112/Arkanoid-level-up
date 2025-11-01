@@ -19,9 +19,17 @@ public class GamePanel extends JPanel {
 
     private int WIDTH;
     private int HEIGHT;
+    private int prevWid;
+    private int prevHei;
+    public int sca;
+    public static float resize = 1;
 
-    public static float scaleX = 1f;
-    public static float scaleY = 1f;
+    public float scaleX = 1f;
+    public float scaleY = 1f;
+    public static float scale = 1f;
+
+    public int offsetX = 0;
+    public int offsetY = 0;
 
     /**
      * Khởi tạo GamePanel với kích thước xác định và các màn hình con.
@@ -34,6 +42,10 @@ public class GamePanel extends JPanel {
     public GamePanel(int width, int height) {
         this.WIDTH = width;
         this.HEIGHT = height;
+        this.sca = HEIGHT;
+        this.prevHei = this.HEIGHT;
+        this.prevWid = this.WIDTH;
+
         cardLayout = new CardLayout();
         setLayout(cardLayout);
 
@@ -52,9 +64,26 @@ public class GamePanel extends JPanel {
             public void componentResized(ComponentEvent e) {
                 WIDTH = getWidth();
                 HEIGHT = getHeight();
-                setPanelSize(WIDTH, HEIGHT);
-                scaleX = (float) WIDTH / 800f;
-                scaleY = (float) HEIGHT / 600f;
+                scaleX = (float) WIDTH / 800;
+                scaleY = (float) HEIGHT / 600;
+                scale = Math.min(scaleX, scaleY);
+                System.out.println(sca + " " + HEIGHT);
+                if (sca == HEIGHT) {
+                    resize = 1;
+                } else if (sca < WIDTH) {
+                    resize = 793f / 600f;
+                    sca = WIDTH;
+                } else if (sca > WIDTH) {
+                    resize = 600f / 793f;
+                    sca = WIDTH;
+                }
+
+                offsetX = (int)((WIDTH - 800 * scale) / 2);
+                offsetY = (int)((HEIGHT - 600 * scale) / 2);
+
+                if (game != null) {
+                    game.setGameSize(scale);
+                }
             }
         });
 
@@ -65,19 +94,20 @@ public class GamePanel extends JPanel {
         showMenu();
     }
 
-    /**
-     * Cập nhật lại kích thước panel và các thành phần bên trong.
-     * @param width chiều rộng mới.
-     * @param height chiều cao mới.
-     */
-    public void setPanelSize(int width, int height) {
-        this.WIDTH = width;
-        this.HEIGHT = height;
-        if (game != null) {
-            game.setGameSize(width, height);
-        }
-        setPreferredSize(new Dimension(WIDTH, HEIGHT));
-        revalidate(); // cập nhật layout nếu cần
+    public int getWIDTH() {
+        return this.WIDTH;
+    }
+
+    public int getHEIGHT() {
+        return this.HEIGHT;
+    }
+
+    public int getOffsetX() {
+        return this.offsetX;
+    }
+
+    public int getOffsetY() {
+        return this.offsetY;
     }
 
     /**

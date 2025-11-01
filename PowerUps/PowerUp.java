@@ -14,7 +14,6 @@ public abstract class PowerUp extends GameObject {
     protected long durationMs;
     protected String type;
     protected float dy = 2.0f;
-    protected Clip clip;
     protected boolean collectedOrOffscreen = false;
 
     /**

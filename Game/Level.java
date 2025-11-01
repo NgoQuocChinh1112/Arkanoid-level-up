@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Level {
-    public static List<Brick> buildLevel(int level, int WIDTH, int HEIGHT, float scaleX, float scaleY) {
+    public static List<Brick> buildLevel(int level, int WIDTH, int HEIGHT) {
         List<Brick> bricks = new ArrayList<>();
 
         String fileName = "/levels/level" + level + ".txt";
@@ -23,9 +23,9 @@ public class Level {
             return bricks;
         }
 
-        int brickW = (int)(64f * scaleX);
-        int brickH = (int)(24f * scaleY);
-        int offsetY = (int)(60 * scaleY);
+        int brickW = 64;
+        int brickH = 24;
+        int offsetY = 60;
 
         int row = lines.size();
         int cols = lines.getFirst().split("\\s+").length;

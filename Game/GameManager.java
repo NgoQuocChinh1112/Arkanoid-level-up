@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
+import static Game.GamePanel.resize;
 import static Game.GamePanel.scale;
 
 public class GameManager extends JPanel implements KeyListener, ActionListener {
@@ -21,6 +22,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
 
     private int WIDTH;
     private int HEIGHT;
+    public final static float scaleY = 793f / 600f;
 
     private final Timer gameTimer;
     private final int FPS = 60;
@@ -100,24 +102,24 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
             backgroundImage = resizeImage(backgroundImage, WIDTH, HEIGHT);
         }
         for (Ball ball : balls) {
-            ball.setX(ball.getX() * scale);
-            ball.setY(ball.getY() * scale);
+            ball.setX(ball.getX() * resize);
+            ball.setY(ball.getY() * resize);
             ball.setWidth((int)(16 * scale));
             ball.setHeight((int)(16 * scale));
         }
-        paddle1.setX(paddle1.getX() * scale);
-        paddle1.setY(paddle1.getY() * scale);
+        paddle1.setX(paddle1.getX() * resize);
+        paddle1.setY(paddle1.getY() * resize);
         paddle1.setWidth((int)(120 * scale));
         paddle1.setHeight((int)(16 * scale));
         if (twoPlayerMode) {
-            paddle2.setX(paddle2.getX() * scale);
-            paddle2.setY(paddle2.getY() * scale);
+            paddle2.setX(paddle2.getX() * resize);
+            paddle2.setY(paddle2.getY() * resize);
             paddle2.setWidth((int)(120 * scale));
             paddle2.setHeight((int)(16 * scale));
         }
         for (Brick brick : bricks) {
-            brick.setX(brick.getX() * scale);
-            brick.setY(brick.getY() * scale);
+            brick.setX(brick.getX() * resize);
+            brick.setY(brick.getY() * resize);
             brick.setwidth((int)(64 * scale));
             brick.setHeight((int)(24 * scale));
         }
@@ -302,29 +304,29 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
     }
 
     private void initGame() {
-        paddle1 = new Paddle(WIDTH / 2f - 60, HEIGHT - 60, 120, 16);
+        paddle1 = new Paddle(WIDTH / 2f - (int)(60 * scale), HEIGHT - (int)(60 * scale), (int)(120 * scale), (int)(16 * scale));
         if(twoPlayerMode) {
-            paddle2 = new Paddle(WIDTH / 2f - 60, HEIGHT - 140, 120, 16);
+            paddle2 = new Paddle(WIDTH / 2f - (int)(60 * scale), HEIGHT - (int)(140 * scale), (int)(120 * scale), (int)(16 * scale));
         }
 
         float bx, by;
         if (twoPlayerMode) {
             // Bóng gắn với paddle2
-            bx = paddle2.getX() + paddle2.getWidth() / 2f - 8;
-            by = paddle2.getY() - 16 - 1;
+            bx = paddle2.getX() + paddle2.getWidth() / 2f - (int)(8 * scale);
+            by = paddle2.getY() - (int)(16 * scale) - 1;
         } else {
             // Bóng gắn với paddle1
-            bx = paddle1.getX() + paddle1.getWidth() / 2f - 8;
+            bx = paddle1.getX() + paddle1.getWidth() / 2f - (int)(8 * scale);
             by = paddle1.getY() - 16 - 1;
         }
-        mainBall = new Ball(bx, by, 16, 16);
+        mainBall = new Ball(bx, by, (int)(16 * scale), (int)(16 * scale));
         mainBall.resetToPaddle(twoPlayerMode ? paddle2 : paddle1);
 
         balls.clear();
         balls.add(mainBall);
         extraBall = null;
 
-        bricks = Level.buildLevel(currentLevel, WIDTH, HEIGHT);
+        bricks = Level.buildLevel(currentLevel, WIDTH, HEIGHT, scale);
         powerUps = new ArrayList<>();
         toRemove.clear();
     }
@@ -505,26 +507,26 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
 
     private void checkBrickCross(Brick brick, Brick other) {
         if (checkCollisionsWithBrick(brick, other)) {
-                float disX = Math.min(brick.getX() + brick.getWidth(), other.getX() + other.getWidth())
-                        - Math.max(brick.getX(), other.getX());
-                float disY = Math.min(brick.getY() + brick.getHeight(), other.getY() + other.getHeight())
-                        - Math.max(brick.getY(), other.getY());
-                if ((other.getDx() == 0 && brick.getDy() == 0)
-                        || (other.getDy() == 0 && brick.getDx() == 0)) {
-                    if (Math.abs(disX - disY) > EPSILON) {
-                        if (disX - disY < 0){
-                            setColX(brick, other);
-                        } else {
-                            setColY(brick, other);
-                        }
-                    } else {
-                        // Va chạm góc
+            float disX = Math.min(brick.getX() + brick.getWidth(), other.getX() + other.getWidth())
+                    - Math.max(brick.getX(), other.getX());
+            float disY = Math.min(brick.getY() + brick.getHeight(), other.getY() + other.getHeight())
+                    - Math.max(brick.getY(), other.getY());
+            if ((other.getDx() == 0 && brick.getDy() == 0)
+                    || (other.getDy() == 0 && brick.getDx() == 0)) {
+                if (Math.abs(disX - disY) > EPSILON) {
+                    if (disX - disY < 0){
                         setColX(brick, other);
+                    } else {
                         setColY(brick, other);
                     }
+                } else {
+                    // Va chạm góc
+                    setColX(brick, other);
+                    setColY(brick, other);
                 }
             }
         }
+    }
 
     private boolean checkCollisionsWithBrick(Brick brick, Brick other) {
         if (brick == null || other == null) {

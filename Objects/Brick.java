@@ -19,6 +19,7 @@ public class Brick extends MovableObject {
     private float minY;
     private final List<List<BufferedImage>> textures = Renderer.loadBrickTexture();
 
+
     public Brick(float x, float y, int width, int height, int temp) {
         super(x, y, width, height);
         this.hitPoints = temp / 100;

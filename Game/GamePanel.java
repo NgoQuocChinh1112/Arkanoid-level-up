@@ -18,6 +18,8 @@ public class GamePanel extends JPanel {
     private int HEIGHT;
     private int prevWid;
     private int prevHei;
+    public int sca;
+    public static float resize = 1;
 
     public float scaleX = 1f;
     public float scaleY = 1f;
@@ -39,6 +41,7 @@ public class GamePanel extends JPanel {
     public GamePanel(int width, int height) {
         this.WIDTH = width;
         this.HEIGHT = height;
+        this.sca = HEIGHT;
         this.prevHei = this.HEIGHT;
         this.prevWid = this.WIDTH;
 
@@ -62,8 +65,20 @@ public class GamePanel extends JPanel {
                 scaleX = (float) WIDTH / 800;
                 scaleY = (float) HEIGHT / 600;
                 scale = Math.min(scaleX, scaleY);
+                System.out.println(sca + " " + HEIGHT);
+                if (sca == HEIGHT) {
+                    resize = 1;
+                } else if (sca < WIDTH) {
+                    resize = 793f / 600f;
+                    sca = WIDTH;
+                } else if (sca > WIDTH) {
+                    resize = 600f / 793f;
+                    sca = WIDTH;
+                }
+
                 offsetX = (int)((WIDTH - 800 * scale) / 2);
                 offsetY = (int)((HEIGHT - 600 * scale) / 2);
+
                 if (game != null) {
                     game.setGameSize(scale);
                 }
@@ -90,18 +105,6 @@ public class GamePanel extends JPanel {
 
     public int getOffsetY() {
         return this.offsetY;
-    }
-
-    /**
-     * Cập nhật lại kích thước panel và các thành phần bên trong.
-     * @param width chiều rộng mới.
-     * @param height chiều cao mới.
-     */
-    public void setPanelSize(int width, int height) {
-        this.WIDTH = width;
-        this.HEIGHT = height;
-        setPreferredSize(new Dimension(WIDTH, HEIGHT));
-        revalidate(); // cập nhật layout nếu cần
     }
 
     /**

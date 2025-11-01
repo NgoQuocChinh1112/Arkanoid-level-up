@@ -2,6 +2,7 @@ package PowerUps;
 
 import java.awt.*;
 import Game.GameManager;
+import Game.SoundEffect;
 import Objects.Ball;
 import Objects.Paddle;
 
@@ -28,8 +29,9 @@ public class ExtraLifePowerUp extends PowerUp {
     @Override
     public void applyEffect(Paddle paddle, Ball mainBall, Object gameManager ) {
         if (gameManager instanceof GameManager) {
-            GameManager game = (GameManager) gameManager;
-            game.addLife();
+            GameManager Game = (GameManager) gameManager;
+            Game.addLife();
+            SoundEffect.play("extralife");
         }
     }
     /**

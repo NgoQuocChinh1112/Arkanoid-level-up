@@ -89,19 +89,30 @@ public class LevelPanel extends JPanel {
                 for (int i = 0; i < 5; i++) {
                     levelsRectLocal[i] = new Rectangle(centerX + i * btnW * 3/2, startY, btnW, btnH);
                     if (levelsRectLocal[i].contains(p)) {
-                        parent.startGame(i + 1);
+                        if (Menu.isCompetitive) {
+                            parent.showCompetitiveMode(i + 1);
+                        }
+                        else {
+                            parent.startGame(i + 1);
+                        }
                     }
                 }
 
                 for (int i = 5; i < 10; ++i) {
                     levelsRectLocal[i] = new Rectangle(centerX + (i - 5) * btnW * 3/2, startY + btnH * 2, btnW, btnH);
                     if (levelsRectLocal[i].contains(p)) {
-                        parent.startGame(i + 1);
+                        if (Menu.isCompetitive) {
+                            parent.showCompetitiveMode(i + 1);
+                        }
+                        else {
+                            parent.startGame(i + 1);
+                        }
                     }
                 }
 
                 if (backLocal.contains(p)) {
                     parent.showMenu();
+                    Menu.isCompetitive = false;
                 }
             }
 

@@ -45,4 +45,68 @@ public class Level {
         }
         return bricks;
     }
+
+    /**
+    * Tạo level cho 1 người chơi trong chế độ competitive (đọc từ file)
+    * @param level Level hiện tại (1, 2, 3)
+    * @param offsetX Vị trí bắt đầu theo trục X (0 cho P1, WIDTH/2 cho P2)
+    * @param areaWidth Chiều rộng khu vực của player (WIDTH/2)
+    * @param areaHeight Chiều cao màn hình
+    * @param scaleX Scale theo X
+    * @param scaleY Scale theo Y
+    * @return Danh sách các brick
+    */
+public static List<Brick> buildLevelForPlayer(int level, int offsetX, int areaWidth,
+                                              int areaHeight, float scaleX, float scaleY) {
+    List<Brick> bricks = new ArrayList<>();
+    String fileName = "/levels/level" + level + ".txt";
+    List<String> lines = new ArrayList<>();
+
+    try (InputStream is = Level.class.getResourceAsStream(fileName);
+         BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
+        String line;
+        while ((line = br.readLine()) != null) {
+            lines.add(line.trim());
+        }
+    } catch (IOException | NullPointerException e) {
+        e.printStackTrace();
+        return bricks;
+    }
+
+    if (lines.isEmpty()) return bricks;
+
+    // ---- Cấu hình ma trận ----
+    int rows = 10;   // số hàng hiển thị
+    int cols = 11;   // số cột hiển thị
+    float gapX = 2f * scaleX;
+    float gapY = 2f * scaleY;
+
+    // ---- Tính kích thước gạch động ----
+    float totalGapWidth = (cols - 1) * gapX;
+    float totalGapHeight = (rows - 1) * gapY;
+
+    float brickW = (areaWidth - totalGapWidth) / cols;
+    float brickH = (areaHeight * 0.25f - totalGapHeight) / rows;  // chiếm khoảng 1/4 chiều cao màn hình
+    float offsetY = 60f * scaleY;
+
+    // ---- Căn giữa trong khu vực người chơi ----
+    float totalBricksWidth = cols * brickW + totalGapWidth;
+    float playerOffsetX = offsetX + (areaWidth - totalBricksWidth) / 2f;
+
+    // ---- Tạo gạch ----
+    for (int r = 0; r < Math.min(rows, lines.size()); r++) {
+        String[] nums = lines.get(r).split("\\s+");
+        for (int c = 0; c < Math.min(cols, nums.length); c++) {
+            int type = Integer.parseInt(nums[c]);
+            if (type != 0) {
+                float x = playerOffsetX + c * (brickW + gapX);
+                float y = offsetY + r * (brickH + gapY);
+                bricks.add(new Brick(Math.round(x), Math.round(y),
+                                     Math.round(brickW), Math.round(brickH), type));
+            }
+        }
+    }
+
+    return bricks;
+}
 }

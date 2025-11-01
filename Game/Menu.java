@@ -14,20 +14,25 @@ public class Menu extends JPanel {
     private BufferedImage background;
     private BufferedImage title;
     private BufferedImage startTop, startBot;
-    private BufferedImage exitTop, exitBot;
     private BufferedImage chooseTop, chooseBot;
     private BufferedImage onePlayerTop, onePlayerBot;
     private BufferedImage twoPlayerTop, twoPlayerBot;
+    private BufferedImage competitiveTop, competitiveBot;
+    private BufferedImage exitTop, exitBot;
 
     private boolean hoverStart = false;
-    private boolean hoverExit = false;
     private boolean hoverChoose = false;
     private boolean hoverRegime = false;
+    private boolean hoverCompetitive =false;
+    private boolean hoverExit = false;
 
     private Rectangle startRect;
-    private Rectangle exitRect;
     private Rectangle chooseRect;
     private Rectangle regimeRect;
+    private Rectangle competitive;
+     private Rectangle exitRect;
+
+    public static boolean isCompetitive = false;
 
     public Menu(GamePanel parent) {
         this.parent = parent;
@@ -47,6 +52,8 @@ public class Menu extends JPanel {
             onePlayerBot = ImageIO.read(getClass().getResource("/assets/one_player_bot.png"));
             twoPlayerTop = ImageIO.read(getClass().getResource("/assets/two_player_top.png"));
             twoPlayerBot = ImageIO.read(getClass().getResource("/assets/two_player_bot.png"));
+            competitiveTop = ImageIO.read(getClass().getResource("/assets/isCompetitive_top.png"));
+            competitiveBot = ImageIO.read(getClass().getResource("/assets/isCompetitive_bot.png"));
         } catch (IOException | IllegalArgumentException e) {
             e.printStackTrace();
         }
@@ -56,6 +63,7 @@ public class Menu extends JPanel {
         exitRect = new Rectangle();
         chooseRect = new Rectangle();
         regimeRect = new Rectangle();
+        competitive = new Rectangle();
 
         // Mouse
         addMouseListener(new MouseAdapter() {
@@ -64,17 +72,19 @@ public class Menu extends JPanel {
                 Point p = e.getPoint();
                 int w = getWidth();
                 int h = getHeight();
-                int btnW = 90, btnH = 90;
-                int centerX = w/2 - btnW/2;
-                int startY = h/2 - 130;
-                int chooseY = startY + 105;
-                int regimeY = chooseY + 105;
-                int exitY = regimeY + 105;
+                int startW = 90, startH = 90;
+                int startX = w/2 - startW/2, startY = h/2;
+                int chooseX = startX - 105, chooseY = startY - 20, chooseW = startW - 10, chooseH = startW - 10;
+                int regimeX = startX + 105, regimeY = startY - 20, regimeW = startW - 10, regimeH = startW - 10;
+                int competitiveX = regimeX + 105, competitiveY = regimeY - 20, competitiveW = regimeW - 10, competitiveH = regimeH - 10;
+                int exitX = chooseX - 105, exitY = chooseY - 20, exitW = chooseW - 10, exitH = chooseH - 10;
 
-                Rectangle startRectLocal = new Rectangle(centerX, startY, btnW, btnH);
-                Rectangle chooseRectLocal = new Rectangle(centerX, chooseY, btnW, btnH);
-                Rectangle regimeRectLocal = new Rectangle(centerX, regimeY, btnW, btnH);
-                Rectangle exitRectLocal = new Rectangle(centerX, exitY, btnW, btnH);
+                Rectangle startRectLocal = new Rectangle(startX, startY, startW, startH);
+                Rectangle chooseRectLocal = new Rectangle(chooseX, chooseY, chooseW, chooseH);
+                Rectangle regimeRectLocal = new Rectangle(regimeX, regimeY, regimeW, regimeH);
+                Rectangle competitiveLocal = new Rectangle(competitiveX, competitiveY, competitiveW, competitiveH);
+                Rectangle exitRectLocal = new Rectangle(exitX, exitY, exitW, exitH);
+                
 
                 if (startRectLocal.contains(p)) {
                     parent.startGame();
@@ -85,12 +95,15 @@ public class Menu extends JPanel {
                     repaint();
                 } else if (exitRectLocal.contains(p)) {
                     System.exit(0);
+                } else if (competitiveLocal.contains(p)) {
+                    isCompetitive = true;
+                    parent.showLevelPanel();
                 }
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
-                hoverStart = hoverChoose = hoverRegime = hoverExit = false;
+                hoverStart = hoverChoose = hoverRegime = hoverExit = hoverCompetitive = false;
                 repaint();
             }
         });
@@ -101,25 +114,30 @@ public class Menu extends JPanel {
                 Point p = e.getPoint();
                 int w = getWidth();
                 int h = getHeight();
-                int btnW = 90, btnH = 90;
-                int centerX = w/2 - btnW/2;
-                int startY = h/2 - 130;
-                int chooseY = startY + 105;
-                int regimeY = chooseY + 105;
-                int exitY = regimeY + 105;
+                int startW = 90, startH = 90;
+                int startX = w/2 - startW/2, startY = h/2;
+                int chooseX = startX - 105, chooseY = startY - 20, chooseW = startW - 10, chooseH = startW - 10;
+                int regimeX = startX + 105, regimeY = startY - 20, regimeW = startW - 10, regimeH = startW - 10;
+                int competitiveX = regimeX + 105, competitiveY = regimeY - 20, competitiveW = regimeW - 10, competitiveH = regimeH - 10;
+                int exitX = chooseX - 105, exitY = chooseY - 20, exitW = chooseW - 10, exitH = chooseH - 10;
 
-                Rectangle startRectLocal = new Rectangle(centerX, startY, btnW, btnH);
-                Rectangle chooseRectLocal = new Rectangle(centerX, chooseY, btnW, btnH);
-                Rectangle regimeRectLocal = new Rectangle(centerX, regimeY, btnW, btnH);
-                Rectangle exitRectLocal = new Rectangle(centerX, exitY, btnW, btnH);
+                Rectangle startRectLocal = new Rectangle(startX, startY, startW, startH);
+                Rectangle chooseRectLocal = new Rectangle(chooseX, chooseY, chooseW, chooseH);
+                Rectangle regimeRectLocal = new Rectangle(regimeX, regimeY, regimeW, regimeH);
+                Rectangle competitiveLocal = new Rectangle(competitiveX, competitiveY, competitiveW, competitiveH);
+                Rectangle exitRectLocal = new Rectangle(exitX, exitY, exitW, exitH);
+                
 
-                boolean oldStart = hoverStart, oldChoose = hoverChoose, oldRegime = hoverRegime, oldExit = hoverExit;
+                boolean oldStart = hoverStart, oldChoose = hoverChoose, oldRegime = hoverRegime, 
+                        oldCompetitive = hoverCompetitive, oldExit = hoverExit;
                 hoverStart = startRectLocal.contains(p);
                 hoverChoose = chooseRectLocal.contains(p);
                 hoverRegime = regimeRectLocal.contains(p);
+                hoverCompetitive = competitiveLocal.contains(p);
                 hoverExit = exitRectLocal.contains(p);
 
-                if (hoverStart != oldStart || hoverChoose != oldChoose || hoverRegime != oldRegime || hoverExit != oldExit) repaint();
+                if (hoverStart != oldStart || hoverChoose != oldChoose || hoverRegime != oldRegime 
+                                           || hoverCompetitive != oldCompetitive || hoverExit != oldExit) repaint();
             }
         });
     }
@@ -150,51 +168,58 @@ public class Menu extends JPanel {
         }
 
         // Kích thước nút
-        int btnW = 90;
-        int btnH = 90;
-        int centerX = w / 2 - btnW / 2;
-        int startY = h / 2 - 130;
-        int chooseY = startY + 105;
-        int regimeY = chooseY + 105;
-        int exitY = regimeY + 105;
+        int startW = 90, startH = 90;
+        int startX = w/2 - startW/2, startY = h/2;
+        int chooseX = startX - 105, chooseY = startY - 20, chooseW = startW - 10, chooseH = startW - 10;
+        int regimeX = startX + 105, regimeY = startY - 20, regimeW = startW - 10, regimeH = startW - 10;
+        int competitiveX = regimeX + 105, competitiveY = regimeY - 20, competitiveW = regimeW - 10, competitiveH = regimeH - 10;
+        int exitX = chooseX - 105, exitY = chooseY - 20, exitW = chooseW - 10, exitH = chooseH - 10;
 
         // Cập nhật vùng click
-        startRect.setBounds(centerX, startY, btnW, btnH);
-        chooseRect.setBounds(centerX, chooseY, btnW, btnH);
-        regimeRect.setBounds(centerX, regimeY, btnW, btnH);
-        exitRect.setBounds(centerX, exitY, btnW, btnH);
-
+        startRect.setBounds(startX, startY, startW, startH);
+        chooseRect.setBounds(chooseX, chooseY, chooseW, chooseH);
+        regimeRect.setBounds(regimeX, regimeY, regimeW, regimeH);
+        competitive.setBounds(competitiveX, competitiveY, competitiveW, competitiveH);
+        exitRect.setBounds(exitX, exitY, exitW, exitH);
+        
         // Vẽ nút start
         if (hoverStart && startTop != null)
-            g2.drawImage(startTop, centerX, startY, btnW, btnH, null);
+            g2.drawImage(startTop, startX, startY, startW, startH, null);
         else if (startBot != null)
-            g2.drawImage(startBot, centerX, startY, btnW, btnH, null);
+            g2.drawImage(startBot, startX, startY, startW, startH, null);
 
         // Vẽ nút choose
         if (hoverChoose && chooseTop != null)
-            g2.drawImage(chooseTop, centerX, chooseY, btnW, btnH, null);
+            g2.drawImage(chooseTop, chooseX, chooseY, chooseW, chooseH, null);
         else if (chooseBot != null)
-            g2.drawImage(chooseBot, centerX, chooseY, btnW, btnH, null);
+            g2.drawImage(chooseBot, chooseX, chooseY, chooseW, chooseH, null);
 
         // Vẽ nút regime
         if (!parent.getGameManager().getTwoPlayerMode()) {
             if (hoverRegime && onePlayerTop != null) {
-                g2.drawImage(onePlayerTop, centerX, regimeY, btnW,btnH, null);
+                g2.drawImage(onePlayerTop, regimeX, regimeY, regimeW, regimeH, null);
             } else if (onePlayerBot != null) {
-                g2.drawImage(onePlayerBot, centerX, regimeY, btnW,btnH, null);
+                g2.drawImage(onePlayerBot, regimeX, regimeY, regimeW, regimeH, null);
             }
         } else {
             if (hoverRegime && twoPlayerTop != null) {
-                g2.drawImage(twoPlayerTop, centerX, regimeY, btnW,btnH, null);
+                g2.drawImage(twoPlayerTop, regimeX, regimeY, regimeW, regimeH, null);
             } else if (twoPlayerBot != null) {
-                g2.drawImage(twoPlayerBot, centerX, regimeY, btnW,btnH, null);
+                g2.drawImage(twoPlayerBot, regimeX, regimeY, regimeW, regimeH, null);
             }
+        }
+
+        // Vẽ nút competitive
+        if (hoverCompetitive && competitiveTop != null) {
+            g2.drawImage(competitiveTop, competitiveX, competitiveY, competitiveW, competitiveH, null);
+        } else if (competitiveBot != null) {
+            g2.drawImage(competitiveBot, competitiveX, competitiveY, competitiveW, competitiveH, null);
         }
 
         // Vẽ nút exit
         if (hoverExit && exitTop != null)
-            g2.drawImage(exitTop, centerX, exitY, btnW, btnH, null);
+            g2.drawImage(exitTop, exitX, exitY, exitW, exitH, null);
         else if (exitBot != null)
-            g2.drawImage(exitBot, centerX, exitY, btnW, btnH, null);
+            g2.drawImage(exitBot, exitX, exitY, exitW, exitH, null);
     }
 }

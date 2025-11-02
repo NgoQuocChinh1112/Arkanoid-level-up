@@ -36,16 +36,16 @@ public class SoundEffect {
 
     // Load tất cả âm thanh một lần khi khởi động game
     public static void loadAllSounds() {
-        addSound("break", "sound/breaker.wav");
-        addSound("collision", "sound/collision.wav");
-        addSound("bgm", "sound/bgsound.wav");
-        addSound("bigball",  "sound/BigBall.wav");
-        addSound("expandpad",  "sound/ExpandPaddle.wav");
-        addSound("explosiveball", "sound/ExplosiveBall.wav");
-        addSound("explosive",  "sound/ExplosiveBall.wav");
-        addSound("fastball",  "sound/FastBall.wav");
-        addSound("shrinkpad",  "sound/ShrinkPaddle.wav");
-        addSound("extralife",  "sound/ExtraLife.wav");
+        addSound("break", "src/sound/breaker.wav");
+        addSound("collision", "src/sound/collision.wav");
+        addSound("bgm", "src/sound/bgsound.wav");
+        addSound("bigball",  "src/sound/BigBall.wav");
+        addSound("expandpad",  "src/sound/ExpandPaddle.wav");
+        addSound("explosiveball", "src/sound/ExplosiveBall.wav");
+        addSound("explosive",  "src/sound/ExplosiveBall.wav");
+        addSound("fastball",  "src/sound/FastBall.wav");
+        addSound("shrinkpad",  "src/sound/ShrinkPaddle.wav");
+        addSound("extralife",  "src/sound/ExtraLife.wav");
     }
 
     private static void addSound(String name, String filePath) {

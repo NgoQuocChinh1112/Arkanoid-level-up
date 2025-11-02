@@ -538,10 +538,10 @@ public class Competitive extends GameManager {
         Graphics2D g2 = (Graphics2D) g;
         g2.setColor(Color.BLACK);
         g2.fillRect(0, 0, parent.getWIDTH(), parent.getHEIGHT());
-        g2.drawImage(Renderer.loadBackGroundPlayer1(), 0, 0, WIDTH/2, HEIGHT, null);
-        g2.drawImage(Renderer.loadBackGroundPlayer2(), WIDTH/2, 0, WIDTH/2, HEIGHT, null);
         // Áp dụng scale và dịch
         g2.translate(parent.getOffsetX(), parent.getOffsetY()); // vẽ nền
+        g2.drawImage(Renderer.loadBackGroundPlayer1(), 0, 0, WIDTH/2, HEIGHT, null);
+        g2.drawImage(Renderer.loadBackGroundPlayer2(), WIDTH/2, 0, WIDTH/2, HEIGHT, null);
         // Đường chia
         g2.setColor(new Color(255, 255, 255, 100));
         g2.setStroke(new BasicStroke(2f));

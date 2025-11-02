@@ -170,7 +170,13 @@ public class Renderer {
             return null;
         }
     }
+    public static BufferedImage loadBackGroundPlayer1() {
+        return loadTexture("/assets/background_player_1.jpg");
+    }
 
+    public static BufferedImage loadBackGroundPlayer2() {
+        return loadTexture("/assets/background_player_2.jpg");
+    }
 
 
 }

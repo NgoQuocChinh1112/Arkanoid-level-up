@@ -142,6 +142,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
                     int butY = (int)(20 * scale) + parent.getOffsetY();
                     Rectangle pauRect = new Rectangle(pauX, butY, butW, butH);
                     if (pauRect.contains(p)) {
+                        SoundEffect.play("click");
                         gameState = "PAUSED";
                     }
                 }
@@ -160,6 +161,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
                     Rectangle menuRect = new Rectangle(btnX, menuY, btnW, btnH);
 
                     if (resumeRect.contains(p)) {
+                        SoundEffect.play("click");
                         switch (gameState) {
                             case "PAUSED" -> gameState = "RUNNING";
                             case "LOSE" -> parent.showLevelPanel();
@@ -169,8 +171,10 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
                             }
                         }
                     } else if (menuRect.contains(p)) {
+                        SoundEffect.play("click");
                         parent.showMenu();
                     } else if (LsRect.contains(p)) {
+                        SoundEffect.play("click");
                         restart();
                     }
                 }
@@ -379,10 +383,12 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         // check win/lose
         if(checkWin(bricks)) {
             gameState = "WIN";
+            SoundEffect.play("win");
         }
 
         if (checkLose(lives)) {
             gameState = "LOSE";
+            SoundEffect.play("lose");
         }
 
         ExplosiveBallPowerUp.updateExplosions();
@@ -528,18 +534,21 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
 
         //Tường trái
         if (ball.getX() <= 0) {
+            SoundEffect.play("BallWallCol");
             ball.setX(0);
             ball.setDx(Math.abs(ball.getDx()));
             collided = true;
         }
         //Tường phải
         else if (ball.getX() + ball.getWidth() >= WIDTH) {
+            SoundEffect.play("BallWallCol");
             ball.setX(WIDTH - ball.getWidth());
             ball.setDx(-Math.abs(ball.getDx()));
             collided = true;
         }
         //Tường trên
         if (ball.getY() <= 0) {
+            SoundEffect.play("BallWallCol");
             ball.setY(0);
             ball.setDy(Math.abs(ball.getDy()));
             collided = true;
@@ -565,7 +574,6 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
 
         if (collided) {
             normalizeVelocity(ball);
-            SoundEffect.play("collision");
         }
     }
 
@@ -597,11 +605,11 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         // Va chạm từ trên xuống
         if (ball.getDy() > 0 && prevBottom <= paddleTop) {
             handlePaddleTopCollision(ball, paddleRect, ballCenterX);
-            SoundEffect.play("collision");
+            SoundEffect.play("BallPaddleCol");
             // Va chạm từ bên
         } else {
             handlePaddleSideCollision(ball, paddleRect);
-            SoundEffect.play("collision");
+            SoundEffect.play("BallPaddleCol");
         }
     }
 
@@ -650,14 +658,12 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
             ball.setX(paddleLeft - ball.getWidth());
             ball.setDx(-Math.abs(ball.getDx())); // Đảo chiều sang trái
             normalizeVelocity(ball);
-            SoundEffect.play("collision");
         }
         // Xác định va chạm từ bên phải
         else if (prevCenterX > paddleRight && ballCenterX <= paddleRight) {
             ball.setX(paddleRight);
             ball.setDx(Math.abs(ball.getDx())); // Đảo chiều sang phải
             normalizeVelocity(ball);
-            SoundEffect.play("collision");
         }
     }
 
@@ -736,6 +742,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
             }
 
             if (brick.isDestroyed()) {
+                SoundEffect.play("score");
                 score += brick.getHitPoints() * 100;
                 it.remove();
 

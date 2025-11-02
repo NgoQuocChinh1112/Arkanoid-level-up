@@ -10,7 +10,7 @@ import java.io.IOException;
 
 public class DoubleBallPowerUp extends PowerUp {
 
-    private static final int BALL_SIZE = 16;
+    private static final int BALL_SIZE = 20;
 
     /**
      * Constructor.

@@ -62,7 +62,6 @@ public class GamePanel extends JPanel {
                 scaleX = (float) WIDTH / 800;
                 scaleY = (float) HEIGHT / 600;
                 scale = Math.min(scaleX, scaleY);
-                System.out.println(sca + " " + HEIGHT);
                 if (sca == HEIGHT) {
                     resize = 1;
                 } else if (sca < WIDTH) {

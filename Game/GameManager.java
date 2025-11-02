@@ -92,8 +92,8 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         for (Ball ball : balls) {
             ball.setX(ball.getX() * resize);
             ball.setY(ball.getY() * resize);
-            ball.setWidth((int)(16 * scale));
-            ball.setHeight((int)(16 * scale));
+            ball.setWidth((int)(20 * scale));
+            ball.setHeight((int)(20 * scale));
         }
         paddle1.setX(paddle1.getX() * resize);
         paddle1.setY(paddle1.getY() * resize);
@@ -139,7 +139,6 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
                 if (gameState.equals("RUNNING")) {
                     int butW = (int)(30 * scale) , butH = (int)(30 * scale);
                     int pauX = WIDTH - (int)(50 * scale) + parent.getOffsetX();
-                    System.out.println(parent.getOffsetX());
                     int butY = (int)(20 * scale) + parent.getOffsetY();
                     Rectangle pauRect = new Rectangle(pauX, butY, butW, butH);
                     if (pauRect.contains(p)) {
@@ -148,7 +147,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
                 }
                 if (gameState.equals("PAUSED") || gameState.equals("LOSE") || gameState.equals("WIN")) {
                     int boxX = (WIDTH - (int)(300 * scale)) / 2 + parent.getOffsetX();
-                    int boxY = (HEIGHT - (int)(245 * scale)) / 2 + parent.getOffsetY();
+                    int boxY = (HEIGHT - (int)(145 * scale)) / 2 + parent.getOffsetY();
                     int btnW = (int)(180 * scale);
                     int btnH = (int)(50 * scale);
                     int resY = boxY + (int)(35 * scale);
@@ -183,7 +182,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
                 Point p = e.getPoint();
                 if (gameState.equals("PAUSED") || gameState.equals("LOSE") || gameState.equals("WIN")) {
                     int boxX = (WIDTH - (int)(300 * scale)) / 2 + parent.getOffsetX();
-                    int boxY = (HEIGHT - (int)(245 * scale)) / 2 + parent.getOffsetY();
+                    int boxY = (HEIGHT - (int)(145 * scale)) / 2 + parent.getOffsetY();
                     int btnW = (int)(180 * scale);
                     int btnH = (int)(50 * scale);
                     int resY = boxY + (int)(35 * scale);
@@ -228,7 +227,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         int boxW = (int)(300 * scale);
         int boxH = (int)(245 * scale);
         int boxX = (WIDTH - boxW) / 2;
-        int boxY = (HEIGHT - boxH) / 2;
+        int boxY = (HEIGHT - boxH) / 2 + (int)(50 * scale);
         if (button[0] != null) {
             g.drawImage(button[0], boxX, boxY, boxW, boxH, null);
         } else {
@@ -849,7 +848,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
 
         // draw HUD
         g2.setColor(Color.WHITE);
-        Font customFont = Renderer.loadFond(g2, 30);
+        Font customFont = Renderer.loadFond(g2, (int)(30 * scale));
         g2.setFont(customFont);
         String scoreText = String.format("%06d", score);
         g2.drawString(scoreText, (int)(12 * scale), HEIGHT - (int)(10 * scale));
@@ -1053,11 +1052,11 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
 
     public void drawScore(Graphics2D g2, String text, int y) {
         int width = g2.getFontMetrics().stringWidth(text);
-        g2.setColor(Color.WHITE);
+        g2.setColor(Color.YELLOW);
         g2.drawString(text, (WIDTH - width) / 2, y);
     }
     public void printHighScore(Graphics2D g2) throws FileNotFoundException {
-        String filename = "src/highscores/highscore" + currentLevel + ".txt";
+        String filename = "highscores/highscore" + currentLevel + ".txt";
         try {
             BufferedReader br = new BufferedReader(new FileReader(filename));
             String highScore = br.readLine();
@@ -1066,14 +1065,14 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
                 highScore = String.valueOf(score);
             }
 
-            drawScore(g2, highScore, 200);
-            drawScore(g2, String.valueOf(score), 300);
+                drawScore(g2, "HIGHEST: " + highScore, (int)(150 * scale));
+            drawScore(g2, "SCORE: "+ score, (int)(200 * scale));
         } catch(Exception e) {
             e.printStackTrace();
         }
     }
     public void writeHighScore(int highScore) throws FileNotFoundException {
-        String filename = "src/highscores/highscore" + currentLevel + ".txt";
+        String filename = "highscores/highscore" + currentLevel + ".txt";
         try  {
             BufferedWriter bw = new BufferedWriter(new FileWriter(filename, false));
             bw.write(Integer.toString(highScore));

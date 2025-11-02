@@ -52,8 +52,8 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
     private boolean angleSweepingRight = true;
 
     protected float angleSpeed = 90f;
-    protected static final float MIN_LAUNCH_ANGLE = 0f;
-    protected static final float MAX_LAUNCH_ANGLE = 180F;
+    protected static final float MIN_LAUNCH_ANGLE = 15f;
+    protected static final float MAX_LAUNCH_ANGLE = 165f;
 
     private BufferedImage backgroundImage;
     protected final BufferedImage[] button = Renderer.loadbuttonTexture();
@@ -67,8 +67,8 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
 
     // Constants để tránh magic numbers
     public static final float MAX_BOUNCE_ANGLE = 60f;
-    public static final float MIN_ANGLE = 15f;
-    public static final float MAX_ANGLE = 165f;
+    public static final float MIN_COL_ANGLE = 15f;
+    public static final float MAX_COL_ANGLE = 165f;
     public static final float VERTICAL_ANGLE = 90f;
     public static final float EPSILON = 0.001f; // Để so sánh float
 
@@ -669,7 +669,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         float angleInDegrees = VERTICAL_ANGLE - hitPosition * MAX_BOUNCE_ANGLE;
 
         // Clamp angle để tránh góc quá ngang
-        angleInDegrees = Math.max(MIN_ANGLE, Math.min(MAX_ANGLE, angleInDegrees));
+        angleInDegrees = Math.max(MIN_COL_ANGLE, Math.min(MAX_COL_ANGLE, angleInDegrees));
 
         // Convert sang radians và set velocity mới
         return Math.toRadians(angleInDegrees);
@@ -886,16 +886,8 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
 
         // draw HUD
         g2.setColor(Color.WHITE);
-        try {
-            Font customFont = Font.createFont(
-                    Font.TRUETYPE_FONT,
-                    new File("assets/font.ttf")
-            ).deriveFont(Font.BOLD, 30f);
-            g2.setFont(customFont);
-        } catch (Exception e) {
-            e.printStackTrace();
-            g2.setFont(new Font("SansSerif", Font.BOLD, (int)(18 * scale)));
-        }
+        Font customFont = Renderer.loadFond(g2, 30);
+        g2.setFont(customFont);
         String scoreText = String.format("%06d", score);
         g2.drawString(scoreText, (int)(12 * scale), HEIGHT - (int)(10 * scale));
 

@@ -457,8 +457,10 @@ public class CompetitiveGameManager extends GameManager {
     @Override
     protected void paintComponent(Graphics g) {
         Graphics2D g2 = (Graphics2D) g;
-        g2.setColor(Color.BLACK);
-    g2.fillRect(0, 0, WIDTH, HEIGHT); // vẽ nền
+        g2.setColor(Color.BLACK); // todo
+        g2.fillRect(0, 0, WIDTH, HEIGHT); // vẽ nền
+        g2.drawImage(Renderer.loadBackGroundPlayer1(), 0, 0, WIDTH/2, HEIGHT, null);
+        g2.drawImage(Renderer.loadBackGroundPlayer2(), WIDTH/2, 0, WIDTH/2, HEIGHT, null);
         
         // Đường chia
         g2.setColor(new Color(255, 255, 255, 100));
@@ -494,24 +496,24 @@ public class CompetitiveGameManager extends GameManager {
     }
     
     private void drawCompetitiveHUD(Graphics2D g2) {
-        g2.setFont(new Font("SansSerif", Font.BOLD, 24));
+        g2.setFont(Renderer.loadFond(g2, 24));
         g2.setColor(Color.WHITE);
         
         // Player 1
-        g2.drawString(String.format("P1: %05d", score1), 10, 30);
+        g2.drawString(String.format("%05d", score1), 10, 30);
         drawLives(g2, lives1, 10, 40);
         
         // Player 2
-        String p2Text = String.format("P2: %05d", score2);
+        String p2Text = String.format("%05d", score2);
         int p2Width = g2.getFontMetrics().stringWidth(p2Text);
         g2.drawString(p2Text, WIDTH - p2Width - 10, 30);
         drawLives(g2, lives2, WIDTH - 100, 40);
         
         // Timer
-        g2.setFont(new Font("SansSerif", Font.BOLD, 36));
+        g2.setFont(Renderer.loadFond(g2, 36));
         String timeText = String.format("%02d:%02d", timeRemaining / 60000, (timeRemaining % 60000) / 1000);
         int timerWidth = g2.getFontMetrics().stringWidth(timeText);
-        g2.setColor(timeRemaining < 30000 ? new Color(255, 100, 100) : Color.WHITE);
+        g2.setColor(timeRemaining < 30000 ? new Color(255, 100, 100) : Color.YELLOW);
         g2.drawString(timeText, (WIDTH - timerWidth) / 2, 30);
     }
     
@@ -527,15 +529,19 @@ public class CompetitiveGameManager extends GameManager {
         g2.setColor(new Color(0, 0, 0, 150));
         g2.fillRect(0, 0, WIDTH, HEIGHT);
         
-        g2.setFont(new Font("SansSerif", Font.BOLD, 40));
-        g2.setColor(Color.WHITE);
+        g2.setFont(Renderer.loadFond(g2, 45));
+        g2.setColor(Color.YELLOW);
         if ((System.currentTimeMillis() / 500) % 2 == 0) {
             drawCenteredText(g2, "PRESS SPACE TO START", HEIGHT / 2);
         }
-        g2.setFont(new Font("SansSerif", Font.PLAIN, 20));
-        g2.setColor(new Color(200, 200, 200));
+        g2.setFont(new Font("SansSerif", Font.BOLD, 25));
+        g2.setColor(Color.WHITE);
         drawCenteredText(g2, "Player 1: ← → + ↑", HEIGHT / 2 + 60);
-        drawCenteredText(g2, "Player 2: A D + W", HEIGHT / 2 + 90);
+        drawCenteredText(g2, "Player 2: A D + W", HEIGHT / 2 + 95);
+        g2.setFont(Renderer.loadFond(g2, 30));
+        if ((System.currentTimeMillis() / 500) % 2 == 0) {
+            drawCenteredText(g2, "PRESS P TO PAUSE", HEIGHT / 2 + 150);
+        }
     }
       
     private void drawEndScreen(Graphics2D g2) {
@@ -551,16 +557,16 @@ public class CompetitiveGameManager extends GameManager {
             winner = score1 > score2 ? "PLAYER 1 WINS!" : score2 > score1 ? "PLAYER 2 WINS!" : "TIE GAME!";
         }
         
-        g2.setFont(new Font("SansSerif", Font.BOLD, 48));
-        g2.setColor(new Color(255, 215, 0));
+        g2.setFont(Renderer.loadFond(g2, 50));
+        g2.setColor(Color.YELLOW);
         drawCenteredText(g2, winner, HEIGHT / 2 - 80);
         
-        g2.setFont(new Font("SansSerif", Font.BOLD, 32));
+        g2.setFont(Renderer.loadFond(g2, 30));
         g2.setColor(Color.WHITE);
         drawCenteredText(g2, String.format("Player 1: %05d", score1), HEIGHT / 2);
         drawCenteredText(g2, String.format("Player 2: %05d", score2), HEIGHT / 2 + 50);
         
-        g2.setFont(new Font("SansSerif", Font.PLAIN, 24));
+        g2.setFont(Renderer.loadFond(g2, 35));
         if ((System.currentTimeMillis() / 500) % 2 == 0) {
             drawCenteredText(g2, "PRESS P TO SELECT", HEIGHT / 2 + 120);
         }

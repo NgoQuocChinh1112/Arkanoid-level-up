@@ -1,7 +1,10 @@
 package Game;
 
 import javax.imageio.ImageIO;
+import static Game.GamePanel.scale;
+import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +26,20 @@ public class Renderer {
             System.err.println("Không thể tải ảnh: " + path);
             return null;
         }
+    }
+
+    public static Font loadFond(Graphics2D g2, int size) {
+        Font customFont;
+        try {
+            customFont = Font.createFont(
+                    Font.TRUETYPE_FONT,
+                    new File("assets/font.ttf")
+            ).deriveFont(Font.BOLD, (float)size);
+        } catch (Exception e) {
+            e.printStackTrace();
+            customFont = new Font("SansSerif", Font.BOLD, (int)(size * scale));
+        }
+        return customFont;
     }
 
     public static List <List<BufferedImage>> loadBrickTexture() {
@@ -124,7 +141,6 @@ public class Renderer {
     public static BufferedImage loadPressStartTexture() {
         return loadTexture("/assets/press_start.png");
     }
-
     public static BufferedImage loadArrowTexture() {
         return loadTexture("/assets/arrow.png");
     }

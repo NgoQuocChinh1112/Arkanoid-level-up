@@ -83,11 +83,9 @@ public class Level {
         // ---- Tính kích thước gạch động ----
         float totalGapWidth = (cols - 1) * gapX;
         float totalGapHeight = (rows - 1) * gapY;
-        System.out.println("Total Gap Width: " + totalGapWidth + ", Total Gap Height: " + totalGapHeight);
 
         float brickW = (areaWidth - totalGapWidth) / cols;
-        float brickH = (areaHeight * 0.25f - totalGapHeight) / rows;// chiếm khoảng 1/4 chiều cao màn hình
-        System.out.println("brickW: " + brickW + " brickH: " + brickH);
+        float brickH = (areaHeight * 0.25f - totalGapHeight) / rows;  // chiếm khoảng 1/4 chiều cao màn hình
         float offsetY = 60f * scale;
 
         // ---- Căn giữa trong khu vực người chơi ----
@@ -107,7 +105,6 @@ public class Level {
                 }
             }
         }
-
         return bricks;
     }
 }

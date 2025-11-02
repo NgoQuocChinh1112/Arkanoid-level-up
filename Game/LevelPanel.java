@@ -19,21 +19,6 @@ public class LevelPanel extends JPanel {
     private BufferedImage title_choose_level;
     private BufferedImage back_bot;
     private BufferedImage back_top;
-
-    private static int WIDTH_BUTTON_LEVEL = (int)(100 * scale);
-    private static int HEIGHT_BUTTON_LEVEL = (int)(100 * scale);
-    private static int WIDTH_BUTTON_BACK = (int)(60 * scale);
-    private static int HEIGHT_BUTTON_BACK = (int)(60 * scale);
-    private static int WIDTH_TITLE = (int)(400 *  scale);
-    private static int HEIGHT_TITLE = (int)(100 *  scale);
-
-    private static int X_BUTTON_LEVEL_1 = (int)(50 * scale);
-    private static int Y_BUTTON_LEVEL_1 = (int)(200 * scale);
-    private static int X_BUTTON_BACK = (int)(700 * scale);
-    private static int Y_BUTTON_BACK = (int)(30 *  scale);
-    private static int X_TITLE = (int)(200 *  scale);
-    private static int Y_TITLE = (int)(8 *  scale);
-
     private Rectangle[] levelsRect;
     private Rectangle back;
 

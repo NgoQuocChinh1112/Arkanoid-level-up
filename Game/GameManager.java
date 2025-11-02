@@ -4,15 +4,14 @@ import Objects.*;
 import PowerUps.*;
 
 import javax.swing.*;
+import javax.swing.Timer;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.io.*;
+import java.util.*;
 import java.util.List;
-import java.util.Random;
 
 import static Game.GamePanel.resize;
 import static Game.GamePanel.scale;
@@ -314,7 +313,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
             bx = paddle1.getX() + paddle1.getWidth() / 2f - (int)(8 * scale);
             by = paddle1.getY() - (int)(16 * scale) - 1;
         }
-        mainBall = new Ball(bx, by, (int)(16 * scale), (int)(16 * scale));
+        mainBall = new Ball(bx, by, (int)(20 * scale), (int)(20 * scale));
         mainBall.resetToPaddle(twoPlayerMode ? paddle2 : paddle1);
 
         balls.clear();
@@ -943,11 +942,17 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
             if ((System.currentTimeMillis() / 300) % 2 == 0) {
                 g2.drawImage(Renderer.loadPressStartTexture(), x, y, wPressStart, hPressStart, null);
             }
-        } else if (gameState.equals("PAUSED") || gameState.equals("LOSE")
-                || gameState.equals("WIN")) {
+        } else if (gameState.equals("PAUSED") || gameState.equals("WIN")) {
             showMenu(g2);
         } else if (gameState.equals("RUNNING")) {
             buttonInGame(g2);
+        } else {
+            showMenu(g2);
+            try {
+                printHighScore(g2);
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
         }
         g2.dispose();
     }
@@ -1083,5 +1088,37 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         g2.drawImage(Renderer.loadArrowTexture(), -arrowW/2, -(int)(50 * scale), arrowW, arrowH, null);
 
         g2.setTransform(oldTransform);
+    }
+
+    public void drawScore(Graphics2D g2, String text, int y) {
+        int width = g2.getFontMetrics().stringWidth(text);
+        g2.setColor(Color.WHITE);
+        g2.drawString(text, (WIDTH - width) / 2, y);
+    }
+    public void printHighScore(Graphics2D g2) throws FileNotFoundException {
+        String filename = "src/highscores/highscore" + currentLevel + ".txt";
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(filename));
+            String highScore = br.readLine();
+            if (score >= Integer.parseInt(highScore)) {
+                writeHighScore(score);
+                highScore = String.valueOf(score);
+            }
+
+            drawScore(g2, highScore, 200);
+            drawScore(g2, String.valueOf(score), 300);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
+    public void writeHighScore(int highScore) throws FileNotFoundException {
+        String filename = "src/highscores/highscore" + currentLevel + ".txt";
+        try  {
+            BufferedWriter bw = new BufferedWriter(new FileWriter(filename, false));
+            bw.write(Integer.toString(highScore));
+            bw.close();
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -652,7 +652,7 @@ public class Competitive extends GameManager {
         }
     }
     
-    private void drawCenteredText(Graphics2D g2, String text, int y) {
+    protected void drawCenteredText(Graphics2D g2, String text, int y) {
         int width = g2.getFontMetrics().stringWidth(text);
         g2.drawString(text, (WIDTH - width) / 2, y);
     }

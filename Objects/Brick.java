@@ -43,7 +43,7 @@ public class Brick extends MovableObject {
 
     public void takeHit() {
         if (hitPoints > 0) {
-            SoundEffect.play("collision");
+            SoundEffect.play("break");
             if (hitPoints != 6 && heart > 0) {
                 heart--;
             }
@@ -59,7 +59,6 @@ public class Brick extends MovableObject {
                 }
             }
         } else {
-            SoundEffect.play("break");
             texture = null;
         }
     }

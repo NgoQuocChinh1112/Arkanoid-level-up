@@ -18,7 +18,6 @@ public abstract class MovableObject extends GameObject {
     @Override
     public void update() {
         move();
-
     }
 
     // getters/setters

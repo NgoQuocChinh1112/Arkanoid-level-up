@@ -4,8 +4,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+
+import static Game.Menu.isCompetitive;
 
 /**
  * Quản lý giao diện chính của trò chơi, điều hướng giữa menu, level và game.
@@ -14,7 +14,7 @@ public class GamePanel extends JPanel {
     private CardLayout cardLayout;
     private Menu menu;
     private GameManager game;
-    private CompetitiveGameManager competitiveManager;
+    private Competitive competitive;
     private LevelPanel levelPanel;
 
     private int WIDTH;
@@ -55,7 +55,7 @@ public class GamePanel extends JPanel {
         menu = new Menu(this);
         game = new GameManager(this, WIDTH, HEIGHT);
         levelPanel = new LevelPanel(this);
-        competitiveManager = new CompetitiveGameManager(this, WIDTH, HEIGHT);
+        competitive = new Competitive(this, WIDTH, HEIGHT);
 
         SoundEffect.loadAllSounds();
 
@@ -81,8 +81,9 @@ public class GamePanel extends JPanel {
                 offsetX = (int)((WIDTH - 800 * scale) / 2);
                 offsetY = (int)((HEIGHT - 600 * scale) / 2);
 
-                if (game != null) {
+                if (game != null && competitive != null) {
                     game.setGameSize(scale);
+                    competitive.setGameSize(scale);
                 }
             }
         });
@@ -90,7 +91,7 @@ public class GamePanel extends JPanel {
         add(menu, "Menu");
         add(game, "Game");
         add(levelPanel, "LevelPanel");
-        add(competitiveManager, "Competitive");
+        add(competitive, "Competitive");
         showMenu();
     }
 
@@ -162,11 +163,11 @@ public class GamePanel extends JPanel {
     public void showCompetitiveMode(int level) {
         SoundEffect.loop("bgm");
         cardLayout.show(this, "Competitive");
-        competitiveManager.setLevel(level); // khi chọn level cụ thể
+        competitive.setLevel(level); // khi chọn level cụ thể
         SwingUtilities.invokeLater(() -> {
-            competitiveManager.setFocusable(true);
-            competitiveManager.requestFocusInWindow();
-            competitiveManager.grabFocus();
+            competitive.setFocusable(true);
+            competitive.requestFocusInWindow();
+            competitive.grabFocus();
         });
     }
 }

@@ -4,21 +4,28 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import javax.imageio.ImageIO;
+
+import static Game.GamePanel.scale;
 
 public class Menu extends JPanel {
 
     private final GamePanel parent;
 
-    private BufferedImage background;
-    private BufferedImage title;
-    private BufferedImage startTop, startBot;
-    private BufferedImage chooseTop, chooseBot;
-    private BufferedImage onePlayerTop, onePlayerBot;
-    private BufferedImage twoPlayerTop, twoPlayerBot;
-    private BufferedImage competitiveTop, competitiveBot;
-    private BufferedImage exitTop, exitBot;
+    private final BufferedImage[] button = Renderer.loadButtonMenu();
+    private final BufferedImage background;
+    private final BufferedImage title;
+    private final BufferedImage startTop;
+    private final BufferedImage startBot;
+    private final BufferedImage chooseTop;
+    private final BufferedImage chooseBot;
+    private final BufferedImage onePlayerTop;
+    private final BufferedImage onePlayerBot;
+    private final BufferedImage twoPlayerTop;
+    private final BufferedImage twoPlayerBot;
+    private final BufferedImage competitiveTop;
+    private final BufferedImage competitiveBot;
+    private final BufferedImage exitTop;
+    private final BufferedImage exitBot;
 
     private boolean hoverStart = false;
     private boolean hoverChoose = false;
@@ -26,11 +33,11 @@ public class Menu extends JPanel {
     private boolean hoverCompetitive =false;
     private boolean hoverExit = false;
 
-    private Rectangle startRect;
-    private Rectangle chooseRect;
-    private Rectangle regimeRect;
-    private Rectangle competitive;
-     private Rectangle exitRect;
+    private final Rectangle startRect;
+    private final Rectangle chooseRect;
+    private final Rectangle regimeRect;
+    private final Rectangle competitive;
+     private final Rectangle exitRect;
 
     public static boolean isCompetitive = false;
 
@@ -38,25 +45,20 @@ public class Menu extends JPanel {
         this.parent = parent;
         setLayout(null);
 
-        // Nạp ảnh
-        try {
-            background = ImageIO.read(getClass().getResource("/assets/BG_Level_1.png"));
-            title = ImageIO.read(getClass().getResource("/assets/title.png"));
-            startTop = ImageIO.read(getClass().getResource("/assets/start_top.png"));
-            startBot = ImageIO.read(getClass().getResource("/assets/start_bot.png"));
-            exitTop = ImageIO.read(getClass().getResource("/assets/exit_top.png"));
-            exitBot = ImageIO.read(getClass().getResource("/assets/exit_bot.png"));
-            chooseTop = ImageIO.read(getClass().getResource("/assets/choose_levels_top.png"));
-            chooseBot = ImageIO.read(getClass().getResource("/assets/choose_levels_bot.png"));
-            onePlayerTop = ImageIO.read(getClass().getResource("/assets/one_player_top.png"));
-            onePlayerBot = ImageIO.read(getClass().getResource("/assets/one_player_bot.png"));
-            twoPlayerTop = ImageIO.read(getClass().getResource("/assets/two_player_top.png"));
-            twoPlayerBot = ImageIO.read(getClass().getResource("/assets/two_player_bot.png"));
-            competitiveTop = ImageIO.read(getClass().getResource("/assets/isCompetitive_top.png"));
-            competitiveBot = ImageIO.read(getClass().getResource("/assets/isCompetitive_bot.png"));
-        } catch (IOException | IllegalArgumentException e) {
-            e.printStackTrace();
-        }
+        background = button[0];
+        title = button[1];
+        startTop = button[2];
+        startBot = button[3];
+        exitTop = button[4];
+        exitBot = button[5];
+        chooseTop = button[6];
+            chooseBot = button[7];
+        onePlayerTop = button[8];
+        onePlayerBot = button[9];
+        twoPlayerTop = button[10];
+        twoPlayerBot = button[11];
+        competitiveTop = button[12];
+        competitiveBot = button[13];
 
         // Vùng bấm
         startRect = new Rectangle();
@@ -98,6 +100,21 @@ public class Menu extends JPanel {
                 } else if (competitiveLocal.contains(p)) {
                     isCompetitive = true;
                     parent.showLevelPanel();
+                }
+
+                int butW = (int)(50 * scale) , butH = (int)(50 * scale);
+                int volX = parent.getWIDTH() - (int)(70 * scale);
+                int butY = parent.getHEIGHT() - (int)(70 * scale);
+                Rectangle volRect = new Rectangle(volX, butY, butW, butH);
+
+                if (volRect.contains(p)) {
+                    GamePanel.switchVol = !GamePanel.switchVol;
+                    if (GamePanel.switchVol) {
+                        SoundEffect.setVolume(6);
+                    } else {
+                        SoundEffect.setVolume(-80);
+                    }
+                    repaint();
                 }
             }
 
@@ -217,9 +234,21 @@ public class Menu extends JPanel {
         }
 
         // Vẽ nút exit
-        if (hoverExit && exitTop != null)
+        if (hoverExit && exitTop != null) {
             g2.drawImage(exitTop, exitX, exitY, exitW, exitH, null);
-        else if (exitBot != null)
+        }
+        else if (exitBot != null) {
             g2.drawImage(exitBot, exitX, exitY, exitW, exitH, null);
+        }
+
+        int butW = (int)(50 * scale), butH = (int)(50 * scale);
+        int volX = parent.getWIDTH() - (int)(70 * scale);
+        int butY = parent.getHEIGHT() - (int)(70 * scale);
+
+        if (button[14] != null && GamePanel.switchVol) {
+            g2.drawImage(button[14], volX, butY, butW, butH, null);
+        } else if (button[15] != null) {
+            g2.drawImage(button[15], volX, butY, butW, butH, null);
+        }
     }
 }

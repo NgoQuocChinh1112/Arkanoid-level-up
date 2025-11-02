@@ -60,8 +60,6 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
     private boolean hoverMenu = false;
     private boolean hoverLs = false;
 
-    private static boolean switchVol = true;
-
     protected final Random rand = new Random();
 
     // Constants để tránh magic numbers
@@ -80,16 +78,8 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         initGame();
     }
 
-    public int getCurrentLevel() {
-        return currentLevel;
-    }
-
     public void addLife() {
         lives++;
-    }
-
-    public void setCurrentLevel(int level) {
-        this.currentLevel = level;
     }
 
     public void setGameSize(float scale) {
@@ -141,7 +131,6 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         int delay = 1000 / FPS;
         gameTimer = new Timer(delay, this);
         gameTimer.start();
-        SoundEffect.setVolume(6);
 
         addMouseListener(new MouseAdapter() {
             @Override
@@ -151,22 +140,10 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
                     int butW = (int)(30 * scale) , butH = (int)(30 * scale);
                     int pauX = WIDTH - (int)(50 * scale) + parent.getOffsetX();
                     System.out.println(parent.getOffsetX());
-                    int volX = pauX - (int)(40 * scale);
                     int butY = (int)(20 * scale) + parent.getOffsetY();
                     Rectangle pauRect = new Rectangle(pauX, butY, butW, butH);
-                    Rectangle volRect = new Rectangle(volX, butY, butW, butH);
                     if (pauRect.contains(p)) {
                         gameState = "PAUSED";
-                    }
-                    if (volRect.contains(p)) {
-                        switchVol = !switchVol;
-                        repaint();
-                        if (switchVol) {
-                            SoundEffect.setVolume(6);
-                        } else {
-                            SoundEffect.setVolume(-80);
-                        }
-                        repaint();
                     }
                 }
                 if (gameState.equals("PAUSED") || gameState.equals("LOSE") || gameState.equals("WIN")) {
@@ -331,7 +308,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         repaint();
     }
 
-    private boolean checkWin(List<Brick> bricks) {
+    protected boolean checkWin(List<Brick> bricks) {
         for (Brick brick : bricks) {
             if (brick.getHitPoints() < 6 && brick.getHitPoints() > 0) {
                 return false;
@@ -620,7 +597,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
 
         // Va chạm từ trên xuống
         if (ball.getDy() > 0 && prevBottom <= paddleTop) {
-            handlePaddleTopCollision(ball, paddle, paddleRect, ballCenterX);
+            handlePaddleTopCollision(ball, paddleRect, ballCenterX);
             SoundEffect.play("collision");
             // Va chạm từ bên
         } else {
@@ -629,7 +606,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         }
     }
 
-    private void handlePaddleTopCollision(Ball ball, Paddle paddle, Rectangle paddleRect, float ballCenterX) {
+    private void handlePaddleTopCollision(Ball ball, Rectangle paddleRect, float ballCenterX) {
         // Đặt bóng lên trên paddle
         ball.setY(paddleRect.y - ball.getHeight() - 0.5f);
 
@@ -904,7 +881,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
             int j = 1;
             for (int i = 4; i <= lives; ++i) {
                 g2.drawImage(Renderer.loadDamageTexture(), (int)((690 - 30 * j) * scale),
-                            (int)(HEIGHT - (int)(35 * scale)), wLives , hLives, null);
+                            HEIGHT - (int)(35 * scale), wLives , hLives, null);
                 j++;
             }
         }
@@ -944,15 +921,9 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
     private void buttonInGame(Graphics g) {
         int butW = (int)(30 * scale), butH = (int)(30 * scale);
         int pauX = WIDTH - (int)(50 * scale);
-        int volX = pauX - (int)(40 * scale);
         int butY = (int)(20 * scale);
         if (button[1] != null) {
             g.drawImage(button[1], pauX, butY, butW, butH, null);
-        }
-        if (button[14] != null && switchVol) {
-            g.drawImage(button[14], volX, butY, butW, butH, null);
-        } else if (button[15] != null) {
-            g.drawImage(button[15], volX, butY, butW, butH, null);
         }
     }
 

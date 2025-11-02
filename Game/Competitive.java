@@ -49,7 +49,7 @@ public class Competitive extends GameManager {
     
     private boolean hoverResume = false;
     private boolean hoverMenu = false;
-    private boolean hoverLs = false;
+    private boolean hoverRestart = false;
 
     @Override
     public void setLevel(int level) {
@@ -70,7 +70,7 @@ public class Competitive extends GameManager {
             @Override
             public void mouseClicked(MouseEvent e) {
                 Point p = e.getPoint();
-                if (gameState.equals("PAUSED") || gameState.equals("END")) {
+                if (gameState.equals("PAUSED") || gameState.equals("SELECT")) {
                     int boxX = (WIDTH - (int)(300 * scale)) / 2 + parent.getOffsetX();
                     int boxY = (HEIGHT - (int)(245 * scale)) / 2 + parent.getOffsetY();
                     int btnW = (int)(180 * scale);
@@ -81,18 +81,21 @@ public class Competitive extends GameManager {
                     int btnX = boxX + ((int)(300 * scale) - btnW) / 2;
 
                     Rectangle resumeRect = new Rectangle(btnX, resumeY, btnW, btnH);
-                    Rectangle LsRect = new Rectangle(btnX, resY, btnW, btnH);
+                    Rectangle RestartRect = new Rectangle(btnX, resY, btnW, btnH);
                     Rectangle menuRect = new Rectangle(btnX, menuY, btnW, btnH);
 
                     if (resumeRect.contains(p)) {
                         switch (gameState) {
                             case "PAUSED" -> gameState = "RUNNING";
-                            case "END" -> parent.showLevelPanel();
+                            case "SELECT" -> {
+                                currentLevel++;
+                                setLevel(currentLevel);
+                            }
                         }
                     } else if (menuRect.contains(p)) {
                         Menu.isCompetitive = false;
                         parent.showMenu();
-                    } else if (LsRect.contains(p)) {
+                    } else if (RestartRect.contains(p)) {
                         restart();
                     }
                 }
@@ -102,7 +105,7 @@ public class Competitive extends GameManager {
         addMouseMotionListener(new MouseMotionAdapter() {
             public void mouseMoved(MouseEvent e) {
                 Point p = e.getPoint();
-                if (gameState.equals("PAUSED") || gameState.equals("END")) {
+                if (gameState.equals("PAUSED") || gameState.equals("SELECT")) {
                     int boxX = (WIDTH - (int)(300 * scale)) / 2 + parent.getOffsetX();
                     int boxY = (HEIGHT - (int)(245 * scale)) / 2 + parent.getOffsetY();
                     int btnW = (int)(180 * scale);
@@ -113,17 +116,17 @@ public class Competitive extends GameManager {
                     int btnX = boxX + ((int)(300 * scale) - btnW) / 2;
 
                     Rectangle resumeRect = new Rectangle(btnX, resumeY, btnW, btnH);
-                    Rectangle LsRect = new Rectangle(btnX, resY, btnW, btnH);
+                    Rectangle RestartRect = new Rectangle(btnX, resY, btnW, btnH);
                     Rectangle menuRect = new Rectangle(btnX, menuY, btnW, btnH);
 
                     boolean oldHoverResume = hoverResume;
                     hoverResume = resumeRect.contains(p);
                     boolean oldHoverMenu = hoverMenu;
                     hoverMenu = menuRect.contains(p);
-                    boolean oldHoverLs = hoverLs;
-                    hoverLs = LsRect.contains(p);
+                    boolean oldHoverLs = hoverRestart;
+                    hoverRestart = RestartRect.contains(p);
                     if (oldHoverResume != hoverResume || oldHoverMenu != hoverMenu
-                            || oldHoverLs != hoverLs) {
+                            || oldHoverLs != hoverRestart) {
                         repaint();
                     }
                 }
@@ -214,7 +217,7 @@ public class Competitive extends GameManager {
             } else if (button[5] != null) {
                 g.drawImage(button[5], btnX, resumeY, btnW, btnH, null);
             }
-        } else if (gameState.equals("END")) {
+        } else if (gameState.equals("SELECT")) {
             if (button[12] != null && hoverResume) {
                 g.drawImage(button[12], btnX, resumeY, btnW, btnH, null);
             } else if (button[13] != null) {
@@ -226,7 +229,7 @@ public class Competitive extends GameManager {
         } else if (button[3] != null) {
             g.drawImage(button[3], btnX, menuY, btnW, btnH, null);
         }
-        if (button[6] != null && hoverLs) {
+        if (button[6] != null && hoverRestart) {
             g.drawImage(button[6], btnX, resY, btnW, btnH, null);
         } else if (button[7] != null) {
             g.drawImage(button[7], btnX, resY, btnW, btnH, null);
@@ -270,7 +273,7 @@ public class Competitive extends GameManager {
     
     @Override
     protected void updateGame() {
-        if (gameState.equals("END") || gameState.equals("PAUSED")) return;
+        if (gameState.equals("END") || gameState.equals("PAUSED") || gameState.equals("SELECT")) return;
         // Update góc bắn
         if (!ball1.isLaunched()) updateLaunchAngle(1);
         if (!ball2.isLaunched()) updateLaunchAngle(2);
@@ -318,8 +321,8 @@ public class Competitive extends GameManager {
         paddle2.setX(clamp(paddle2.getX(), dividerX, WIDTH - paddle2.getWidth()));
         
         // Update balls
-        updateBallPosition(ball1, paddle1, 1);
-        updateBallPosition(ball2, paddle2, 2);
+        updateBallPosition(ball1, paddle1);
+        updateBallPosition(ball2, paddle2);
         
         checkCollisionsWithBall(ball1, bricks1, paddle1, powerUps1, 1);
         checkCollisionsWithBall(ball2, bricks2, paddle2, powerUps2, 2);
@@ -336,7 +339,8 @@ public class Competitive extends GameManager {
         long elapsed = System.currentTimeMillis() - gameStartTime - totalPausedTime;
         timeRemaining = gameDuration - elapsed;
         
-        if (timeRemaining <= 0 || (bricks1.isEmpty() || bricks2.isEmpty())) {
+        if (timeRemaining <= 0 || (bricks1.isEmpty() || bricks2.isEmpty())
+                || (checkWin(bricks1) ||  checkWin(bricks2))) {
             timeRemaining = 0;
             gameState = "END";
         }
@@ -348,21 +352,21 @@ public class Competitive extends GameManager {
     }
 
     private void checkCollisionDivider() {
-        for (int i = 0; i < bricks1.size(); i++) {
-            if (!bricks1.get(i).isDestroyed() && bricks1.get(i).getX() + bricks1.get(i).getWidth() > dividerX) {
-                bricks1.get(i).setX(bricks1.get(i).getX() - bricks1.get(i).getSpeed());
-                bricks1.get(i).setDx(-bricks1.get(i).getDx());
+        for (Brick brick : bricks1) {
+            if (!brick.isDestroyed() && brick.getX() + brick.getWidth() > dividerX) {
+                brick.setX(brick.getX() - brick.getSpeed());
+                brick.setDx(-brick.getDx());
             }
         }
-        for (int i = 0; i < bricks2.size(); i++) {
-            if (!bricks2.get(i).isDestroyed() && bricks2.get(i).getX() < dividerX) {
-                bricks2.get(i).setX(bricks2.get(i).getX() + bricks2.get(i).getSpeed());
-                bricks2.get(i).setDx(-bricks2.get(i).getDx());
+        for (Brick brick : bricks2) {
+            if (!brick.isDestroyed() && brick.getX() < dividerX) {
+                brick.setX(brick.getX() + brick.getSpeed());
+                brick.setDx(-brick.getDx());
             }
         }
     }
 
-    private void updateBallPosition(Ball ball, Paddle paddle, int player) {
+    private void updateBallPosition(Ball ball, Paddle paddle) {
         if (!ball.isLaunched()) {
             ball.setX(paddle.getX() + paddle.getWidth() / 2f - ball.getWidth() / 2f);
             ball.setY(paddle.getY() - ball.getHeight() - 1);
@@ -500,6 +504,7 @@ public class Competitive extends GameManager {
         Rectangle brickRect = brick.getBounds();
         float ballCenterX = ball.getCenterX();
         float ballCenterY = ball.getCenterY();
+
         float brickCenterX = brickRect.x + brickRect.width / 2f;
         float brickCenterY = brickRect.y + brickRect.height / 2f;
         
@@ -524,13 +529,13 @@ public class Competitive extends GameManager {
         float y = brick.getY() + brick.getHeight()/2f;
         int w = (int)(24 * scale);
         int h = (int)(24 * scale);
-        
-        switch(type) {
-            case 0: return new ExpandPaddlePowerUp(x, y, w, h, 5000);
-            case 1: return new FastBallPowerUp(x, y, w, h, 5000);
-            case 2: return new BigBallPowerUp(x, y, w, h, 5000);
-            default : return new ShrinkPaddlePowerUp(x, y, w, h, 5000);
-        }
+
+        return switch (type) {
+            case 0 -> new ExpandPaddlePowerUp(x, y, w, h, 5000);
+            case 1 -> new FastBallPowerUp(x, y, w, h, 5000);
+            case 2 -> new BigBallPowerUp(x, y, w, h, 5000);
+            default -> new ShrinkPaddlePowerUp(x, y, w, h, 5000);
+        };
     }
     
     @Override
@@ -554,14 +559,12 @@ public class Competitive extends GameManager {
         
         // HUD
         drawCompetitiveHUD(g2);
-        
-        // Overlays
-        if (gameState.equals("MENU")) {
-            drawStartScreen(g2);
-        } else if (gameState.equals("PAUSED")) {
-            showMenu(g2);
-        } else if (gameState.equals("END")) {
-            drawEndScreen(g2);
+
+        switch (gameState) {
+            case "MENU" -> drawStartScreen(g2);
+            case "PAUSED" -> showMenu(g2);
+            case "END" -> drawEndScreen(g2);
+            case "SELECT" -> showMenu(g2);
         }
     }
     
@@ -581,13 +584,13 @@ public class Competitive extends GameManager {
         
         // Player 1
         g2.drawString(String.format("%05d", score1), 10, 30);
-        drawLives(g2, lives1, 10, 40);
+        drawLives(g2, lives1, 10);
         
         // Player 2
         String p2Text = String.format("%05d", score2);
         int p2Width = g2.getFontMetrics().stringWidth(p2Text);
         g2.drawString(p2Text, WIDTH - p2Width - 10, 30);
-        drawLives(g2, lives2, WIDTH - 100, 40);
+        drawLives(g2, lives2, WIDTH - 100);
         
         // Timer
         g2.setFont(Renderer.loadFond(g2, 36));
@@ -597,11 +600,11 @@ public class Competitive extends GameManager {
         g2.drawString(timeText, (WIDTH - timerWidth) / 2, 30);
     }
     
-    private void drawLives(Graphics2D g2, int lives, int x, int y) {
+    private void drawLives(Graphics2D g2, int lives, int x) {
         int size = 25;
         for (int i = 0; i < 3; i++) {
             g2.drawImage(i < lives ? Renderer.loadHeartTexture() : Renderer.loadDamageTexture(),
-                        x + i * 30, y, size, size, null);
+                        x + i * 30, 40, size, size, null);
         }
     }
     
@@ -678,7 +681,6 @@ public class Competitive extends GameManager {
     @Override
     public void keyPressed(KeyEvent e) {
         int kc = e.getKeyCode();
-        
         if (kc == KeyEvent.VK_LEFT) leftPressed = true;
         if (kc == KeyEvent.VK_RIGHT) rightPressed = true;
         if (kc == KeyEvent.VK_A) aPressed = true;
@@ -696,15 +698,19 @@ public class Competitive extends GameManager {
         }
         
         if (kc == KeyEvent.VK_P) {
-            if (gameState.equals("RUNNING")) {
-                gameState = "PAUSED";
-                pauseStartTime = System.currentTimeMillis();
-            } else if (gameState.equals("PAUSED")) {
-                gameState = "RUNNING";
-                totalPausedTime += System.currentTimeMillis() - pauseStartTime;
-            } else if (gameState.equals("END")) {
-                gameState = "PAUSED";
-                pauseStartTime = System.currentTimeMillis();
+            switch (gameState) {
+                case "RUNNING" -> {
+                    gameState = "PAUSED";
+                    pauseStartTime = System.currentTimeMillis();
+                }
+                case "PAUSED" -> {
+                    gameState = "RUNNING";
+                    totalPausedTime += System.currentTimeMillis() - pauseStartTime;
+                }
+                case "END" -> {
+                    gameState = "SELECT";
+                    pauseStartTime = System.currentTimeMillis();
+                }
             }
         }
     }

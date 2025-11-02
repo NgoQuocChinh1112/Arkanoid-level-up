@@ -101,6 +101,27 @@ public class Renderer {
         return background_level[currentLevel - 1];
     }
 
+    public static BufferedImage[] loadButtonMenu() {
+        BufferedImage[] images = new BufferedImage[16];
+        images[0] = loadTexture("/assets/BG_Level_1.png");
+        images[1] = loadTexture("/assets/title.png");
+        images[2] = loadTexture("/assets/start_top.png");
+        images[3] = loadTexture("/assets/start_bot.png");
+        images[4] = loadTexture("/assets/exit_top.png");
+        images[5] = loadTexture("/assets/exit_bot.png");
+        images[6] = loadTexture("/assets/choose_levels_top.png");
+        images[7] = loadTexture("/assets/choose_levels_bot.png");
+        images[8] = loadTexture("/assets/one_player_top.png");
+        images[9] = loadTexture("/assets/one_player_bot.png");
+        images[10] = loadTexture("/assets/two_player_top.png");
+        images[11] = loadTexture("/assets/two_player_bot.png");
+        images[12] = loadTexture("/assets/isCompetitive_top.png");
+        images[13] = loadTexture("/assets/isCompetitive_bot.png");
+        images[14] = loadTexture(("/assets/on_volume.png"));
+        images[15] = loadTexture(("/assets/off_volume.png"));
+        return images;
+    }
+
     public static BufferedImage[] loadbuttonTexture() {
         BufferedImage[] button = new BufferedImage[16];
         button[0] = loadTexture(("/assets/menu.png"));
@@ -160,15 +181,9 @@ public class Renderer {
     public static BufferedImage loadExplosionTexture() {
         BufferedImage img = textureCache.get("explosive_effect");
         if (img != null) return img;
-
-        try {
-            img = ImageIO.read(Renderer.class.getResourceAsStream("/assets/explosive.png"));
-            textureCache.put("explosive_effect", img);
-            return img;
-        } catch (IOException | NullPointerException e) {
-            System.err.println("Không thể tải ảnh explosion: " + e.getMessage());
-            return null;
-        }
+        img = loadTexture("/assets/explosive.png");
+        textureCache.put("explosive_effect", img);
+        return img;
     }
     public static BufferedImage loadBackGroundPlayer1() {
         return loadTexture("/assets/background_player_1.jpg");

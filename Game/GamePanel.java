@@ -9,11 +9,9 @@ import java.awt.event.ComponentEvent;
  * Quản lý giao diện chính của trò chơi, điều hướng giữa menu, level và game.
  */
 public class GamePanel extends JPanel {
-    private CardLayout cardLayout;
-    private Menu menu;
-    private GameManager game;
-    private Competitive competitive;
-    private LevelPanel levelPanel;
+    private final CardLayout cardLayout;
+    private final GameManager game;
+    private final Competitive competitive;
 
     private int WIDTH;
     private int HEIGHT;
@@ -26,6 +24,9 @@ public class GamePanel extends JPanel {
 
     public int offsetX = 0;
     public int offsetY = 0;
+
+
+    public static boolean switchVol = true;
 
     /**
      * Khởi tạo GamePanel với kích thước xác định và các màn hình con.
@@ -46,13 +47,13 @@ public class GamePanel extends JPanel {
         // Thiết đặt kích thước panel
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
 
-        menu = new Menu(this);
+        Menu menu = new Menu(this);
         game = new GameManager(this, WIDTH, HEIGHT);
-        levelPanel = new LevelPanel(this);
+        LevelPanel levelPanel = new LevelPanel(this);
         competitive = new Competitive(this, WIDTH, HEIGHT);
 
         SoundEffect.loadAllSounds();
-
+        SoundEffect.setVolume(6);
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
@@ -74,11 +75,8 @@ public class GamePanel extends JPanel {
 
                 offsetX = (int)((WIDTH - 800 * scale) / 2);
                 offsetY = (int)((HEIGHT - 600 * scale) / 2);
-
-                if (game != null && competitive != null) {
-                    game.setGameSize(scale);
-                    competitive.setGameSize(scale);
-                }
+                game.setGameSize(scale);
+                competitive.setGameSize(scale);
             }
         });
 
@@ -127,7 +125,6 @@ public class GamePanel extends JPanel {
     public void startGame() {
         SoundEffect.loop("bgm");
         cardLayout.show(this, "Game");
-        game.setCurrentLevel(1);
         game.setLevel(1);
         SwingUtilities.invokeLater(() -> {
             game.setFocusable(true);
@@ -143,7 +140,6 @@ public class GamePanel extends JPanel {
     public void startGame(int level) {
         SoundEffect.loop("bgm");
         cardLayout.show(this, "Game");
-        game.setCurrentLevel(level);
         game.setLevel(level); // khi chọn level cụ thể
         SwingUtilities.invokeLater(() -> {
             game.setFocusable(true);

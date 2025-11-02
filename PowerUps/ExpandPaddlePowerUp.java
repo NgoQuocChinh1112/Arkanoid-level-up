@@ -26,7 +26,7 @@ public class ExpandPaddlePowerUp extends PowerUp {
     public ExpandPaddlePowerUp(float x, float y, int width, int height, long durationMs) {
         super(x, y, width, height, durationMs, "EXPAND_PADDLE");
         try {
-            BufferedImage[] powerUps = Renderer.PowerUpTexture();
+            BufferedImage[] powerUps = Renderer.loadPowerUpTexture();
             texture = powerUps[3];
 
             if (texture == null) {
@@ -80,7 +80,7 @@ public class ExpandPaddlePowerUp extends PowerUp {
             if (texture == null) {
                 throw new IOException("Ảnh  bị null");
             }
-            g2.drawImage(texture, Math.round(x), Math.round(y), width, height, null);
+            g2.drawImage(texture, Math.round(x), Math.round(y), width * 2, height * 2, null);
         } catch (Exception e) {
             System.err.println("Không thể vẽ ảnh " + e.getMessage());
         }

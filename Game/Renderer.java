@@ -1,7 +1,6 @@
 package Game;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -130,7 +129,7 @@ public class Renderer {
         return loadTexture("/assets/arrow.png");
     }
 
-    public static BufferedImage[] PowerUpTexture() {
+    public static BufferedImage[] loadPowerUpTexture() {
         BufferedImage[] PowerUp = new BufferedImage[7];
         PowerUp[0] = loadTexture(("/assets/BigBall.png"));
         PowerUp[1] = loadTexture(("/assets/FastBall.png"));
@@ -141,6 +140,21 @@ public class Renderer {
         PowerUp[6] = loadTexture(("/assets/DoubleBall.png"));
         return PowerUp;
     }
+
+    public static BufferedImage loadExplosionTexture() {
+        BufferedImage img = textureCache.get("explosive_effect");
+        if (img != null) return img;
+
+        try {
+            img = ImageIO.read(Renderer.class.getResourceAsStream("/assets/explosive.png"));
+            textureCache.put("explosive_effect", img);
+            return img;
+        } catch (IOException | NullPointerException e) {
+            System.err.println("Không thể tải ảnh explosion: " + e.getMessage());
+            return null;
+        }
+    }
+
 
 
 }

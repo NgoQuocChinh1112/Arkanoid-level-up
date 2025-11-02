@@ -26,7 +26,7 @@ public class FastBallPowerUp extends PowerUp {
     public FastBallPowerUp(float x, float y, int width, int height, long durationMs) {
         super(x, y, width, height, durationMs, "FAST_BALL");
         try {
-            BufferedImage[] powerUps = Renderer.PowerUpTexture();
+            BufferedImage[] powerUps = Renderer.loadPowerUpTexture();
             texture = powerUps[1];
 
             if (texture == null) {
@@ -76,7 +76,7 @@ public class FastBallPowerUp extends PowerUp {
             if (texture == null) {
                 throw new IOException("Ảnh bị null");
             }
-            g2.drawImage(texture, Math.round(x), Math.round(y), width, height, null);
+            g2.drawImage(texture, Math.round(x), Math.round(y), width * 2, height * 2, null);
         } catch (Exception e) {
             System.err.println("Không thể vẽ ảnh  " + e.getMessage());
         }

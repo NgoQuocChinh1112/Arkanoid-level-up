@@ -33,11 +33,11 @@ public class ExplosiveBallPowerUp extends PowerUp {
      */
     public ExplosiveBallPowerUp(float x, float y, int width, int height, long durationMs) {
         super(x, y, width, height, durationMs, "EXPLOSIVE_BALL");
-        loadImage();
+        explosionImg = Renderer.loadExplosionTexture();
 
         // xử lý exception ở đây (Renderer chỉ load)
         try {
-            BufferedImage[] powerUps = Renderer.PowerUpTexture();
+            BufferedImage[] powerUps = Renderer.loadPowerUpTexture();
             texture = powerUps[2]; // ExplosiveBall ở index 2
             if (texture == null) {
                 throw new Exception("Texture  bị null.");
@@ -45,16 +45,6 @@ public class ExplosiveBallPowerUp extends PowerUp {
         } catch (Exception e) {
             System.err.println("Lỗi khi tải ảnh " + e.getMessage());
             texture = null;
-        }
-    }
-
-    private void loadImage() {
-        if (explosionImg == null) {
-            try {
-                explosionImg = ImageIO.read(getClass().getResourceAsStream("/assets/explosive.png"));
-            } catch (IOException | NullPointerException e) {
-                System.err.println("Không thể tải ảnh explosion: " + e.getMessage());
-            }
         }
     }
 
@@ -86,14 +76,10 @@ public class ExplosiveBallPowerUp extends PowerUp {
             if (texture == null) {
                 throw new IOException("Ảnh  bị null");
             }
-            g2.drawImage(texture, Math.round(x), Math.round(y), width, height, null);
+            g2.drawImage(texture, Math.round(x), Math.round(y), width * 2, height * 2, null);
         } catch (Exception e) {
             System.err.println("Không thể vẽ ảnh " + e.getMessage());
-            // fallback đơn giản
-            g2.setColor(Color.ORANGE);
-            g2.fillOval(Math.round(x), Math.round(y), width, height);
-            g2.setColor(Color.BLACK);
-            g2.drawString("E", Math.round(x + width / 2f - 3), Math.round(y + height / 2f + 4));
+
         }
     }
 

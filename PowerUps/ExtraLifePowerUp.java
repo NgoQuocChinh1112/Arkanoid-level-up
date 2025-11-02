@@ -23,7 +23,7 @@ public class ExtraLifePowerUp extends PowerUp {
         super(x, y, width, height, durationMs, "EXTRA_LIFE");
         this.durationMs = 0;
         try {
-            BufferedImage[] powerUps = Renderer.PowerUpTexture();
+            BufferedImage[] powerUps = Renderer.loadPowerUpTexture();
             texture = powerUps[5];
 
             if (texture == null) {
@@ -58,7 +58,7 @@ public class ExtraLifePowerUp extends PowerUp {
             if (texture == null) {
                 throw new IOException("Ảnh  bị null");
             }
-            g2.drawImage(texture, Math.round(x), Math.round(y), width, height, null);
+            g2.drawImage(texture, Math.round(x), Math.round(y), width * 2, height * 2, null);
         } catch (Exception e) {
             System.err.println("Không thể vẽ ảnh  " + e.getMessage());
         }

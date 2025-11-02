@@ -445,17 +445,17 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         // Đẩy nhau
         if (brick.getX() < other.getX()) {
             if (brick.getType() != 0) {
-                brick.setX(brick.getX() - brick.getSpeed()/2);
+                brick.setX(brick.getX() - brick.getSpeed());
             }
             if (other.getType() != 0) {
-                other.setX(other.getX() + other.getSpeed()/2);
+                other.setX(other.getX() + other.getSpeed());
             }
         } else {
             if (brick.getType() != 0) {
-                brick.setX(brick.getX() + brick.getSpeed()/2);
+                brick.setX(brick.getX() + brick.getSpeed());
             }
             if (other.getType() != 0) {
-                other.setX(other.getX() - other.getSpeed()/2);
+                other.setX(other.getX() - other.getSpeed());
             }
         }
     }
@@ -467,17 +467,17 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         // Đây nhau
         if (brick.getY() < other.getY()) {
             if (brick.getType() != 0) {
-                brick.setY(brick.getY() - brick.getSpeed()/2);
+                brick.setY(brick.getY() - brick.getSpeed());
             }
             if (other.getType() != 0) {
-                other.setY(other.getY() + brick.getSpeed()/2);
+                other.setY(other.getY() + brick.getSpeed());
             }
         } else {
             if (brick.getType() != 0) {
-                brick.setY(brick.getY() + brick.getSpeed()/2);
+                brick.setY(brick.getY() + brick.getSpeed());
             }
             if (other.getType() != 0) {
-                other.setY(other.getY() - brick.getSpeed()/2);
+                other.setY(other.getY() - brick.getSpeed());
             }
         }
     }

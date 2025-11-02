@@ -21,6 +21,7 @@ public class GamePanel extends JPanel {
     public static float scaleX = 1f;
     public static float scaleY = 1f;
     public static float scale = 1f;
+    public static boolean loopMenu = false, loopStartGame = false;
 
     public int offsetX = 0;
     public int offsetY = 0;
@@ -84,6 +85,7 @@ public class GamePanel extends JPanel {
         add(game, "Game");
         add(levelPanel, "LevelPanel");
         add(competitive, "Competitive");
+        SoundEffect.loop("sound_Menu");
         showMenu();
     }
 
@@ -108,6 +110,7 @@ public class GamePanel extends JPanel {
      */
     public void showMenu() {
         SoundEffect.stop("bgm");
+        if(switchVol) SoundEffect.loop("soundMenu");
         cardLayout.show(this, "Menu");
     }
 
@@ -116,6 +119,7 @@ public class GamePanel extends JPanel {
      */
     public void showLevelPanel() {
         SoundEffect.stop("bgm");
+        SoundEffect.stop("soundMenu");
         cardLayout.show(this, "LevelPanel");
     }
 
@@ -123,7 +127,8 @@ public class GamePanel extends JPanel {
      * Bắt đầu trò chơi từ level 1 (mặc định).
      */
     public void startGame() {
-        SoundEffect.loop("bgm");
+        SoundEffect.stop("soundMenu");
+        if(switchVol) SoundEffect.loop("bgm");
         cardLayout.show(this, "Game");
         game.setLevel(1);
         SwingUtilities.invokeLater(() -> {
@@ -138,7 +143,8 @@ public class GamePanel extends JPanel {
      * @param level cấp độ người chơi chọn để bắt đầu.
      */
     public void startGame(int level) {
-        SoundEffect.loop("bgm");
+        SoundEffect.stop("soundMenu");
+        if(switchVol) SoundEffect.loop("bgm");
         cardLayout.show(this, "Game");
         game.setLevel(level); // khi chọn level cụ thể
         SwingUtilities.invokeLater(() -> {
@@ -151,7 +157,8 @@ public class GamePanel extends JPanel {
      * Bắt đầu chế độ đối kháng 2 người chơi.
      */
     public void showCompetitiveMode(int level) {
-        SoundEffect.loop("bgm");
+        SoundEffect.stop("soundMenu");
+        if(switchVol) SoundEffect.loop("bgm");
         cardLayout.show(this, "Competitive");
         competitive.setLevel(level); // khi chọn level cụ thể
         SwingUtilities.invokeLater(() -> {

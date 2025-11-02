@@ -77,6 +77,7 @@ public class LevelPanel extends JPanel {
                 for (int i = 0; i < 5; i++) {
                     levelsRectLocal[i] = new Rectangle(centerX + i * (int)(150 * scaleX), startY, btnW, btnH);
                     if (levelsRectLocal[i].contains(p)) {
+                        SoundEffect.play("click");
                         if (Menu.isCompetitive) {
                             parent.showCompetitiveMode(i + 1);
                         }
@@ -89,6 +90,7 @@ public class LevelPanel extends JPanel {
                 for (int i = 5; i < 10; ++i) {
                     levelsRectLocal[i] = new Rectangle(centerX + (i - 5) * (int)(150 * scaleX), startY + btnH * 2, btnW, btnH);
                     if (levelsRectLocal[i].contains(p)) {
+                        SoundEffect.play("click");
                         if (Menu.isCompetitive) {
                             parent.showCompetitiveMode(i + 1);
                         }
@@ -99,6 +101,7 @@ public class LevelPanel extends JPanel {
                 }
 
                 if (backLocal.contains(p)) {
+                    SoundEffect.play("click");
                     parent.showMenu();
                     Menu.isCompetitive = false;
                 }

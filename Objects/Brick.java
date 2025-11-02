@@ -43,7 +43,7 @@ public class Brick extends MovableObject {
 
     public void takeHit() {
         if (hitPoints > 0) {
-            SoundEffect.play("break");
+            SoundEffect.play("BallBrickCol");
             if (hitPoints != 6 && heart > 0) {
                 heart--;
             }

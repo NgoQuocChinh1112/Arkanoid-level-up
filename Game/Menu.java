@@ -37,7 +37,7 @@ public class Menu extends JPanel {
     private final Rectangle chooseRect;
     private final Rectangle regimeRect;
     private final Rectangle competitive;
-     private final Rectangle exitRect;
+    private final Rectangle exitRect;
 
     public static boolean isCompetitive = false;
 
@@ -89,15 +89,20 @@ public class Menu extends JPanel {
                 
 
                 if (startRectLocal.contains(p)) {
+                    SoundEffect.play("click");
                     parent.startGame();
                 } else if (chooseRectLocal.contains(p)) {
+                    SoundEffect.play("click");
                     parent.showLevelPanel();
                 } else if (regimeRectLocal.contains(p)) {
+                    SoundEffect.play("click");
                     parent.getGameManager().setTwoPlayerMode();
                     repaint();
                 } else if (exitRectLocal.contains(p)) {
+                    SoundEffect.play("click");
                     System.exit(0);
                 } else if (competitiveLocal.contains(p)) {
+                    SoundEffect.play("click");
                     isCompetitive = true;
                     parent.showLevelPanel();
                 }
@@ -108,11 +113,14 @@ public class Menu extends JPanel {
                 Rectangle volRect = new Rectangle(volX, butY, butW, butH);
 
                 if (volRect.contains(p)) {
+                    SoundEffect.play("click");
                     GamePanel.switchVol = !GamePanel.switchVol;
                     if (GamePanel.switchVol) {
+                        SoundEffect.loop("soundMenu");
                         SoundEffect.setVolume(6);
                     } else {
-                        SoundEffect.setVolume(-80);
+                        SoundEffect.stop("bgm");
+                        SoundEffect.stop("soundMenu");
                     }
                     repaint();
                 }

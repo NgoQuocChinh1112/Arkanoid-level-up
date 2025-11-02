@@ -85,6 +85,7 @@ public class Competitive extends GameManager {
                     Rectangle menuRect = new Rectangle(btnX, menuY, btnW, btnH);
 
                     if (resumeRect.contains(p)) {
+                        SoundEffect.play("click");
                         switch (gameState) {
                             case "PAUSED" -> gameState = "RUNNING";
                             case "SELECT" -> {
@@ -93,9 +94,11 @@ public class Competitive extends GameManager {
                             }
                         }
                     } else if (menuRect.contains(p)) {
+                        SoundEffect.play("click");
                         Menu.isCompetitive = false;
                         parent.showMenu();
                     } else if (RestartRect.contains(p)) {
+                        SoundEffect.play("click");
                         restart();
                     }
                 }
@@ -343,9 +346,11 @@ public class Competitive extends GameManager {
                 || (checkWin(bricks1) ||  checkWin(bricks2))) {
             timeRemaining = 0;
             gameState = "END";
+            SoundEffect.play("win");
         }
         if (lives1 == 0 || lives2 == 0) {
             gameState = "END";
+            SoundEffect.play("win");
         }
         
         ExplosiveBallPowerUp.updateExplosions();
@@ -410,20 +415,24 @@ public class Competitive extends GameManager {
         
         if (player == 1) {
             if (ball.getX() <= 0) {
+                SoundEffect.play("BallWallCol");
                 ball.setX(0);
                 ball.setDx(Math.abs(ball.getDx()));
                 collided = true;
             } else if (ball.getX() + ball.getWidth() >= dividerX) {
+                SoundEffect.play("BallWallCol");
                 ball.setX(dividerX - ball.getWidth());
                 ball.setDx(-Math.abs(ball.getDx()));
                 collided = true;
             }
         } else {
             if (ball.getX() <= dividerX) {
+                SoundEffect.play("BallWallCol");
                 ball.setX(dividerX);
                 ball.setDx(Math.abs(ball.getDx()));
                 collided = true;
             } else if (ball.getX() + ball.getWidth() >= WIDTH) {
+                SoundEffect.play("BallWallCol");
                 ball.setX(WIDTH - ball.getWidth());
                 ball.setDx(-Math.abs(ball.getDx()));
                 collided = true;
@@ -431,6 +440,7 @@ public class Competitive extends GameManager {
         }
         
         if (ball.getY() <= 0) {
+            SoundEffect.play("BallWallCol");
             ball.setY(0);
             ball.setDy(Math.abs(ball.getDy()));
             collided = true;
@@ -448,7 +458,6 @@ public class Competitive extends GameManager {
         
         if (collided) {
             normalizeVelocity(ball);
-            SoundEffect.play("collision");
         }
     }
     

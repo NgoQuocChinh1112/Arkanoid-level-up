@@ -36,7 +36,6 @@ public class SoundEffect {
 
     // Load tất cả âm thanh một lần khi khởi động game
     public static void loadAllSounds() {
-        addSound("break", "sound/breaker.wav");
         addSound("collision", "sound/collision.wav");
         addSound("bgm", "sound/bgsound.wav");
         addSound("bigball",  "sound/BigBall.wav");
@@ -46,6 +45,14 @@ public class SoundEffect {
         addSound("fastball",  "sound/FastBall.wav");
         addSound("shrinkpad",  "sound/ShrinkPaddle.wav");
         addSound("extralife",  "sound/ExtraLife.wav");
+        addSound("soundMenu", "sound/sound_menu.wav");
+        addSound("BallBrickCol", "sound/BallBrickCollision.wav");
+        addSound("BallPaddleCol", "sound/BallPaddleCollision.wav");
+        addSound("BallWallCol", "sound/BallWallCollision.wav");
+        addSound("click", "sound/click.wav");
+        addSound("lose", "sound/lose.wav");
+        addSound("score", "sound/score.wav");
+        addSound("win", "sound/win.wav");
     }
 
     private static void addSound(String name, String filePath) {
@@ -91,6 +98,14 @@ public class SoundEffect {
     public static void setVolume(float volume) {
         for (SoundEffect s : sounds.values()) {
             s.volumeControl.setValue(volume);
+        }
+    }
+
+    // resume nhạc đang pause tiếp tục từ vị trí hiện tại
+    public static void resume(String name) {
+        SoundEffect s = sounds.get(name);
+        if (s != null && s.clip != null) {
+            s.clip.start();
         }
     }
 }

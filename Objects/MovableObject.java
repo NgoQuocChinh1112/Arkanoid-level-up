@@ -1,7 +1,5 @@
 package Objects;
 
-import Game.GamePanel;
-
 public abstract class MovableObject extends GameObject {
     protected float dx = 0;
     protected float dy = 0;

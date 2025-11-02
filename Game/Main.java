@@ -1,7 +1,6 @@
 package Game;
 
 import javax.swing.*;
-import java.awt.*;
 
 public class Main {
     private static JFrame frame;

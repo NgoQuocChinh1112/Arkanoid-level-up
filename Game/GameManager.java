@@ -8,7 +8,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -413,14 +412,6 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         ExplosiveBallPowerUp.updateExplosions();
     }
 
-    private void resetBallsToPaddles() {
-        for (Ball b : balls) {
-            b.resetToPaddle(twoPlayerMode ? paddle2 : paddle1);
-            b.setDx(0); b.setDy(0);
-        }
-    }
-
-
     private void handleInput() {
         float sp = paddle1.getSpeed();
         if (leftPressed && !rightPressed) paddle1.setDx(-sp);
@@ -606,7 +597,6 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         Rectangle paddleRect = paddle.getBounds();
 
         float ballCenterX = ball.getCenterX();
-        float ballCenterY = ball.getCenterY();
         float ballBottom = ball.getY() + ball.getHeight();
 
         float paddleTop = paddleRect.y;
@@ -708,7 +698,6 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
     }
 
     private void checkBrickCollisions(Ball ball, List<Brick> bricks, List<PowerUp> powerUps) {
-        Rectangle ballRect = ball.getBounds();
         float ballCenterX = ball.getCenterX();
         float ballCenterY = ball.getCenterY();
 

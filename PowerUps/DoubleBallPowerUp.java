@@ -4,7 +4,6 @@ import Game.GameManager;
 import Game.Renderer;
 import Objects.Ball;
 import Objects.Paddle;
-import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -12,7 +11,6 @@ import java.io.IOException;
 public class DoubleBallPowerUp extends PowerUp {
 
     private static final int BALL_SIZE = 16;
-    private Timer timer;
 
     /**
      * Constructor.

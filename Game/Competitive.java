@@ -42,7 +42,7 @@ public class Competitive extends GameManager {
     
     // ========== TIMER ==========
     private long gameStartTime;
-    private long gameDuration = 180000;  // 3 phút
+    private final long gameDuration = 180000;  // 3 phút
     private long timeRemaining;
     private long pauseStartTime;
     private long totalPausedTime = 0;
@@ -616,8 +616,8 @@ public class Competitive extends GameManager {
         }
         g2.setFont(new Font("SansSerif", Font.BOLD, 25));
         g2.setColor(Color.WHITE);
-        drawCenteredText(g2, "Player 1: ← → + ↑", HEIGHT / 2 + 60);
-        drawCenteredText(g2, "Player 2: A D + W", HEIGHT / 2 + 95);
+        drawCenteredText(g2, "Player 1: A D + W", HEIGHT / 2 + 60);
+        drawCenteredText(g2, "Player 2: ← → + ↑", HEIGHT / 2 + 95);
         g2.setFont(Renderer.loadFond(g2, 30));
         if ((System.currentTimeMillis() / 500) % 2 == 0) {
             drawCenteredText(g2, "PRESS P TO PAUSE", HEIGHT / 2 + 150);
@@ -632,6 +632,10 @@ public class Competitive extends GameManager {
         if (lives1 > 0 && lives2 == 0) {
             winner = "PLAYER 1 WINS!";
         } else if (lives2 > 0 && lives1 == 0) {
+            winner = "PLAYER 2 WINS!";
+        } else if (bricks1.isEmpty()) {
+            winner = "PLAYER 1 WINS!";
+        } else if (bricks2.isEmpty()){
             winner = "PLAYER 2 WINS!";
         } else {
             winner = score1 > score2 ? "PLAYER 1 WINS!" : score2 > score1 ? "PLAYER 2 WINS!" : "TIE GAME!";

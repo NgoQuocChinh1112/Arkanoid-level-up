@@ -8,7 +8,6 @@ import Objects.Brick;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.io.IOException;
 import java.util.ArrayList;

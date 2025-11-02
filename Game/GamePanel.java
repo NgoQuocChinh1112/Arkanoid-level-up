@@ -5,8 +5,6 @@ import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
-import static Game.Menu.isCompetitive;
-
 /**
  * Quản lý giao diện chính của trò chơi, điều hướng giữa menu, level và game.
  */
@@ -19,8 +17,6 @@ public class GamePanel extends JPanel {
 
     private int WIDTH;
     private int HEIGHT;
-    private int prevWid;
-    private int prevHei;
     public int sca;
     public static float resize = 1;
 
@@ -43,8 +39,6 @@ public class GamePanel extends JPanel {
         this.WIDTH = width;
         this.HEIGHT = height;
         this.sca = HEIGHT;
-        this.prevHei = this.HEIGHT;
-        this.prevWid = this.WIDTH;
 
         cardLayout = new CardLayout();
         setLayout(cardLayout);

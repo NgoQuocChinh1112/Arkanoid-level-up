@@ -24,8 +24,8 @@ public class GamePanel extends JPanel {
     public int sca;
     public static float resize = 1;
 
-    public float scaleX = 1f;
-    public float scaleY = 1f;
+    public static float scaleX = 1f;
+    public static float scaleY = 1f;
     public static float scale = 1f;
 
     public int offsetX = 0;

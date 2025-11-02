@@ -134,7 +134,6 @@ public class Competitive extends GameManager {
 
     @Override
     public void setGameSize(float scale) {
-        gameState = "PAUSE";
         WIDTH = (int)(800 * scale);
         HEIGHT = (int)(600 * scale);
         setPreferredSize(new Dimension(WIDTH, HEIGHT));

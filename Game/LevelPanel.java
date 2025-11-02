@@ -9,6 +9,7 @@ import javax.swing.JPanel;
 import java.awt.event.*;
 
 import static Game.GamePanel.scale;
+import static Game.GamePanel.scaleX;
 
 
 public class LevelPanel extends JPanel {
@@ -65,7 +66,7 @@ public class LevelPanel extends JPanel {
             back_top = ImageIO.read(getClass().getResource("/assets/back_top.png"));
         } catch (IOException e) {
             e.printStackTrace();
-        } 
+        }
 
         levelsRect = new Rectangle[10];
         back = new Rectangle();
@@ -79,16 +80,16 @@ public class LevelPanel extends JPanel {
                 Point p = e.getPoint();
                 int btnW = (int)(100 * scale);
                 int btnH = (int)(100 * scale);
-                int centerX = (int)(50 * scale);
+                int centerX = (int)(50 * scaleX);
                 int startY = (int)(200 * scale);
 
-                Rectangle backLocal = new Rectangle((int)(700 * scale), (int)(30 *  scale),
+                Rectangle backLocal = new Rectangle((int)(700 * scaleX), (int)(30 *  scale),
                         (int)(60 * scale), (int)(60 * scale));
 
                 Rectangle[] levelsRectLocal = new Rectangle[10];
 
                 for (int i = 0; i < 5; i++) {
-                    levelsRectLocal[i] = new Rectangle(centerX + i * btnW * 3/2, startY, btnW, btnH);
+                    levelsRectLocal[i] = new Rectangle(centerX + i * (int)(150 * scaleX), startY, btnW, btnH);
                     if (levelsRectLocal[i].contains(p)) {
                         if (Menu.isCompetitive) {
                             parent.showCompetitiveMode(i + 1);
@@ -100,7 +101,7 @@ public class LevelPanel extends JPanel {
                 }
 
                 for (int i = 5; i < 10; ++i) {
-                    levelsRectLocal[i] = new Rectangle(centerX + (i - 5) * btnW * 3/2, startY + btnH * 2, btnW, btnH);
+                    levelsRectLocal[i] = new Rectangle(centerX + (i - 5) * (int)(150 * scaleX), startY + btnH * 2, btnW, btnH);
                     if (levelsRectLocal[i].contains(p)) {
                         if (Menu.isCompetitive) {
                             parent.showCompetitiveMode(i + 1);
@@ -136,17 +137,17 @@ public class LevelPanel extends JPanel {
                 int centerX = (int)(50 * scale);
                 int startY = (int)(200 * scale);
 
-                Rectangle backLocal = new Rectangle((int)(700 * scale), (int)(30 *  scale),
+                Rectangle backLocal = new Rectangle((int)(700 * scaleX), (int)(30 *  scale),
                         (int)(60 * scale), (int)(60 * scale));
 
                 Rectangle[] levelsRectLocal = new Rectangle[10];
 
                 for (int i = 0; i < 5; i++) {
-                    levelsRectLocal[i] = new Rectangle(centerX + i * btnW * 3/2, startY, btnW, btnH);
+                    levelsRectLocal[i] = new Rectangle(centerX + i * (int)(150 * scaleX), startY, btnW, btnH);
                 }
 
                 for (int i = 5; i < 10; ++i) {
-                    levelsRectLocal[i] = new Rectangle(centerX + (i - 5) * btnW * 3/2, startY + btnH * 2, btnW, btnH);
+                    levelsRectLocal[i] = new Rectangle(centerX + (i - 5) * (int)(150 * scaleX), startY + btnH * 2, btnW, btnH);
                 }
 
                 boolean oldHoverLevel[] = new boolean[10];
@@ -175,7 +176,7 @@ public class LevelPanel extends JPanel {
 
         int btnW = (int)(100 * scale);
         int btnH = (int)(100 * scale);
-        int centerX = (int)(50 * scale);
+        int centerX = (int)(50 * scaleX);
         int startY = (int)(200 * scale);
 
         if (levelsBackGround != null) {
@@ -183,11 +184,11 @@ public class LevelPanel extends JPanel {
         }
 
         if (title_choose_level != null) {
-            g2.drawImage(title_choose_level, (int)(200 *  scale), (int)(8 *  scale),
+            g2.drawImage(title_choose_level, (parent.getWIDTH() - (int)(400 * scale)) / 2, (int)(8 *  scale),
                     (int)(400 *  scale), (int)(100 *  scale), null);
         }
 
-        back.setBounds((int)(700 * scale), (int)(30 *  scale),
+        back.setBounds((int)(700 * scaleX), (int)(30 *  scale),
                 (int)(60 * scale), (int)(60 * scale));
 
         for (int i = 0; i < 10; ++i) {
@@ -195,18 +196,18 @@ public class LevelPanel extends JPanel {
         }
 
         for (int i = 0; i < 5; ++i) {
-            levelsRect[i].setBounds(centerX + i * btnW * 3/2, startY, btnW, btnH);
+            levelsRect[i].setBounds(centerX + i * (int)(150 * scaleX), startY, btnW, btnH);
         }
 
         for (int i = 5; i < 10; ++i) {
-            levelsRect[i].setBounds(centerX + (i - 5) * btnW * 3/2, startY + btnH * 2, btnW, btnH);
+            levelsRect[i].setBounds(centerX + (i - 5) * (int)(150 * scaleX), startY + btnH * 2, btnW, btnH);
         }
 
         if (hoverBack && back_top != null) {
-            g2.drawImage(back_top, (int)(700 * scale), (int)(30 *  scale),
+            g2.drawImage(back_top, (int)(700 * scaleX), (int)(30 *  scale),
                     (int)(60 * scale), (int)(60 * scale), null);
         } else if (back_bot != null) {
-            g2.drawImage(back_bot, (int)(700 * scale), (int)(30 *  scale),
+            g2.drawImage(back_bot, (int)(700 * scaleX), (int)(30 *  scale),
                     (int)(60 * scale), (int)(60 * scale), null);
         }
 
@@ -214,10 +215,10 @@ public class LevelPanel extends JPanel {
             for (int i = 0; i < 10; ++i) {
                 int x, y;
                 if (i < 5) {
-                    x = centerX + i * btnW * 3 / 2;
+                    x = centerX + i * (int)(150 * scaleX);
                     y = startY;
                 } else {
-                    x = centerX + (i - 5) * btnW * 3 / 2;
+                    x = centerX + (i - 5) * (int)(150 * scaleX);
                     y = startY + btnH * 2;
                 }
 
@@ -234,5 +235,5 @@ public class LevelPanel extends JPanel {
                 g2.drawImage(image_level[i], x, y, drawW, drawH, null);
             }
         }
-    } 
+    }
 }

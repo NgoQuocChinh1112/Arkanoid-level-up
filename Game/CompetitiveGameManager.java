@@ -225,6 +225,29 @@ public class CompetitiveGameManager extends GameManager {
         
         paddle1.update();
         paddle2.update();
+
+        for (int i = 0; i < bricks1.size(); i++) {
+            if (!bricks1.get(i).isDestroyed()) {
+                bricks1.get(i).update();
+                checkBrickWithWall(bricks1.get(i));
+                for (int j = i + 1; j < bricks1.size(); j++ ) { 
+                    checkBrickHeadOn(bricks1.get(i), bricks1.get(j));
+                    checkBrickCross(bricks1.get(i), bricks1.get(j));
+                }
+                bricks1.get(i).changeVector();
+            }
+        }
+        for (int i = 0; i < bricks2.size(); i++) {
+            if (!bricks2.get(i).isDestroyed()) {
+                bricks2.get(i).update();
+                checkBrickWithWall(bricks2.get(i));
+                for (int j = i + 1; j < bricks2.size(); j++ ) { 
+                    checkBrickHeadOn(bricks2.get(i), bricks2.get(j));
+                    checkBrickCross(bricks2.get(i), bricks2.get(j));
+                }
+                bricks2.get(i).changeVector();
+            }
+        }
         
         // Clamp paddle
         paddle1.setX(clamp(paddle1.getX(), 0, dividerX - paddle1.getWidth()));

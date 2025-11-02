@@ -437,7 +437,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         }
     }
 
-    private void checkBrickWithWall(Brick brick) {
+    protected void checkBrickWithWall(Brick brick) {
         if (brick.getX() < 0) {
             brick.setX(brick.getX() + brick.getSpeed());
             brick.setDx(-brick.getDx());
@@ -453,7 +453,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
             brick.setDy(-brick.getDy());
         }
     }
-    private void checkBrickHeadOn(Brick brick, Brick other) {
+    protected void checkBrickHeadOn(Brick brick, Brick other) {
         if (checkCollisionsWithBrick(brick, other)) {
             if (brick.getDx() == 0 && other.getDx() == 0
                     && brick.getDy() ==  - other.getDy()) {
@@ -467,7 +467,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         }
     }
 
-    private void setColX(Brick brick, Brick other) {
+    protected void setColX(Brick brick, Brick other) {
         // Va chạm ngang
         brick.setDx(-brick.getDx());
         other.setDx(-other.getDx());
@@ -490,7 +490,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         }
     }
 
-    private void setColY(Brick brick, Brick other) {
+    protected void setColY(Brick brick, Brick other) {
         // Va chạm dọc
         brick.setDy(-brick.getDy());
         other.setDy(-other.getDy());
@@ -512,7 +512,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         }
     }
 
-    private void checkBrickCross(Brick brick, Brick other) {
+    protected void checkBrickCross(Brick brick, Brick other) {
         if (checkCollisionsWithBrick(brick, other)) {
             float disX = Math.min(brick.getX() + brick.getWidth(), other.getX() + other.getWidth())
                     - Math.max(brick.getX(), other.getX());

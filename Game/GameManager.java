@@ -133,10 +133,6 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         setFocusable(true);
         requestFocus();
         addKeyListener(this);
-
-        setFocusable(true);
-        requestFocusInWindow();
-
         backgroundImage = Renderer.loadBgroundTexture(currentLevel);
         if (backgroundImage != null) {
             backgroundImage = resizeImage(backgroundImage, width, height);
@@ -357,6 +353,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
             // xử lý input & di chuyển paddle
             handleInput();
             paddle1.update();
+
             for (int i = 0; i < bricks.size(); i++) {
                 if (!bricks.get(i).isDestroyed()) {
                     bricks.get(i).update();
@@ -436,7 +433,6 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
             else paddle2.setDx(0);
         }
     }
-
     protected void checkBrickWithWall(Brick brick) {
         if (brick.getX() < 0) {
             brick.setX(brick.getX() + brick.getSpeed());
@@ -453,6 +449,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
             brick.setDy(-brick.getDy());
         }
     }
+
     protected void checkBrickHeadOn(Brick brick, Brick other) {
         if (checkCollisionsWithBrick(brick, other)) {
             if (brick.getDx() == 0 && other.getDx() == 0

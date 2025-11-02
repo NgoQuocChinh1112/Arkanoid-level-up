@@ -1,9 +1,12 @@
 package PowerUps;
 
+import Game.Renderer;
 import Game.SoundEffect;
 import Objects.Ball;
 import Objects.Paddle;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import javax.swing.Timer;
 
 
@@ -22,6 +25,17 @@ public class ExpandPaddlePowerUp extends PowerUp {
      */
     public ExpandPaddlePowerUp(float x, float y, int width, int height, long durationMs) {
         super(x, y, width, height, durationMs, "EXPAND_PADDLE");
+        try {
+            BufferedImage[] powerUps = Renderer.PowerUpTexture();
+            texture = powerUps[3];
+
+            if (texture == null) {
+                throw new Exception("Texture  bị null.");
+            }
+        } catch (Exception e) {
+            System.err.println("Lỗi khi tải ảnh " + e.getMessage());
+            texture = null;
+        }
     }
 
     /**
@@ -62,13 +76,13 @@ public class ExpandPaddlePowerUp extends PowerUp {
      */
     @Override
     public void render(Graphics2D g2) {
-        g2.setColor(new Color(60, 180, 75));
-        g2.fillOval(Math.round(x), Math.round(y), width, height);
-        g2.setColor(Color.BLACK);
-        g2.drawOval(Math.round(x), Math.round(y), width, height);
-        g2.setFont(new Font("Arial", Font.BOLD, 12));
-        String s = "E";
-        int tw = g2.getFontMetrics().stringWidth(s);
-        g2.drawString(s, Math.round(x) + (width - tw)/2, Math.round(y) + height/2 + 4);
+        try {
+            if (texture == null) {
+                throw new IOException("Ảnh  bị null");
+            }
+            g2.drawImage(texture, Math.round(x), Math.round(y), width, height, null);
+        } catch (Exception e) {
+            System.err.println("Không thể vẽ ảnh " + e.getMessage());
+        }
     }
 }

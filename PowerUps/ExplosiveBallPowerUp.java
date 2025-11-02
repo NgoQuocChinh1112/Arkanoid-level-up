@@ -1,5 +1,6 @@
 package PowerUps;
 
+import Game.Renderer;
 import Game.SoundEffect;
 import Objects.Ball;
 import Objects.Paddle;
@@ -12,31 +13,39 @@ import javax.swing.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.Timer;
 
 public class ExplosiveBallPowerUp extends PowerUp {
+
     private static BufferedImage explosionImg;
     private boolean active = false;
+    private BufferedImage texture;
 
     private static final List<Float> explosionX = new ArrayList<>();
     private static final List<Float> explosionY = new ArrayList<>();
     private static final List<Integer> explosionFrame = new ArrayList<>();
     private static final List<Integer> explosionCounter = new ArrayList<>();
 
-    private static final int TOTAL_FRAMES = 6;   //  6 frame
+    private static final int TOTAL_FRAMES = 6;   // 6 frame nổ
     private static final int FRAME_DELAY = 3;    // tốc độ chuyển frame
 
     /**
      * Constructor.
-     * @param x
-     * @param y
-     * @param width
-     * @param height
-     * @param durationMs
      */
     public ExplosiveBallPowerUp(float x, float y, int width, int height, long durationMs) {
         super(x, y, width, height, durationMs, "EXPLOSIVE_BALL");
         loadImage();
+
+        // xử lý exception ở đây (Renderer chỉ load)
+        try {
+            BufferedImage[] powerUps = Renderer.PowerUpTexture();
+            texture = powerUps[2]; // ExplosiveBall ở index 2
+            if (texture == null) {
+                throw new Exception("Texture  bị null.");
+            }
+        } catch (Exception e) {
+            System.err.println("Lỗi khi tải ảnh " + e.getMessage());
+            texture = null;
+        }
     }
 
     private void loadImage() {
@@ -50,53 +59,46 @@ public class ExplosiveBallPowerUp extends PowerUp {
     }
 
     /**
-     * Áp dụng hiệu ứng
-     * @param paddle
-     * @param ball
-     * @param gameManager
+     * Áp dụng hiệu ứng.
      */
     @Override
     public void applyEffect(Paddle paddle, Ball ball, Object gameManager) {
         if (active) return;
         active = true;
 
-        // Gắn cờ explosive cho bóng
         ball.setExplosive(true);
 
-        // Tạo Timer để tắt hiệu ứng sau durationMs mili-giây
         Timer timer = new Timer((int) durationMs, e -> {
             ball.setExplosive(false);
             active = false;
-
         });
 
-        timer.setRepeats(false); // chỉ chạy một lần
+        timer.setRepeats(false);
         timer.start();
     }
 
     /**
      * Vẽ.
-     * @param g2
      */
     @Override
     public void render(Graphics2D g2) {
-        g2.setColor(new Color(220, 120, 40));
-        g2.fillOval(Math.round(x), Math.round(y), width, height);
-        g2.setColor(Color.BLACK);
-        g2.drawOval(Math.round(x), Math.round(y), width, height);
-        g2.setFont(new Font("Arial", Font.BOLD, 12));
-        String s = "E";
-        int tw = g2.getFontMetrics().stringWidth(s);
-        g2.drawString(s, Math.round(x) + (width - tw) / 2, Math.round(y) + height / 2 + 4);
+        try {
+            if (texture == null) {
+                throw new IOException("Ảnh  bị null");
+            }
+            g2.drawImage(texture, Math.round(x), Math.round(y), width, height, null);
+        } catch (Exception e) {
+            System.err.println("Không thể vẽ ảnh " + e.getMessage());
+            // fallback đơn giản
+            g2.setColor(Color.ORANGE);
+            g2.fillOval(Math.round(x), Math.round(y), width, height);
+            g2.setColor(Color.BLACK);
+            g2.drawString("E", Math.round(x + width / 2f - 3), Math.round(y + height / 2f + 4));
+        }
     }
 
     /**
-     * Đánh dấu các gạch bị nổ và phát âm thanh.
-     * @param bricks
-     * @param centerX
-     * @param centerY
-     * @param radius
-     * @param toRemove
+     * Đánh dấu các gạch bị nổ.
      */
     public static void explodeAt(List<Brick> bricks, float centerX, float centerY, float radius, List<Brick> toRemove) {
         SoundEffect.play("explosive");
@@ -105,17 +107,15 @@ public class ExplosiveBallPowerUp extends PowerUp {
                 float bx = brick.getX() + brick.getWidth() / 2f;
                 float by = brick.getY() + brick.getHeight() / 2f;
                 float dist = (float) Math.hypot(centerX - bx, centerY - by);
+
                 if (dist < radius) {
-                    if (brick.getHitPoints() == 6) {
-                        continue;
-                    }
-                    while (!brick.isDestroyed()) {
-                        brick.takeHit();
-                    }
+                    if (brick.getHitPoints() == 6) continue;
+
+                    while (!brick.isDestroyed()) brick.takeHit();
+
                     if (brick.isDestroyed()) {
                         toRemove.add(brick);
                     }
-
                 }
             }
         }
@@ -127,7 +127,7 @@ public class ExplosiveBallPowerUp extends PowerUp {
     }
 
     /**
-     * Chuyển Frame nổ.
+     * Cập nhật frame nổ.
      */
     public static void updateExplosions() {
         for (int i = 0; i < explosionFrame.size(); i++) {
@@ -157,18 +157,13 @@ public class ExplosiveBallPowerUp extends PowerUp {
 
     /**
      * Vẽ vụ nổ.
-     * @param g2
-     * @param x
-     * @param y
-     * @param frame
      */
     private static void renderExplosion(Graphics2D g2, float x, float y, int frame) {
         if (explosionImg == null) return;
 
-        int totalWidth = explosionImg.getWidth();   // ảnh sprite tổng
-        int totalHeight = explosionImg.getHeight(); // chiều cao ảnh
+        int totalWidth = explosionImg.getWidth();
+        int totalHeight = explosionImg.getHeight();
 
-        // Tính vùng cắt đều chính xác cho 6 frame
         int frameWidth = Math.round(totalWidth / (float) TOTAL_FRAMES);
         int sx1 = frame * frameWidth;
         int sx2 = sx1 + frameWidth;

@@ -125,7 +125,22 @@ public class Renderer {
     public static BufferedImage loadPressStartTexture() {
         return loadTexture("/assets/press_start.png");
     }
+
     public static BufferedImage loadArrowTexture() {
         return loadTexture("/assets/arrow.png");
     }
+
+    public static BufferedImage[] PowerUpTexture() {
+        BufferedImage[] PowerUp = new BufferedImage[7];
+        PowerUp[0] = loadTexture(("/assets/BigBall.png"));
+        PowerUp[1] = loadTexture(("/assets/FastBall.png"));
+        PowerUp[2] = loadTexture(("/assets/ExplosiveBall.png"));
+        PowerUp[3] = loadTexture(("/assets/ExpandPaddle.png"));
+        PowerUp[4] = loadTexture(("/assets/ShrinkPaddle.png"));
+        PowerUp[5] = loadTexture(("/assets/ExtraLife.png"));
+        PowerUp[6] = loadTexture(("/assets/DoubleBall.png"));
+        return PowerUp;
+    }
+
+
 }

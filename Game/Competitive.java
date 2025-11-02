@@ -14,7 +14,7 @@ import static Game.GamePanel.scale;
 
 /**
  * Chế độ thi đấu 2 người - chia màn hình theo chiều dọc
- * Player 1: Bên trái (điều khiển: ←→ + Space)
+ * Player 1: Bên trái (điều khiển: ←→ + ↑)
  * Player 2: Bên phải (điều khiển: A D + W)
  */
 public class Competitive extends GameManager {

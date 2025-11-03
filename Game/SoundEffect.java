@@ -38,23 +38,23 @@ public class SoundEffect {
      * Load tất cả âm thanh một lần khi khởi động.
      */
     public static void loadAllSounds() {
-        addSound("collision", "src/sound/collision.wav");
-        addSound("bgm", "src/sound/bgsound.wav");
-        addSound("bigball",  "src/sound/BigBall.wav");
-        addSound("expandpad",  "src/sound/ExpandPaddle.wav");
-        addSound("explosiveball", "src/sound/ExplosiveBall.wav");
-        addSound("explosive",  "src/sound/ExplosiveBall.wav");
-        addSound("fastball",  "src/sound/FastBall.wav");
-        addSound("shrinkpad",  "src/sound/ShrinkPaddle.wav");
-        addSound("extralife",  "src/sound/ExtraLife.wav");
-        addSound("soundMenu", "src/sound/sound_menu.wav");
-        addSound("BallBrickCol", "src/sound/BallBrickCollision.wav");
-        addSound("BallPaddleCol", "src/sound/BallPaddleCollision.wav");
-        addSound("BallWallCol", "src/sound/BallWallCollision.wav");
-        addSound("click", "src/sound/click.wav");
-        addSound("lose", "src/sound/lose.wav");
-        addSound("score", "src/sound/score.wav");
-        addSound("win", "src/sound/win.wav");
+        addSound("collision", "sound/collision.wav");
+        addSound("bgm", "sound/bgsound.wav");
+        addSound("bigball",  "sound/BigBall.wav");
+        addSound("expandpad",  "sound/ExpandPaddle.wav");
+        addSound("explosiveball", "sound/ExplosiveBall.wav");
+        addSound("explosive",  "sound/ExplosiveBall.wav");
+        addSound("fastball",  "sound/FastBall.wav");
+        addSound("shrinkpad",  "sound/ShrinkPaddle.wav");
+        addSound("extralife",  "sound/ExtraLife.wav");
+        addSound("soundMenu", "sound/sound_menu.wav");
+        addSound("BallBrickCol", "sound/BallBrickCollision.wav");
+        addSound("BallPaddleCol", "sound/BallPaddleCollision.wav");
+        addSound("BallWallCol", "sound/BallWallCollision.wav");
+        addSound("click", "sound/click.wav");
+        addSound("lose", "sound/lose.wav");
+        addSound("score", "sound/score.wav");
+        addSound("win", "sound/win.wav");
     }
 
     /**

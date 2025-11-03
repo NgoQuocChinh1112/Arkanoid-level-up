@@ -1,4 +1,4 @@
-<img width="2521" height="2384" alt="image" src="https://github.com/user-attachments/assets/8b391615-ed83-4411-a2b8-11b110222485" /># Arkanoid-level-up
+# Arkanoid-level-up
 Bản thiết kế:![z7183276831838_e62f25411a29c3f974be0d7867dbf7f0](https://github.com/user-attachments/assets/aa01a813-31dc-429d-8de6-f92f01107daa)
 -Link video :https://drive.google.com/drive/folders/1D-iQodEMBZZD5dM7hFMtvFy7KHQZ17bO?usp=sharing
 *Thành viên

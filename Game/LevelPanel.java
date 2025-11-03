@@ -157,7 +157,9 @@ public class LevelPanel extends JPanel {
         });
     }
 
-    // ve man hinh hien thi level
+    /**
+     * Phương thức vẽ vẽ giao diện chọn level.
+     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);

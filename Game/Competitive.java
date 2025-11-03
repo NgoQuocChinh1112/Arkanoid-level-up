@@ -51,12 +51,21 @@ public class Competitive extends GameManager {
     private boolean hoverMenu = false;
     private boolean hoverRestart = false;
 
+    /**
+     * Phương thức setter.
+     */
     @Override
     public void setLevel(int level) {
         this.currentLevel = level;
         restart();
     }
     
+    /**
+     * Constructor.
+     * @param parent GamePanel quản lý các Panel
+     * @param width chiều rộng
+     * @param height chiều cao
+     */
     public Competitive(GamePanel parent, int width, int height) {
         super(parent, width, height);
         this.dividerX = width / 2;
@@ -138,6 +147,9 @@ public class Competitive extends GameManager {
         initGame();
     }
 
+    /**
+     * Phương thức setGameSize.
+     */
     @Override
     public void setGameSize(float scale) {
         WIDTH = (int)(800 * scale);
@@ -180,6 +192,9 @@ public class Competitive extends GameManager {
         revalidate(); // cập nhật layout nếu cần
     }
 
+    /**
+     * Phương thức showMenu nội bộ để lựa chọn.
+     */
     @Override
     protected void showMenu(Graphics g) {
         // lớp phủ mờ
@@ -239,6 +254,9 @@ public class Competitive extends GameManager {
         }
     }
     
+    /**
+     * Phương thức initGame khởi tạo game.
+     */
     @Override
     protected void initGame() {
         int halfWidth = WIDTH / 2;
@@ -274,6 +292,9 @@ public class Competitive extends GameManager {
         totalPausedTime = 0;
     }
     
+    /**
+     * Phương thức updateGame.
+     */
     @Override
     protected void updateGame() {
         if (gameState.equals("END") || gameState.equals("PAUSED") || gameState.equals("SELECT")) return;
@@ -370,7 +391,12 @@ public class Competitive extends GameManager {
             }
         }
     }
-
+    
+    /**
+     * Phương thức updateBallPosition update trạng thái bóng.
+     * @param ball bóng
+     * @param paddle thanh đỡ paddle
+     */
     private void updateBallPosition(Ball ball, Paddle paddle) {
         if (!ball.isLaunched()) {
             ball.setX(paddle.getX() + paddle.getWidth() / 2f - ball.getWidth() / 2f);
@@ -380,6 +406,10 @@ public class Competitive extends GameManager {
         }
     }
     
+    /**
+     * Phương thức update góc bắn.
+     * @param player người chơi 1 hoặc 2
+     */
     private void updateLaunchAngle(int player) {
         float deltaAngle = angleSpeed / FPS;
         
@@ -402,6 +432,14 @@ public class Competitive extends GameManager {
         }
     }
     
+    /**
+     * Phương thức kiểm tra va chạm với bóng.
+     * @param ball bóng
+     * @param bricks danh sách gạch
+     * @param paddle thanh đỡ
+     * @param powerUps danh sách powerUps
+     * @param player người chơi 1 hoặc 2
+     */
     private void checkCollisionsWithBall(Ball ball, List<Brick> bricks, Paddle paddle, List<PowerUp> powerUps, int player) {
         if (!ball.isLaunched()) return;
         
@@ -410,6 +448,11 @@ public class Competitive extends GameManager {
         checkBrickCollisions(ball, bricks, powerUps, player);
     }
     
+    /**
+     * Kiểm tra va chạm với tường.
+     * @param ball bóng 
+     * @param player người chơi 1 hoặc 2
+     */
     private void checkWallCollisions(Ball ball, int player) {
         boolean collided = false;
         
@@ -461,6 +504,10 @@ public class Competitive extends GameManager {
         }
     }
     
+    /**
+     * Phương thức bình thường lại tốc độ bóng.
+     * @param ball bóng
+     */
     private void normalizeVelocity(Ball ball) {
         if (ball.isFast()) return;
         float currentMagnitude = (float) Math.hypot(ball.getDx(), ball.getDy());
@@ -470,6 +517,13 @@ public class Competitive extends GameManager {
         }
     }
     
+    /**
+     * Kiểm tra va chạm với gạch.
+     * @param ball bóng
+     * @param bricks danh sách gạch
+     * @param powerUps danh sách powerUps
+     * @param player người chơi 1 hoặc người chơi 2
+     */
     private void checkBrickCollisions(Ball ball, List<Brick> bricks, List<PowerUp> powerUps, int player) {
         Iterator<Brick> it = bricks.iterator();
         while (it.hasNext()) {
@@ -509,6 +563,11 @@ public class Competitive extends GameManager {
         });
     }
     
+    /**
+     * Kiểm tra va chạm bóng và gạch.
+     * @param ball bóng
+     * @param brick viên gạch
+     */
     private void handleBrickCollision(Ball ball, Brick brick) {
         Rectangle brickRect = brick.getBounds();
         float ballCenterX = ball.getCenterX();
@@ -533,6 +592,12 @@ public class Competitive extends GameManager {
         normalizeVelocity(ball);
     }
     
+    /**
+     * Phương thức tạo powerUp.
+     * @param type kiểu powerUp
+     * @param brick gạch
+     * @return kiểu powerUp
+     */
     private PowerUp createPowerUp(int type, Brick brick) {
         float x = brick.getX() + brick.getWidth()/2f - 12;
         float y = brick.getY() + brick.getHeight()/2f;
@@ -547,6 +612,9 @@ public class Competitive extends GameManager {
         };
     }
     
+    /**
+     * Phương thức vẽ giao diện.
+     */
     @Override
     protected void paintComponent(Graphics g) {
         Graphics2D g2 = (Graphics2D) g;
@@ -577,6 +645,15 @@ public class Competitive extends GameManager {
         }
     }
     
+    /**
+     * Phương thức vẽ cho từng player.
+     * @param g2 đối tượng Graphics2D dùng để vẽ
+     * @param paddle thanh đỡ paddle
+     * @param ball bóng
+     * @param bricks danh sách gạch
+     * @param powerUps danh sách PowerUp
+     * @param angle góc bắn
+     */
     private void renderPlayer(Graphics2D g2, Paddle paddle, Ball ball, List<Brick> bricks, List<PowerUp> powerUps, float angle) {
         paddle.render(g2);
         if (!ball.isLaunched()) {
@@ -587,6 +664,10 @@ public class Competitive extends GameManager {
         powerUps.forEach(p -> p.render(g2));
     }
     
+    /**
+     * Phương thức vẽ giao diện hiển thị thông tin người chơi.
+     * @param g2 đối tượng Graphics2D dùng để vẽ
+     */
     private void drawCompetitiveHUD(Graphics2D g2) {
         g2.setFont(Renderer.loadFond(g2, 24));
         g2.setColor(Color.WHITE);
@@ -609,6 +690,12 @@ public class Competitive extends GameManager {
         g2.drawString(timeText, (WIDTH - timerWidth) / 2, 30);
     }
     
+    /**
+     * Phương thức vẽ mạng cho từng người chơi.
+     * @param g2 đối tượng vẽ
+     * @param lives số mạng
+     * @param x tọa độ x
+     */
     private void drawLives(Graphics2D g2, int lives, int x) {
         int size = 25;
         for (int i = 0; i < 3; i++) {
@@ -617,6 +704,10 @@ public class Competitive extends GameManager {
         }
     }
     
+    /**
+     * Phương thức vẽ giao diện bắt đầu
+     * @param g2 đối tượng dùng để vẽ
+     */
     private void drawStartScreen(Graphics2D g2) {
         g2.setColor(new Color(0, 0, 0, 150));
         g2.fillRect(0, 0, WIDTH, HEIGHT);
@@ -636,6 +727,10 @@ public class Competitive extends GameManager {
         }
     }
       
+    /**
+     * Phương thức vẽ giao diện kết thúc game.
+     * @param g2 đối tượng dùng để vẽ
+     */
     private void drawEndScreen(Graphics2D g2) {
         g2.setColor(new Color(0, 0, 0, 180));
         g2.fillRect(0, 0, WIDTH, HEIGHT);
@@ -668,11 +763,23 @@ public class Competitive extends GameManager {
         }
     }
     
+    /**
+     * Phương thức vẽ 1 chuỗi String theo.
+     * @param g2 đối tượng vẽ
+     * @param text chuỗi String
+     * @param y tọa độ theo phương y
+     */
     protected void drawCenteredText(Graphics2D g2, String text, int y) {
         int width = g2.getFontMetrics().stringWidth(text);
         g2.drawString(text, (WIDTH - width) / 2, y);
     }
     
+    /**
+     * Phương thức vẽ mũi tên góc bắn.
+     * @param g2 đối tượng vẽ
+     * @param ball bóng
+     * @param angleDegrees góc bắn
+     */
     private void drawLaunchArrow(Graphics2D g2, Ball ball, float angleDegrees) {
         float ballCenterX = ball.getX() + ball.getWidth() / 2f;
         float ballCenterY = ball.getY() + ball.getHeight() / 2f;
@@ -687,6 +794,9 @@ public class Competitive extends GameManager {
         g2.setTransform(oldTransform);
     }
     
+    /**
+     * Phương thức xử lý nút bấm.
+     */
     @Override
     public void keyPressed(KeyEvent e) {
         int kc = e.getKeyCode();
@@ -724,12 +834,20 @@ public class Competitive extends GameManager {
         }
     }
 
+    /**
+     * Phương thức restart game.
+     */
     @Override
     public void restart() {
         gameState = "MENU";
         initGame();
     }
     
+    /**
+     * Phương thức bắn bóng theo goc.
+     * @param ball bóng
+     * @param angleDegrees góc bắn
+     */
     private void launchBallAtAngle(Ball ball, float angleDegrees) {
         double angleRadians = Math.toRadians(angleDegrees);
         float speed = ball.getSpeed();

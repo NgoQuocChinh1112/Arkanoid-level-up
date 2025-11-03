@@ -40,6 +40,11 @@ public class Menu extends JPanel {
     private final Rectangle exitRect;
 
     public static boolean isCompetitive = false;
+
+    /**
+     * Constructor.
+     * @param parent đối tượng GamePanel quản lý giao diện.
+     */
     public Menu(GamePanel parent) {
         this.parent = parent;
         setLayout(null);
@@ -51,7 +56,7 @@ public class Menu extends JPanel {
         exitTop = button[4];
         exitBot = button[5];
         chooseTop = button[6];
-            chooseBot = button[7];
+        chooseBot = button[7];
         onePlayerTop = button[8];
         onePlayerBot = button[9];
         twoPlayerTop = button[10];
@@ -166,6 +171,9 @@ public class Menu extends JPanel {
         });
     }
 
+    /**
+     * Phương thức vẽ giao diện Menu.
+     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);

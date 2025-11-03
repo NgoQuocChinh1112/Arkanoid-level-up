@@ -34,6 +34,12 @@ public class GamePanel extends JPanel {
     public GameManager getGameManager() {
         return game;
     }
+
+    /**
+     * Constructor GamePanel.
+     * @param width chiều rộng
+     * @param height chiều cao
+     */
     public GamePanel(int width, int height) {
         this.WIDTH = width;
         this.HEIGHT = height;
@@ -83,17 +89,35 @@ public class GamePanel extends JPanel {
         SoundEffect.loop("sound_Menu");
         showMenu();
     }
+
+    /**
+     * Phương thức getWidth.
+     * @return trả về width
+     */
     public int getWIDTH() {
         return this.WIDTH;
     }
 
+    /**
+     * phương thức getHeigt.
+     * @return return height
+     */
     public int getHEIGHT() {
         return this.HEIGHT;
     }
+    
+    /**
+     * Phương thức getOffsetX
+     * @return offsetX
+     */
     public int getOffsetX() {
         return this.offsetX;
     }
 
+    /**
+     * Phương thức getOffsetY
+     * @return offsetY
+     */
     public int getOffsetY() {
         return this.offsetY;
     }

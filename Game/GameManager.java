@@ -186,7 +186,11 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
                             case "PAUSED" -> gameState = "RUNNING";
                             case "LOSE" -> parent.showLevelPanel();
                             case "WIN" -> {
-                                currentLevel++;
+                                if (currentLevel < 10) {
+                                    currentLevel++;
+                                } else {
+                                    currentLevel = 1;
+                                }
                                 setLevel(currentLevel);
                             }
                         }

@@ -73,6 +73,7 @@ public class GamePanel extends JPanel {
                 offsetX = (int)((WIDTH - 800 * scale) / 2);
                 offsetY = (int)((HEIGHT - 600 * scale) / 2);
                 game.setGameSize(scale);
+                competitive.setGameSize(scale);
             }
         });
 

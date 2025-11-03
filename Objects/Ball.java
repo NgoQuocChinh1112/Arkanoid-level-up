@@ -108,7 +108,6 @@ public class Ball extends MovableObject {
 
     /**
      * Trả về trạng thái nhanh hay chậm của bóng.
-     * @return
      */
     public boolean isFast() {
         return fast;
@@ -116,7 +115,6 @@ public class Ball extends MovableObject {
 
     /**
      * Thiết lập trạng thái tốc độ của bóng.
-     * @param isFast
      */
     public void setFast(boolean isFast) {
         this.fast = isFast;
@@ -126,7 +124,6 @@ public class Ball extends MovableObject {
 
     /**
      * Trả về trạng thái kích thước bóng.
-     * @return
      */
     public boolean isEnlarged() {
         return enlarged;
@@ -134,7 +131,6 @@ public class Ball extends MovableObject {
 
     /**
      * Thiết lập trạng thái kích cỡ bóng
-     * @param enlarged
      */
     public void setEnlarged(boolean enlarged) {
         this.enlarged = enlarged;
@@ -144,7 +140,6 @@ public class Ball extends MovableObject {
 
     /**
      * Trả về bóng có đang nổ không.
-     * @return
      */
     public boolean isExplosive() {
         return explosive;
@@ -152,7 +147,6 @@ public class Ball extends MovableObject {
 
     /**
      * Thiết lập trạng thái nổ của bóng.
-     * @param explosive
      */
     public void setExplosive(boolean explosive) {
         this.explosive = explosive;

@@ -39,16 +39,6 @@ public abstract class PowerUp extends GameObject {
     public abstract void applyEffect(Paddle paddle, Ball ball, Object gameManager);
 
     /**
-     * Trả về kiểu powerup.
-     */
-    public String getType() { return type; }
-
-    /**
-     * Trả về thời gian hoạt động.
-     */
-    public long getDurationMs() { return durationMs; }
-
-    /**
      * Trả về trạng thái ra ngoài hay ăn của powerup.
      */
     public boolean isCollectedOrOffscreen() { return collectedOrOffscreen; }

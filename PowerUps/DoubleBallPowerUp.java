@@ -38,9 +38,9 @@ public class DoubleBallPowerUp extends PowerUp {
     public void applyEffect(Paddle paddle, Ball originalBall, Object gameManagerobj) {
         GameManager gameManager = (GameManager) gameManagerobj;
 
-        // CHỈ TẠO BÓNG PHỤ NẾU CHƯA CÓ
+        // tạo bóng phụ nếu chưa có
         if (gameManager.extraBall != null) {
-            return; // Đã có bóng phụ → bỏ qua
+            return;
         }
 
         float scaleY = (float) width / 24f;
@@ -49,7 +49,7 @@ public class DoubleBallPowerUp extends PowerUp {
         Ball extra = new Ball(x + width / 2f - (BALL_SIZE * scaleY) / 2f, y,
                 (int) (BALL_SIZE * scaleY), (int) (BALL_SIZE * scaleY));
 
-        extra.launch(0, 6f); // Phóng thẳng xuống
+        extra.launch(0, -6f);
         gameManager.addExtraBall(extra);
 
     }

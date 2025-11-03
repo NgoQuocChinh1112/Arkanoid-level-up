@@ -300,7 +300,7 @@ public class Competitive extends GameManager {
                 bricks1.get(i).update();
                 checkBrickWithWall(bricks1.get(i));
                 for (int j = i + 1; j < bricks1.size(); j++ ) { 
-                    checkBrickHeadOn(bricks1.get(i), bricks1.get(j));
+                    checkBrickParallel(bricks1.get(i), bricks1.get(j));
                     checkBrickCross(bricks1.get(i), bricks1.get(j));
                 }
                 bricks1.get(i).changeVector();
@@ -311,7 +311,7 @@ public class Competitive extends GameManager {
                 bricks2.get(i).update();
                 checkBrickWithWall(bricks2.get(i));
                 for (int j = i + 1; j < bricks2.size(); j++ ) { 
-                    checkBrickHeadOn(bricks2.get(i), bricks2.get(j));
+                    checkBrickParallel(bricks2.get(i), bricks2.get(j));
                     checkBrickCross(bricks2.get(i), bricks2.get(j));
                 }
                 bricks2.get(i).changeVector();

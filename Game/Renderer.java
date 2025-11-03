@@ -14,6 +14,13 @@ import java.util.Map;
 public class Renderer {
 
     public static final Map<String, BufferedImage> textureCache = new HashMap<>();
+
+    /**
+     * Loads an image by path that is the name of this image.
+     * If the texture is already cached, returns it directly.
+     * @param path the resource path of the image
+     * @return the loaded BufferedImage, or null if loading fails
+     */
     public static BufferedImage loadTexture(String path) {
         if (textureCache.containsKey(path)) {
             return textureCache.get(path);
@@ -28,6 +35,13 @@ public class Renderer {
         }
     }
 
+    /**
+     * Load a custom font in assets folder and apply the given size.
+     * If loading fails, a default SansSerif bold font is used instead.
+     * @param g2 the Graphics2D context (not use but keep for compatibility)
+     * @param size the font size
+     * @return the loaded Font object, or default font if loading fails
+     */
     public static Font loadFond(Graphics2D g2, int size) {
         Font customFont;
         try {
@@ -42,6 +56,18 @@ public class Renderer {
         return customFont;
     }
 
+    /**
+     * Load all brick textures by color and level points.
+     * Each list contain a brick color with its broken levels.
+     * damage states from normal to weakest.
+     *  Index 0 – White bricks
+     *  Index 1 – Blue bricks
+     *  Index 2 – Green bricks
+     *  Index 3 – Yellow bricks
+     *  Index 4 – Red bricks
+     *  Index 5 – Unbreakable bricks
+     * @return a List contain objects for each brick type and its states.
+     */
     public static List <List<BufferedImage>> loadBrickTexture() {
         List<List<BufferedImage>> textures = new ArrayList<>();
         List<BufferedImage> white = new ArrayList<>();
@@ -80,11 +106,18 @@ public class Renderer {
         textures.add(unbreaker);
         return textures;
     }
-
+    /**
+     * Load image for ball.
+     * @return texture.
+     */
     public static BufferedImage loadBallTexture() {
         return loadTexture("/assets/ball_1.png");
     }
 
+    /**
+     * Load background image for each level.
+     * @param currentLevel corresponding to the positive of array reduce by 1.
+     */
     public static BufferedImage loadBgroundTexture(int currentLevel) {
         BufferedImage[] background_level = new BufferedImage[10];
 
@@ -101,9 +134,12 @@ public class Renderer {
         return background_level[currentLevel - 1];
     }
 
+    /**
+     * Load image button that using in menu.
+     */
     public static BufferedImage[] loadButtonMenu() {
         BufferedImage[] images = new BufferedImage[16];
-        images[0] = loadTexture("/assets/BG_Level_1.png");
+        images[0] = loadTexture("/assets/BG_Level_0.png");
         images[1] = loadTexture("/assets/title.png");
         images[2] = loadTexture("/assets/start_top.png");
         images[3] = loadTexture("/assets/start_bot.png");
@@ -122,6 +158,9 @@ public class Renderer {
         return images;
     }
 
+    /**
+     * Load image for button that use for options in game.
+     */
     public static BufferedImage[] loadbuttonTexture() {
         BufferedImage[] button = new BufferedImage[16];
         button[0] = loadTexture(("/assets/menu.png"));
@@ -143,29 +182,51 @@ public class Renderer {
         return button;
     }
 
+    /**
+     * @return image for paddle.
+     */
     public static BufferedImage loadPaddleTexture() {
         return loadTexture("/assets/paddle_1.png");
     }
 
+    /**
+     * @return image for heart that corresponding to the heart when playing.
+     */
     public static BufferedImage loadHeartTexture() {
         return loadTexture("/assets/heart.png");
     }
 
+    /**
+     * @return image for hearts that reduces when dying.
+     */
     public static BufferedImage loadDamageTexture() {
         return loadTexture("/assets/damage.png");
     }
 
+    /**
+     * @return image that indicates game over text when losing.
+     */
     public static BufferedImage loadGameOverTexture() {
         return loadTexture("/assets/gameover.png");
     }
-    
+
+    /**
+     * @return image indicating instruction text.
+     */
     public static BufferedImage loadPressStartTexture() {
         return loadTexture("/assets/press_start.png");
     }
+
+    /**
+     * @return image showing arrow launching the ball.
+     */
     public static BufferedImage loadArrowTexture() {
         return loadTexture("/assets/arrow.png");
     }
 
+    /**
+     * @return images showing power up icon.
+     */
     public static BufferedImage[] loadPowerUpTexture() {
         BufferedImage[] PowerUp = new BufferedImage[7];
         PowerUp[0] = loadTexture(("/assets/BigBall.png"));
@@ -178,6 +239,9 @@ public class Renderer {
         return PowerUp;
     }
 
+    /**
+     * @return frames that cut use for ball explosive.
+     */
     public static BufferedImage loadExplosionTexture() {
         BufferedImage img = textureCache.get("explosive_effect");
         if (img != null) return img;
@@ -185,10 +249,17 @@ public class Renderer {
         textureCache.put("explosive_effect", img);
         return img;
     }
+
+    /**
+     * @return image for player1 in competitive mode.
+     */
     public static BufferedImage loadBackGroundPlayer1() {
         return loadTexture("/assets/background_player_1.jpg");
     }
 
+    /**
+     * @return image for player2 in competitive mode.
+     */
     public static BufferedImage loadBackGroundPlayer2() {
         return loadTexture("/assets/background_player_2.jpg");
     }

@@ -91,7 +91,7 @@ public class BigBallPowerUp extends PowerUp {
             if (texture == null) {
                 throw new IOException("texture bị null");
             }
-            g2.drawImage(texture, Math.round(x), Math.round(y), width * 2, height * 2, null);
+            g2.drawImage(texture, Math.round(x), Math.round(y), width, height, null);
         } catch (Exception e) {
             System.err.println("Không thể vẽ ảnh " + e.getMessage());
         }

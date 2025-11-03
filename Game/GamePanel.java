@@ -15,7 +15,7 @@ public class GamePanel extends JPanel {
 
     private int WIDTH;
     private int HEIGHT;
-    public int sca;
+    public int prevHei;
     public static float resize = 1;
 
     public static float scaleX = 1f;
@@ -26,21 +26,18 @@ public class GamePanel extends JPanel {
     public int offsetX = 0;
     public int offsetY = 0;
 
-
     public static boolean switchVol = true;
 
     /**
      * Khởi tạo GamePanel với kích thước xác định và các màn hình con.
      */
-
     public GameManager getGameManager() {
         return game;
     }
-
     public GamePanel(int width, int height) {
         this.WIDTH = width;
         this.HEIGHT = height;
-        this.sca = HEIGHT;
+        this.prevHei = HEIGHT;
 
         cardLayout = new CardLayout();
         setLayout(cardLayout);
@@ -63,20 +60,19 @@ public class GamePanel extends JPanel {
                 scaleX = (float) WIDTH / 800;
                 scaleY = (float) HEIGHT / 600;
                 scale = Math.min(scaleX, scaleY);
-                if (sca == HEIGHT) {
+                if (prevHei == HEIGHT) {
                     resize = 1;
-                } else if (sca < WIDTH) {
+                } else if (prevHei < WIDTH) {
                     resize = 793f / 600f;
-                    sca = WIDTH;
-                } else if (sca > WIDTH) {
+                    prevHei = WIDTH;
+                } else if (prevHei > WIDTH) {
                     resize = 600f / 793f;
-                    sca = WIDTH;
+                    prevHei = WIDTH;
                 }
 
                 offsetX = (int)((WIDTH - 800 * scale) / 2);
                 offsetY = (int)((HEIGHT - 600 * scale) / 2);
                 game.setGameSize(scale);
-                competitive.setGameSize(scale);
             }
         });
 
@@ -87,7 +83,6 @@ public class GamePanel extends JPanel {
         SoundEffect.loop("sound_Menu");
         showMenu();
     }
-
     public int getWIDTH() {
         return this.WIDTH;
     }
@@ -95,7 +90,6 @@ public class GamePanel extends JPanel {
     public int getHEIGHT() {
         return this.HEIGHT;
     }
-
     public int getOffsetX() {
         return this.offsetX;
     }

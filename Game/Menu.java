@@ -40,7 +40,6 @@ public class Menu extends JPanel {
     private final Rectangle exitRect;
 
     public static boolean isCompetitive = false;
-
     public Menu(GamePanel parent) {
         this.parent = parent;
         setLayout(null);

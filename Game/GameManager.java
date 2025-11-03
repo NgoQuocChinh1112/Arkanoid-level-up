@@ -69,19 +69,33 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
     public static final float VERTICAL_ANGLE = 90f;
     public static final float EPSILON = 0.001f; // Để so sánh float
 
+    /**
+     * getter twoPlayerMode.
+     * @return true nếu trong chế độ đối kháng.
+     */
     public boolean getTwoPlayerMode() {
         return twoPlayerMode;
     }
 
+    /**
+     * setter twoPlayerMode.
+     */
     public void setTwoPlayerMode() {
         twoPlayerMode = !twoPlayerMode;
         initGame();
     }
 
+    /**
+     * tăng mạng.
+     */
     public void addLife() {
         lives++;
     }
 
+    /**
+     * nhân scale cưa sổ và các object trong game.
+     * @param scale tỉ lệ giữa cửa sổ mới và kích thước cũ.
+     */
     public void setGameSize(float scale) {
         WIDTH = (int)(800 * scale);
         HEIGHT = (int)(600 * scale);
@@ -92,8 +106,8 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         for (Ball ball : balls) {
             ball.setX(ball.getX() * resize);
             ball.setY(ball.getY() * resize);
-            ball.setWidth((int)(20 * scale));
-            ball.setHeight((int)(20 * scale));
+            ball.setWidth((int)(24 * scale));
+            ball.setHeight((int)(24 * scale));
         }
         paddle1.setX(paddle1.getX() * resize);
         paddle1.setY(paddle1.getY() * resize);
@@ -114,6 +128,12 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         revalidate(); // cập nhật layout nếu cần
     }
 
+    /**
+     * khởi tạo gamemanager với kích thước cố định và truyền parent gamemanager vào.
+     * @param parent gamepanel quản lý các panel.
+     * @param width chiều rộng cửa sổ
+     * @param height chiều dài cửa sổ
+     */
     public GameManager(GamePanel parent, int width, int height) {
         this.parent = parent;
         this.WIDTH = width;
@@ -213,6 +233,9 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         });
     }
 
+    /**
+     * vẽ hộp option.
+     */
     protected void showMenu(Graphics g) {
         // lớp phủ mờ
         g.setColor(new Color(0, 0, 0, 150));
@@ -277,6 +300,9 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         }
     }
 
+    /**
+     * vẽ phần tử trong game.
+     */
     protected void initGame() {
         paddle1 = new Paddle(WIDTH / 2f - (int)(60 * scale), HEIGHT - (int)(60 * scale), (int)(120 * scale), (int)(16 * scale));
         if(twoPlayerMode) {
@@ -293,7 +319,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
             bx = paddle1.getX() + paddle1.getWidth() / 2f - (int)(8 * scale);
             by = paddle1.getY() - (int)(16 * scale) - 1;
         }
-        mainBall = new Ball(bx, by, (int)(20 * scale), (int)(20 * scale));
+        mainBall = new Ball(bx, by, (int)(24 * scale), (int)(24 * scale));
         mainBall.resetToPaddle(twoPlayerMode ? paddle2 : paddle1);
 
         balls.clear();
@@ -309,8 +335,14 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
     public void actionPerformed(ActionEvent e) {
         updateGame();
         repaint();
+
     }
 
+    /**
+     * kiểm tra điều kiện thắng.
+     * @param bricks là list level hiện tại.
+     * @return true khi chỉ còn gạch không thể phá.
+     */
     protected boolean checkWin(List<Brick> bricks) {
         for (Brick brick : bricks) {
             if (brick.getHitPoints() < 6 && brick.getHitPoints() > 0) {
@@ -320,10 +352,18 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         return true;
     }
 
+    /**
+     * kiểm tra điều kiện thua.
+     * @param live mạng hiện tại
+     * @return true khi live xuống 0.
+     */
     private boolean checkLose(int live) {
         return live <= 0;
     }
 
+    /**
+     * cập nhật các sự kiện trong game.
+     */
     protected void updateGame() {
         if (gameState.equals("MENU") || gameState.equals("RUNNING")) {
             if (!mainBall.isLaunched()) {
@@ -338,7 +378,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
                     bricks.get(i).update();
                     checkBrickWithWall(bricks.get(i));
                     for (int j = i + 1; j < bricks.size(); j++ ) {
-                        checkBrickHeadOn(bricks.get(i), bricks.get(j));
+                        checkBrickParallel(bricks.get(i), bricks.get(j));
                         checkBrickCross(bricks.get(i), bricks.get(j));
                     }
                     bricks.get(i).changeVector();
@@ -394,6 +434,11 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         ExplosiveBallPowerUp.updateExplosions();
     }
 
+    /**
+     * xử lý di chuyển paddle.
+     * nếu nhấn sang phải mà không nhấn sang phải thì
+     * dx sẽ cộng thêm để sang phải và ngược lại.
+     */
     private void handleInput() {
         float sp = paddle1.getSpeed();
         if (leftPressed && !rightPressed) paddle1.setDx(-sp);
@@ -406,6 +451,11 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
             else paddle2.setDx(0);
         }
     }
+
+    /**
+     * kiểm tra gạch di chuyển va chạm biên.
+     * @param brick gạch trong list.
+     */
     protected void checkBrickWithWall(Brick brick) {
         if (brick.getX() < 0) {
             brick.setX(brick.getX() + brick.getSpeed());
@@ -423,20 +473,46 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         }
     }
 
-    protected void checkBrickHeadOn(Brick brick, Brick other) {
+    /**
+     * kiểm tra 2 gạch song song va chạm.
+     * overX là chiều rộng 2 gạch lấn nhau, overY là chiều dài.
+     * xét các trường hợp song song, bỏ qua trường hợp đứng yên.
+     * overX bé hơn over thì va chạm theo phương ngang và ngược lại.
+     * khi phương va chạm trùng với phương di chuyển thì đảo nghịch chiều di chuyển.
+     * khi phương va chạm khác phương di chuyển thì đây nhau theo phương va chạm.
+     */
+    protected void checkBrickParallel(Brick brick, Brick other) {
+        float overX = Math.min(brick.getX() + brick.getWidth(), other.getX() + other.getWidth())
+                - Math.max(brick.getX(), other.getX());
+        float overY = Math.min(brick.getY() + brick.getHeight(), other.getY() + other.getHeight())
+                - Math.max(brick.getY(), other.getY());
+
         if (checkCollisionsWithBrick(brick, other)) {
             if (brick.getDx() == 0 && other.getDx() == 0
-                    && brick.getDy() ==  - other.getDy()) {
-                brick.setDy(-brick.getDy());
-                other.setDy(-other.getDy());
+                    && (brick.getDy() ==  -other.getDy() || brick.getDy() ==  other.getDy())
+                    && brick.getDy() != 0) {
+                if (overY - overX < 0) {
+                    brick.setDy(-brick.getDy());
+                    other.setDy(-other.getDy());
+                } else if (overY - overX > 0) {
+                    setColX(brick , other);
+                }
             } else if (brick.getDy() == 0 && other.getDy() == 0
-                    && brick.getDx() == -other.getDx()) {
-                brick.setDx(-brick.getDx());
-                other.setDx(-other.getDx());
+                    && (brick.getDx() == -other.getDx() || brick.getDx() == other.getDx())
+                    && brick.getDx() != 0) {
+                if (overX - overY < 0) {
+                    brick.setDx(-brick.getDx());
+                    other.setDx(-other.getDx());
+                } else if (overX - overY > 0) {
+                    setColY(brick , other);
+                }
             }
         }
     }
 
+    /**
+     * xử lý va chạm theo phương ngang.
+     */
     protected void setColX(Brick brick, Brick other) {
         // Va chạm ngang
         brick.setDx(-brick.getDx());
@@ -445,21 +521,24 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         // Đẩy nhau
         if (brick.getX() < other.getX()) {
             if (brick.getType() != 0) {
-                brick.setX(brick.getX() - brick.getSpeed()/2);
+                brick.setX(brick.getX() - brick.getSpeed());
             }
             if (other.getType() != 0) {
-                other.setX(other.getX() + other.getSpeed()/2);
+                other.setX(other.getX() + other.getSpeed());
             }
         } else {
             if (brick.getType() != 0) {
-                brick.setX(brick.getX() + brick.getSpeed()/2);
+                brick.setX(brick.getX() + brick.getSpeed());
             }
             if (other.getType() != 0) {
-                other.setX(other.getX() - other.getSpeed()/2);
+                other.setX(other.getX() - other.getSpeed());
             }
         }
     }
 
+    /**
+     * xử lý va chạm theo phương thẳng đứng.
+     */
     protected void setColY(Brick brick, Brick other) {
         // Va chạm dọc
         brick.setDy(-brick.getDy());
@@ -467,31 +546,36 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         // Đây nhau
         if (brick.getY() < other.getY()) {
             if (brick.getType() != 0) {
-                brick.setY(brick.getY() - brick.getSpeed()/2);
+                brick.setY(brick.getY() - brick.getSpeed());
             }
             if (other.getType() != 0) {
-                other.setY(other.getY() + brick.getSpeed()/2);
+                other.setY(other.getY() + brick.getSpeed());
             }
         } else {
             if (brick.getType() != 0) {
-                brick.setY(brick.getY() + brick.getSpeed()/2);
+                brick.setY(brick.getY() + brick.getSpeed());
             }
             if (other.getType() != 0) {
-                other.setY(other.getY() - brick.getSpeed()/2);
+                other.setY(other.getY() - brick.getSpeed());
             }
         }
     }
 
+    /**
+     * xử lý va chạm vuông góc 2 viên gạch .
+     * kiểm tra overlap xác định phương va chạm.
+     * giữ viên gạch cố định cho nó đứng yên.
+     */
     protected void checkBrickCross(Brick brick, Brick other) {
         if (checkCollisionsWithBrick(brick, other)) {
-            float disX = Math.min(brick.getX() + brick.getWidth(), other.getX() + other.getWidth())
+            float overX = Math.min(brick.getX() + brick.getWidth(), other.getX() + other.getWidth())
                     - Math.max(brick.getX(), other.getX());
-            float disY = Math.min(brick.getY() + brick.getHeight(), other.getY() + other.getHeight())
+            float overY = Math.min(brick.getY() + brick.getHeight(), other.getY() + other.getHeight())
                     - Math.max(brick.getY(), other.getY());
             if ((other.getDx() == 0 && brick.getDy() == 0)
                     || (other.getDy() == 0 && brick.getDx() == 0)) {
-                if (Math.abs(disX - disY) > EPSILON) {
-                    if (disX - disY < 0){
+                if (Math.abs(overX - overY) > EPSILON) {
+                    if (overX - overY < 0){
                         setColX(brick, other);
                     } else {
                         setColY(brick, other);
@@ -505,6 +589,10 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         }
     }
 
+    /**
+     * kiểm tra tra va chạm giữa 2 gạch.
+     * @return true khi có vùng trùng lặp giữa 2 gạch.
+     */
     private boolean checkCollisionsWithBrick(Brick brick, Brick other) {
         if (brick == null || other == null) {
             return false;
@@ -515,6 +603,11 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
                 brick.getY() + brick.getHeight() > other.getY();
     }
 
+    /**
+     * kiểm tra va chạm bóng.
+     * @param ball bóng hiện tại.
+     * @param bricks list gạch.
+     */
     protected void checkCollisionsWithBall(Ball ball, List<Brick> bricks) {
         if (!ball.isLaunched()) return;
 
@@ -529,6 +622,11 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         checkBrickCollisions(ball, bricks, powerUps);
     }
 
+    /**
+     * kiểm tra bóng va chạm biên.
+     * nếu chạm đáy thì mất một mạng.
+     * @param ball boóng hiện tại.
+     */
     protected void checkWallCollisions(Ball ball) {
         boolean collided = false;
 
@@ -577,6 +675,9 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         }
     }
 
+    /**
+     * kiểm tra va chạm bóng với paddle.
+     */
     protected void checkPaddleCollision(Ball ball, Paddle paddle) {
         Rectangle paddleRect = paddle.getBounds();
 
@@ -613,6 +714,9 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         }
     }
 
+    /**
+     * xử lý điểm va chạm giữa bóng và bắn đi theo góc.
+     */
     private void handlePaddleTopCollision(Ball ball, Rectangle paddleRect, float ballCenterX) {
         // Đặt bóng lên trên paddle
         ball.setY(paddleRect.y - ball.getHeight() - 0.5f);
@@ -629,6 +733,10 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         }
     }
 
+    /**
+     * xử lý điểm va chạm bóng với paddle để tính góc bắn.
+     * góc giảm dần về 2 bên.
+     */
     private static double getAngleInRadians(Rectangle paddleRect, float ballCenterX) {
         float paddleCenter = paddleRect.x + paddleRect.width / 2f;
         float hitPosition = (ballCenterX - paddleCenter) / (paddleRect.width / 2f);
@@ -646,6 +754,9 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         return Math.toRadians(angleInDegrees);
     }
 
+    /**
+     * xử lí khi bóng va chạm với hai cạnh bên của paddle.
+     */
     private void handlePaddleSideCollision(Ball ball, Rectangle paddleRect) {
         float ballCenterX = ball.getCenterX();
         float prevCenterX = ball.getX() - ball.getDx() + ball.getRadius();
@@ -667,10 +778,18 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         }
     }
 
+    /**
+     * Giới hạn một giá trị trong khoảng cho phép.
+     */
     public float clamp(float value, float min, float max) {
         return Math.max(min, Math.min(value, max));
     }
 
+    /**
+     * Kiểm tra va chạm giữa hình tròn (quả bóng) và hình chữ nhật.
+     * Tính khoảng cách từ tâm quả bóng đến cạnh gần nhất của hình chữ nhật,
+     * sau đó so sánh với bán kính để xác định xem có giao nhau hay không.
+     */
     public boolean circleCheckCollision(Ball ball, Rectangle rect) {
         float closestX = clamp(ball.getCenterX(), rect.x, rect.x + rect.width);
         float closestY = clamp(ball.getCenterY(), rect.y, rect.y + rect.height);
@@ -679,6 +798,11 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         return (dX * dX + dY * dY) < (ball.getRadius() * ball.getRadius());
     }
 
+    /**
+     * kiểm tra va chạm bóng với gạch.
+     * xử lý ăn powerup.
+     * @param powerUps list powerup quản lí các powerup có thể sẽ xuất hiện.
+     */
     private void checkBrickCollisions(Ball ball, List<Brick> bricks, List<PowerUp> powerUps) {
         float ballCenterX = ball.getCenterX();
         float ballCenterY = ball.getCenterY();
@@ -811,8 +935,8 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
     }
 
     /**
-     * Normalize velocity để duy trì tốc độ ổn định
-     * Fix bug: tốc độ bóng tăng/giảm sau nhiều lần va chạm
+     * Normalize velocity để duy trì tốc độ ổn định.
+     * Fix bug: tốc độ bóng tăng/giảm sau nhiều lần va chạm.
      */
     private void normalizeVelocity(Ball ball) {
         if (ball.isFast()) return;
@@ -823,12 +947,20 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         }
     }
 
+    /**
+     * thêm bóng mới khi ăn được pu tăng bóng.
+     * @param ball đối tượng bóng đc thêm vào.
+     */
     public void addExtraBall(Ball ball) {
         if (extraBall != null || balls.contains(ball)) return;
         balls.add(ball);
         extraBall = ball;
     }
 
+    /**
+     * xóa bóng khi hết thời gian hoặc khi mất mạng.
+     * @param ball đối tượng ball sẽ xóa.
+     */
     public void removeExtraBall(Ball ball) {
         if (extraBall == ball) {
             balls.remove(ball);
@@ -886,7 +1018,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         if (lives > 3) {
             int j = 1;
             for (int i = 4; i <= lives; ++i) {
-                g2.drawImage(Renderer.loadDamageTexture(), (int)((690 - 30 * j) * scale),
+                g2.drawImage(Renderer.loadHeartTexture(), (int)((690 - 30 * j) * scale),
                             HEIGHT - (int)(35 * scale), wLives , hLives, null);
                 j++;
             }
@@ -930,6 +1062,9 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         g2.dispose();
     }
 
+    /**
+     * vẽ nút khi đang chơi game để mở options.
+     */
     private void buttonInGame(Graphics g) {
         int butW = (int)(30 * scale), butH = (int)(30 * scale);
         int pauX = WIDTH - (int)(50 * scale);
@@ -941,7 +1076,8 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
 
     // KeyListener
     @Override
-    public void keyTyped(KeyEvent e) { }
+    public void keyTyped(KeyEvent e) {}
+
     @Override
     public void keyPressed(KeyEvent e) {
         int kc = e.getKeyCode();
@@ -980,6 +1116,9 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         if (kc == KeyEvent.VK_D) dPressed = false;
     }
 
+    /**
+     * restart.
+     */
     public void restart() {
         score = 0;
         lives = 3;
@@ -987,6 +1126,10 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         gameState = "MENU";
     }
 
+    /**
+     * đặt màn chơi.
+     * @param level màn chơi sẽ đặt.
+     */
     public void setLevel(int level) {
         this.currentLevel = level;
         backgroundImage = Renderer.loadBgroundTexture(currentLevel);
@@ -996,7 +1139,13 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         restart();// khởi động lại game với level mới
     }
 
-
+    /**
+     * resize image.
+     * @param originalImage ảnh gốc cần thay đổi kích thước
+     * @param targetWidth   chiều rộng mới của ảnh
+     * @param targetHeight  chiều cao mới của ảnh
+     * @return ảnh đã được thay đổi kích thước
+     */
     private BufferedImage resizeImage(BufferedImage originalImage, int targetWidth, int targetHeight) {
         Image tmp = originalImage.getScaledInstance(targetWidth, targetHeight, Image.SCALE_SMOOTH);
         BufferedImage resized = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_ARGB);
@@ -1007,7 +1156,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
     }
 
     /**
-     * Quet goc ban lien tuc.
+     * Quét góc bắn liên tục.
      */
     private void updateLaunchAngle() {
         float deltaAngle = angleSpeed / FPS;
@@ -1041,6 +1190,9 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         ball.launch(dx, dy);
     }
 
+    /**
+     * vẽ mũi tên xoay quanh bóng.
+     */
     private void drawLaunchArrow(Graphics2D g2, Ball ball, float angleDegrees) {
         float ballCenterX = ball.getX() + ball.getWidth() / 2f;
         float ballCenterY = ball.getY() + ball.getHeight() / 2f;
@@ -1057,11 +1209,19 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
         g2.setTransform(oldTransform);
     }
 
+    /**
+     * vẽ điểm số.
+     */
     public void drawScore(Graphics2D g2, String text, int y) {
         int width = g2.getFontMetrics().stringWidth(text);
         g2.setColor(Color.YELLOW);
         g2.drawString(text, (WIDTH - width) / 2, y);
     }
+
+    /**
+     * in ra điểm số hiện tại và điểm cao nhất.
+     * nếu điểm hiện tại cao hơn điểm cao nhất đọc từ file thì lưu vào file.
+     */
     public void printHighScore(Graphics2D g2) throws FileNotFoundException {
         String filename = "highscores/highscore" + currentLevel + ".txt";
         try {
@@ -1072,12 +1232,18 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
                 highScore = String.valueOf(score);
             }
 
-                drawScore(g2, "HIGHEST: " + highScore, (int)(150 * scale));
+            drawScore(g2, "HIGHEST: " + highScore, (int)(150 * scale));
             drawScore(g2, "SCORE: "+ score, (int)(200 * scale));
         } catch(Exception e) {
             e.printStackTrace();
         }
     }
+
+    /**
+     * đọc highest score từ file.
+     * @param highScore
+     * @throws FileNotFoundException
+     */
     public void writeHighScore(int highScore) throws FileNotFoundException {
         String filename = "highscores/highscore" + currentLevel + ".txt";
         try  {

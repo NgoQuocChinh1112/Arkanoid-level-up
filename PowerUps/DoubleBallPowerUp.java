@@ -10,7 +10,7 @@ import java.io.IOException;
 
 public class DoubleBallPowerUp extends PowerUp {
 
-    private static final int BALL_SIZE = 20;
+    private static final int BALL_SIZE = 24;
 
     /**
      * Constructor.
@@ -72,7 +72,7 @@ public class DoubleBallPowerUp extends PowerUp {
             if (texture == null) {
                 throw new IOException("texture null");
             }
-            g2.drawImage(texture, Math.round(x), Math.round(y), width * 2, height * 2, null);
+            g2.drawImage(texture, Math.round(x), Math.round(y), width, height, null);
         } catch (Exception e) {
             System.err.println("Không thể vẽ ảnh  " + e.getMessage());
         }

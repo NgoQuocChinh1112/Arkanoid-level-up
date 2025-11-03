@@ -34,7 +34,9 @@ public class SoundEffect {
         }
     }
 
-    // Load tất cả âm thanh một lần khi khởi động game
+    /**
+     * Load tất cả âm thanh một lần khi khởi động.
+     */
     public static void loadAllSounds() {
         addSound("collision", "sound/collision.wav");
         addSound("bgm", "sound/bgsound.wav");
@@ -55,13 +57,21 @@ public class SoundEffect {
         addSound("win", "sound/win.wav");
     }
 
+    /**
+     * thêm âm thanh vào Map.
+     * @param name khóa
+     * @param filePath đường dẫn
+     */
     private static void addSound(String name, String filePath) {
         SoundEffect s = new SoundEffect();
         s.loadSound(filePath);
         sounds.put(name, s);
     }
 
-    // Phát âm thanh hiệu ứng (một lần)
+    /**
+     * phát âm thanh một lần.
+     * @param name dường dẫn
+     */
     public static void play(String name) {
         SoundEffect s = sounds.get(name);
         if (s != null) {
@@ -71,7 +81,10 @@ public class SoundEffect {
         }
     }
 
-    // Lặp nhạc nền
+    /**
+     * lặp nhạc nền.
+     * @param name khóa truy cập Map.
+     */
     public static void loop(String name) {
         SoundEffect s = sounds.get(name);
         if (s != null && s.clip != null) {
@@ -79,7 +92,10 @@ public class SoundEffect {
         }
     }
 
-    // Dừng nhạc nền
+    /**
+     * dừng nhạc nền.
+     * @param name khóa truy cập map.
+     */
     public static void stop(String name) {
         SoundEffect s = sounds.get(name);
         if (s != null && s.clip.isRunning()) {
@@ -87,21 +103,30 @@ public class SoundEffect {
         }
     }
 
+    /**
+     * phát âm thanh từ đầu.
+     */
     public void play() {
         if (clip != null) {
-            clip.setFramePosition(0); // quay lại đầu file
+            clip.setFramePosition(0);
             clip.start();
         }
     }
 
-    //chỉnh âm lượng toàn bộ
+    /**
+     * chỉnh âm lượng toàn cục.
+     * @param volume giá trị đơn vị dB (-80dB to 6dB)
+     */
     public static void setVolume(float volume) {
         for (SoundEffect s : sounds.values()) {
             s.volumeControl.setValue(volume);
         }
     }
 
-    // resume nhạc đang pause tiếp tục từ vị trí hiện tại
+    /**
+     * phát tiếp nhạc đang dùng
+     * @param name khóa truy cập map.
+     */
     public static void resume(String name) {
         SoundEffect s = sounds.get(name);
         if (s != null && s.clip != null) {

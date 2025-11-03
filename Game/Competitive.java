@@ -98,7 +98,11 @@ public class Competitive extends GameManager {
                         switch (gameState) {
                             case "PAUSED" -> gameState = "RUNNING";
                             case "SELECT" -> {
-                                currentLevel++;
+                                if (currentLevel < 10) {
+                                    currentLevel++;
+                                } else {
+                                    currentLevel = 1;
+                                }
                                 setLevel(currentLevel);
                             }
                         }

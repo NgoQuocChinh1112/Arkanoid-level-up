@@ -34,10 +34,9 @@ public class ExplosiveBallPowerUp extends PowerUp {
         super(x, y, width, height, durationMs, "EXPLOSIVE_BALL");
         explosionImg = Renderer.loadExplosionTexture();
 
-        // xử lý exception ở đây (Renderer chỉ load)
         try {
             BufferedImage[] powerUps = Renderer.loadPowerUpTexture();
-            texture = powerUps[2]; // ExplosiveBall ở index 2
+            texture = powerUps[2];
             if (texture == null) {
                 throw new Exception("Texture  bị null.");
             }
@@ -134,6 +133,9 @@ public class ExplosiveBallPowerUp extends PowerUp {
         }
     }
 
+    /**
+     * Vẽ các frame nổ.
+     */
     public static void drawExplosions(Graphics2D g2) {
         for (int i = 0; i < explosionFrame.size(); i++) {
             renderExplosion(g2, explosionX.get(i), explosionY.get(i), explosionFrame.get(i));

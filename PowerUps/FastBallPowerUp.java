@@ -1,5 +1,4 @@
 package PowerUps;
-
 import Game.Renderer;
 import Game.SoundEffect;
 import Objects.Ball;
@@ -17,11 +16,6 @@ public class FastBallPowerUp extends PowerUp {
 
     /**
      * Constructor.
-     * @param x
-     * @param y
-     * @param width
-     * @param height
-     * @param durationMs
      */
     public FastBallPowerUp(float x, float y, int width, int height, long durationMs) {
         super(x, y, width, height, durationMs, "FAST_BALL");
@@ -40,9 +34,6 @@ public class FastBallPowerUp extends PowerUp {
 
     /**
      * Áp dụng hiệu ứng.
-     * @param paddle
-     * @param ball
-     * @param gameManager
      */
     @Override
     public void applyEffect(Paddle paddle, Ball ball, Object gameManager) {
@@ -68,7 +59,6 @@ public class FastBallPowerUp extends PowerUp {
 
     /**
      * Vẽ.
-     * @param g2
      */
     @Override
     public void render(Graphics2D g2) {

@@ -186,7 +186,11 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
                             case "PAUSED" -> gameState = "RUNNING";
                             case "LOSE" -> parent.showLevelPanel();
                             case "WIN" -> {
-                                currentLevel++;
+                                if (currentLevel < 10) {
+                                    currentLevel++;
+                                } else {
+                                    currentLevel = 1;
+                                }
                                 setLevel(currentLevel);
                             }
                         }
@@ -1223,7 +1227,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
      * nếu điểm hiện tại cao hơn điểm cao nhất đọc từ file thì lưu vào file.
      */
     public void printHighScore(Graphics2D g2) throws FileNotFoundException {
-        String filename = "highscores/highscore" + currentLevel + ".txt";
+        String filename = "src/highscores/highscore" + currentLevel + ".txt";
         try {
             BufferedReader br = new BufferedReader(new FileReader(filename));
             String highScore = br.readLine();
@@ -1245,7 +1249,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener {
      * @throws FileNotFoundException
      */
     public void writeHighScore(int highScore) throws FileNotFoundException {
-        String filename = "highscores/highscore" + currentLevel + ".txt";
+        String filename = "src/highscores/highscore" + currentLevel + ".txt";
         try  {
             BufferedWriter bw = new BufferedWriter(new FileWriter(filename, false));
             bw.write(Integer.toString(highScore));

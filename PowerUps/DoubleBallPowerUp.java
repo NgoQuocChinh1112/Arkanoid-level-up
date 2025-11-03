@@ -14,11 +14,6 @@ public class DoubleBallPowerUp extends PowerUp {
 
     /**
      * Constructor.
-     * @param x
-     * @param y
-     * @param width
-     * @param height
-     * @param durationMs
      */
     public DoubleBallPowerUp(float x, float y, int width, int height,long durationMs) {
         super(x, y, width, height, durationMs, "DOUBLE_BALL");
@@ -38,9 +33,6 @@ public class DoubleBallPowerUp extends PowerUp {
 
     /**
      * Áp dụng hiệu ứng.
-     * @param paddle
-     * @param originalBall
-     * @param gameManagerobj
      */
     @Override
     public void applyEffect(Paddle paddle, Ball originalBall, Object gameManagerobj) {
@@ -64,7 +56,6 @@ public class DoubleBallPowerUp extends PowerUp {
 
     /**
      * Vẽ.
-     * @param g2
      */
     @Override
     public void render(Graphics2D g2) {

@@ -16,11 +16,6 @@ public class ShrinkPaddlePowerUp extends PowerUp {
 
     /**
      * Constructor.
-     * @param x
-     * @param y
-     * @param width
-     * @param height
-     * @param durationMs
      */
     public ShrinkPaddlePowerUp(float x, float y, int width, int height, long durationMs) {
         super(x, y, width, height, durationMs, "SHRINK_PADDLE");
@@ -39,9 +34,6 @@ public class ShrinkPaddlePowerUp extends PowerUp {
 
     /**
      * Áp dụng hiệu ứng.
-     * @param paddle
-     * @param ball
-     * @param gameManager
      */
     @Override
     public void applyEffect(Paddle paddle, Ball ball, Object gameManager) {
@@ -64,7 +56,6 @@ public class ShrinkPaddlePowerUp extends PowerUp {
 
     /**
      * Vẽ.
-     * @param g2
      */
     @Override
     public void render(Graphics2D g2) {

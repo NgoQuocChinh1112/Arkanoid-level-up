@@ -13,11 +13,6 @@ import javax.swing.Timer;
 public class BigBallPowerUp extends PowerUp {
     /**
      * Constructor.
-     * @param x
-     * @param y
-     * @param width
-     * @param height
-     * @param durationMs
      */
     public BigBallPowerUp(float x, float y, int width, int height, long durationMs) {
         super(x, y, width, height, durationMs, "BIG_BALL");
@@ -36,9 +31,6 @@ public class BigBallPowerUp extends PowerUp {
 
     /**
      * Áp dụng hiệu ứng.
-     * @param paddle
-     * @param ball
-     * @param gameManager
      */
     public void applyEffect(Paddle paddle, Ball ball, Object gameManager) {
         if (ball.isEnlarged()) return;
@@ -83,7 +75,6 @@ public class BigBallPowerUp extends PowerUp {
 
     /**
      * Vẽ.
-     * @param g2
      */
     @Override
     public void render(Graphics2D g2) {

@@ -13,11 +13,6 @@ import Objects.Paddle;
 public class ExtraLifePowerUp extends PowerUp {
     /**
      * Constructor.
-     * @param x
-     * @param y
-     * @param width
-     * @param height
-     * @param durationMs
      */
     public ExtraLifePowerUp(float x, float y, int width, int height, long durationMs) {
         super(x, y, width, height, durationMs, "EXTRA_LIFE");
@@ -37,9 +32,6 @@ public class ExtraLifePowerUp extends PowerUp {
 
     /**
      * Áp dụng hiệu ứng.
-     * @param paddle
-     * @param mainBall
-     * @param gameManager
      */
     @Override
     public void applyEffect(Paddle paddle, Ball mainBall, Object gameManager ) {
@@ -51,7 +43,6 @@ public class ExtraLifePowerUp extends PowerUp {
     }
     /**
      * Vẽ.
-     * @param g2
      */
     public void render(Graphics2D g2) {
         try {

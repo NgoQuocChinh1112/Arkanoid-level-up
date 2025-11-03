@@ -47,7 +47,7 @@ public class Renderer {
         try {
             customFont = Font.createFont(
                     Font.TRUETYPE_FONT,
-                    new File("assets/font.ttf")
+                    new File("src/assets/font.ttf")
             ).deriveFont(Font.BOLD, (float)size);
         } catch (Exception e) {
             e.printStackTrace();

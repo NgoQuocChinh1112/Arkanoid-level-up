@@ -74,7 +74,7 @@ public class Menu extends JPanel {
         // Mouse
         addMouseListener(new MouseAdapter() {
             @Override
-             public void mouseClicked(MouseEvent e) {
+            public void mouseClicked(MouseEvent e) {
                 Point p = e.getPoint();
                 int w = getWidth();
                 int h = getHeight();
@@ -90,7 +90,7 @@ public class Menu extends JPanel {
                 Rectangle regimeRectLocal = new Rectangle(regimeX, regimeY, regimeW, regimeH);
                 Rectangle competitiveLocal = new Rectangle(competitiveX, competitiveY, competitiveW, competitiveH);
                 Rectangle exitRectLocal = new Rectangle(exitX, exitY, exitW, exitH);
-                
+
 
                 if (startRectLocal.contains(p)) {
                     SoundEffect.play("click");
@@ -111,9 +111,9 @@ public class Menu extends JPanel {
                     parent.showLevelPanel();
                 }
 
-                int butW = (int)(50 * scale) , butH = (int)(50 * scale);
-                int volX = parent.getWIDTH() - (int)(70 * scale);
-                int butY = parent.getHEIGHT() - (int)(70 * scale);
+                int butW = 50 , butH = 50;
+                int volX = parent.getWIDTH() - 70;
+                int butY = parent.getHEIGHT() - 70;
                 Rectangle volRect = new Rectangle(volX, butY, butW, butH);
 
                 if (volRect.contains(p)) {
@@ -121,7 +121,7 @@ public class Menu extends JPanel {
                     GamePanel.switchVol = !GamePanel.switchVol;
                     if (GamePanel.switchVol) {
                         SoundEffect.loop("soundMenu");
-                        SoundEffect.setVolume(6);
+                        SoundEffect.setVolume(0);
                     } else {
                         SoundEffect.stop("bgm");
                         SoundEffect.stop("soundMenu");
@@ -155,9 +155,9 @@ public class Menu extends JPanel {
                 Rectangle regimeRectLocal = new Rectangle(regimeX, regimeY, regimeW, regimeH);
                 Rectangle competitiveLocal = new Rectangle(competitiveX, competitiveY, competitiveW, competitiveH);
                 Rectangle exitRectLocal = new Rectangle(exitX, exitY, exitW, exitH);
-                
 
-                boolean oldStart = hoverStart, oldChoose = hoverChoose, oldRegime = hoverRegime, 
+
+                boolean oldStart = hoverStart, oldChoose = hoverChoose, oldRegime = hoverRegime,
                         oldCompetitive = hoverCompetitive, oldExit = hoverExit;
                 hoverStart = startRectLocal.contains(p);
                 hoverChoose = chooseRectLocal.contains(p);
@@ -165,8 +165,8 @@ public class Menu extends JPanel {
                 hoverCompetitive = competitiveLocal.contains(p);
                 hoverExit = exitRectLocal.contains(p);
 
-                if (hoverStart != oldStart || hoverChoose != oldChoose || hoverRegime != oldRegime 
-                                           || hoverCompetitive != oldCompetitive || hoverExit != oldExit) repaint();
+                if (hoverStart != oldStart || hoverChoose != oldChoose || hoverRegime != oldRegime
+                        || hoverCompetitive != oldCompetitive || hoverExit != oldExit) repaint();
             }
         });
     }
@@ -213,7 +213,7 @@ public class Menu extends JPanel {
         regimeRect.setBounds(regimeX, regimeY, regimeW, regimeH);
         competitive.setBounds(competitiveX, competitiveY, competitiveW, competitiveH);
         exitRect.setBounds(exitX, exitY, exitW, exitH);
-        
+
         // Vẽ nút start
         if (hoverStart && startTop != null)
             g2.drawImage(startTop, startX, startY, startW, startH, null);
@@ -256,9 +256,9 @@ public class Menu extends JPanel {
             g2.drawImage(exitBot, exitX, exitY, exitW, exitH, null);
         }
 
-        int butW = (int)(50 * scale), butH = (int)(50 * scale);
-        int volX = parent.getWIDTH() - (int)(70 * scale);
-        int butY = parent.getHEIGHT() - (int)(70 * scale);
+        int butW = 50, butH = 50;
+        int volX = parent.getWIDTH() - 70;
+        int butY = parent.getHEIGHT() - 70;
 
         if (button[14] != null && GamePanel.switchVol) {
             g2.drawImage(button[14], volX, butY, butW, butH, null);

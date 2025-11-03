@@ -57,7 +57,7 @@ public class GamePanel extends JPanel {
         competitive = new Competitive(this, WIDTH, HEIGHT);
 
         SoundEffect.loadAllSounds();
-        SoundEffect.setVolume(6);
+        SoundEffect.setVolume(0);
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {

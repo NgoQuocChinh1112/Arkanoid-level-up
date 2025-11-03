@@ -37,12 +37,12 @@ Phiên bản Arkanoid này được phát triển mở rộng, bổ sung nhiều
 Static Brick – Gạch đứng yên, bố trí cố định.
 Moving Brick – Gạch di chuyển ngang qua lại, tăng độ khó.
 4.2. Các loại gạch
--Brick Trắng	:Vỡ sau 1 lần chạm
--Brick Xanh Dương:Vỡ sau 2 lần chạm
--Brick Xanh lá:Vỡ sau 3 lần chạm
--Brick Vàng :Vỡsau 4 lần chạm
--Brick 5	Đỏ :Vỡsau 5 lần chạm
--Brick 6 Tím	(Unbreakable Brick) :không thể phá
+-Brick Trắng: Vỡ sau 1 lần chạm
+-Brick Xanh Dương: Vỡ sau 2 lần chạm
+-Brick Xanh lá: Vỡ sau 3 lần chạm
+-Brick Vàng: Vỡsau 4 lần chạm
+-Brick Đỏ: Vỡsau 5 lần chạm
+-Brick Tím(Unbreakable Brick):không thể phá
 4.3. Điểm số
 -Mỗi viên gạch bị phá: +100 điểm.
 -Gạch tím không thể bị phá nên không cho điểm.
@@ -66,8 +66,8 @@ Loại âm thanh	Mô tả
 7.1. Cơ bản
 -Người chơi điều khiển paddle để đánh bóng phá gạch.
 -Bóng rơi khỏi màn hình → mất 1 mạng.
--Khi hết 3 mạng → Game Over.
--Khi phá hết gạch (trừ gạch tím) → qua màn kế tiếp.
+-Khi hết tất cả mạng → Game Over.
+-Khi phá hết gạch có thể phá → qua màn kế tiếp.
 7.2. Cơ chế điểm và mạng
 -Người chơi khởi đầu với 3 mạng (Lives = 3).
 -Game lưu lại Highest Score (điểm cao nhất đạt được).
@@ -80,6 +80,13 @@ Loại âm thanh	Mô tả
 +điểm
 +số mạng
 Mục tiêu: đạt điểm cao nhất và so sánh với Highest Score
+8.2 Chế độ 2 người(Multiplayer)
+-Màn hình hiển thị:
++ 2 Paddles
++ Bóng
++ Gạch
++ Điểm
++ Số mạng
 8.2. Chế độ 2 người (Competitive Mode)
 -Chia màn hình ra làm đôi
 -Mỗi người có:
@@ -114,7 +121,7 @@ Mục tiêu: đạt điểm cao nhất và so sánh với Highest Score
 +Competitive kế thừa gameManager	Quản lý chế độ 2 người chơi (timer, điểm riêng, paddle riêng)
 +Main	Điểm khởi động chương trình, khởi tạo các thành phần chính
 10. Tổng kết
-- 10 màn chơi với độ khó tăng dần
+- 10 màn chơi với số lượng và loại gạch khác nhau
 - 2 loại gạch: tĩnh và động
 - 6 loại gạch – có 5 mức độ cứng, gạch tím không thể phá
 - 7 Power-Up độc đáo (2–5s hiệu lực, DoubleBall đặc biệt)
@@ -122,4 +129,4 @@ Mục tiêu: đạt điểm cao nhất và so sánh với Highest Score
 - 3 mạng ban đầu, 100 điểm/gạch, Highest Score
 - Chế độ 1 hoặc 2 người và 2 người cạnh tranh (competitive)
 - Ở chế độ 2 người cạnh tranh: Màn hình chia đôi, mỗi người có điểm và mạng riêng
-- Giao diện có 5 nút chính: Play, Exit, Select Level, 1 Player, 2 Players
+- Giao diện có 5 nút chính: Play, Exit, Select Level, 1 Player/2 Players, 2 Players Competitve

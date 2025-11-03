@@ -96,5 +96,4 @@ public class BigBallPowerUp extends PowerUp {
             System.err.println("Không thể vẽ ảnh " + e.getMessage());
         }
     }
-
 }

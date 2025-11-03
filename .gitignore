@@ -10,4 +10,9 @@ out/
 # Các file khác không cần thiết
 *.iml
 
+# Bỏ qua file build tạm
+bin/
+.vscode/
+*.class
+
 .gitinore/

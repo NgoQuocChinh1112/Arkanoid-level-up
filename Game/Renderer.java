@@ -121,7 +121,7 @@ public class Renderer {
     public static BufferedImage loadBgroundTexture(int currentLevel) {
         BufferedImage[] background_level = new BufferedImage[10];
 
-        background_level[0] = loadTexture("/assets/BG_Level_1.png");
+        background_level[0] = loadTexture("/assets/BG_Level_1.jpg");
         background_level[1] = loadTexture("/assets/BG_Level_2.jpg");
         background_level[2] = loadTexture("/assets/BG_Level_3.png");
         background_level[3] = loadTexture("/assets/BG_Level_4.png");
@@ -139,7 +139,7 @@ public class Renderer {
      */
     public static BufferedImage[] loadButtonMenu() {
         BufferedImage[] images = new BufferedImage[16];
-        images[0] = loadTexture("/assets/BG_Level_0.png");
+        images[0] = loadTexture("/assets/BG_Menu.jpg");
         images[1] = loadTexture("/assets/title.png");
         images[2] = loadTexture("/assets/start_top.png");
         images[3] = loadTexture("/assets/start_bot.png");
